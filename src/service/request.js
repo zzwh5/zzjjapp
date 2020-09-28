@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 // import { getToken } from '@/utils/auth'
+import { Notify } from 'vant';
 
 // create an axios instance
 const service = axios.create({
@@ -22,8 +23,8 @@ service.interceptors.request.use(
   },
   error => {
     // do something with request error
-    console.log(error) // for debug
-    return Promise.reject(error)
+    // console.log(error) // for debug
+    return Promise.resolve(error)
   }
 )
 
@@ -31,12 +32,17 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const res = response.data
+    if (res.code != 200) {
+      Notify({ type: "warning", message: res.msg || '请稍后重试' });
+    } else {
+      Notify({ type: "success", message: "success", duration: 500 });
+    }
     return res
   },
-  error => {
-    console.log('err' + error) // for debug
-    // return Promise.reject(error)
-    return error
+  async error => {
+    // console.dir(error);
+    Notify({ type: "danger", message: "连接服务器超时" });
+    return Promise.reject(error);
   }
 )
 

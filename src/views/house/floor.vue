@@ -6,8 +6,8 @@
         <img src="@/assets/back.png" alt />
       </div>
       <div class="head_text">小区楼栋</div>
-      <div class="head_add">
-        <img src="@/assets/add.png" alt />
+      <div class="head_add" @click="addFloor">
+        <img src="@/assets/add.png" @click="addEstate" alt />
       </div>
     </div>
     <!-- 小区信息 点击会查看小区的信息 -->
@@ -19,9 +19,16 @@
       <img src="@/assets/image/more.png" alt />
     </div>
     <!-- 暂无楼栋的数据 -->
-
+    <nodata
+      :text="nodataText"
+      v-if="!estateInfo.governBuildings || estateInfo.governBuildings.length<=0"
+    />
     <!-- 楼栋的列表 -->
-    <div class="floor_list" v-if="estateInfo.governBuildings.length>0">
+    <div
+      class="floor_list"
+      v-if="estateInfo.governBuildings && estateInfo.governBuildings.length>0"
+    >
+      <!-- @click="goFloor" -->
       <div class="floor_item" v-for="(item,index) in estateInfo.governBuildings" :key="item.id">
         <div
           class="item_con"
@@ -35,35 +42,74 @@
     </div>
     <!-- 底部弹框 -->
     <van-popup v-model="dialog" position="bottom" round :style="{ height: '21%' }">
-      <div>查看房户信息</div>
-      <div>查看住户列表</div>
+      <div @click="goResident">查看房户列表</div>
+      <div @click="goResidentInfo">查看楼栋信息</div>
       <div @click="dialog = false">取消</div>
     </van-popup>
   </div>
 </template>
 <script>
+// 引入接口
 import { getFloorByEstate } from "@/api/house";
+// 引入没有数据的组件
+import nodata from "@/components/nodata";
 export default {
+  components: {
+    nodata
+  },
   name: "Floor",
   data() {
     return {
       // 小区的id
       estateId: sessionStorage.getItem("estateId"),
-      // 小区的小区
+      // 小区的信息 包括楼栋
       estateInfo: {},
       // 当前点击的楼栋
       nowFloorType: null,
       // 底部弹框的显示与否
-      dialog: false
+      dialog: false,
+      // 没有数据的提示
+      nodataText: "没有更多数据"
     };
   },
   created() {
     this.getFloor();
   },
   methods: {
+    // 前往新增楼栋页面
+    addFloor() {
+      // 更改当前操作楼栋的类型 0为小区楼栋
+      sessionStorage.setItem("residentType", 0);
+      // 更改当前的楼栋编辑类型
+      sessionStorage.setItem("floorEditType", 0);
+      this.$router.push({ name: "EditFloor" });
+    },
     // 前往小区详情页
     goEstateInfo() {
       this.$router.push({ name: "EstateInfo" });
+    },
+    // 千万小区详情页
+    addEstate() {
+      // 改变session中的小区的操作类型为修改  0为新增 1为修改
+      // sessionStorage.setItem("estateEditType", 0);
+      // this.$router.push({ name: "EditEstate" });
+    },
+    // 前往小区房户
+    goResident() {
+      // 当前楼栋的id
+      var residentId = this.estateInfo.governBuildings[this.nowFloorType].id;
+      // 再session中设置楼栋id
+      sessionStorage.setItem("residentId", residentId);
+      // console.log(residentId);
+      this.$router.push({ name: "Resident" });
+    },
+    // 查看楼栋信息
+    goResidentInfo() {
+      // 当前楼栋的id
+      var residentId = this.estateInfo.governBuildings[this.nowFloorType].id;
+      // 更改session中设置楼栋id
+      sessionStorage.setItem("residentId", residentId);
+      this.$router.push({ name: "ResidentInfo" });
     },
     // 返回上一级路由
     goback() {
