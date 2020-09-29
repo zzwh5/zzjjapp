@@ -218,7 +218,7 @@ import exceptionalPoverty from "@/until/exceptionalPoverty";
 // 就业/失业
 import service from "@/until/service";
 export default {
-  name: "HouseInfo",
+  name: "UserInfo",
   data() {
     return {
       // basicId

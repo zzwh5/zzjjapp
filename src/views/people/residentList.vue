@@ -75,7 +75,9 @@ export default {
 
     // 点击了新增
     headAdd() {
-      console.log("点击了新增");
+      // console.log("点击了新增");
+      sessionStorage.setItem("userEditType", 0);
+      this.$router.push({ name: "EditUser" });
     }
   }
 };

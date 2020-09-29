@@ -86,7 +86,7 @@
           <van-button
             plain
             size="mini"
-            :loading="item.loading"
+            :loading="subLoading"
             type="info"
             loading-text="提交中..."
             text="提交"
@@ -123,6 +123,19 @@
             <span></span>
           </div>
         </van-form>
+        <div
+          style="width:100%;margin-top:10px;display:flex;aligin-items:center; justify-content: flex-end;"
+        >
+          <van-button
+            plain
+            size="mini"
+            :loading="subLoading"
+            type="info"
+            loading-text="提交中..."
+            text="提交"
+            @click.native="submit('flowInfo',flowInfo)"
+          />
+        </div>
       </div>
       <!-- 特殊人群 -->
       <div class="content_special" v-if="navType == 2">
@@ -573,6 +586,7 @@ export default {
       subLoading: false,
       //遮罩层显示或隐藏
       cityVisable: false,
+      // 联动类别 5级true 3级 false
       //自定义数据五级结构
       areaList: [
         { values: [] },
@@ -584,6 +598,8 @@ export default {
     };
   },
   created() {
+    // 省市区
+    this.getArea("", 0);
     if (this.userEditType != 0) {
       // 省市区
       this.getArea("", 0);
@@ -594,23 +610,55 @@ export default {
   },
   watch: {
     // 监听楼栋信息的变化 更改addressStr
-    houseInfo: {
+    basicInfo: {
       handler: function(value, old) {
-        // console.log("changeAddress");
+        console.log("changeAddress");
         if (
-          value.currentResidenceProvinceStr == null ||
-          !value.currentResidenceProvinceStr
+          value.governRealPopulation.currentResidenceProvinceStr != null ||
+          value.governRealPopulation.currentResidenceProvinceStr
         ) {
-          // console.log(1111);
-          return false;
+          this.basicInfo.governRealPopulation.currentResidences =
+            this.basicInfo.governRealPopulation.currentResidenceProvinceStr +
+            this.basicInfo.governRealPopulation.currentResidenceCityStr +
+            this.basicInfo.governRealPopulation.currentResidenceRegionStr +
+            this.basicInfo.governRealPopulation.currentResidenceStreetStr +
+            this.basicInfo.governRealPopulation.currentResidenceCommunityStr;
         }
-        this.houseInfo.currentResidence =
-          this.houseInfo.currentResidenceProvinceStr +
-          this.houseInfo.currentResidenceCityStr +
-          this.houseInfo.currentResidenceRegionStr +
-          this.houseInfo.currentResidenceStreetStr +
-          this.houseInfo.currentResidenceCommunityStr;
-        // console.log(this.houseInfo.currentResidence);
+        if (
+          value.governRealPopulation.nativePlaceProvinceStr != null ||
+          value.governRealPopulation.nativePlaceProvinceStr
+        ) {
+          console.log(12132132);
+          this.basicInfo.governRealPopulation.nativePlaces =
+            this.basicInfo.governRealPopulation.nativePlaceProvinceStr +
+            this.basicInfo.governRealPopulation.nativePlaceCityStr +
+            this.basicInfo.governRealPopulation.nativePlaceRegionStr;
+        }
+        if (
+          value.governRealPopulation.placeDomicileProvinceStr != null ||
+          value.governRealPopulation.placeDomicileProvinceStr
+        ) {
+          this.basicInfo.governRealPopulation.placeDomiciles =
+            this.basicInfo.governRealPopulation.placeDomicileProvinceStr +
+            this.basicInfo.governRealPopulation.placeDomicileCityStr +
+            this.basicInfo.governRealPopulation.placeDomicileRegionStr;
+        }
+      },
+      deep: true
+    },
+    moreList: {
+      handler: function(value, old) {
+        // console.log(value);
+        var obj = value[0].names;
+        if (
+          obj.mainFamilyMembersWorkProvince != null ||
+          obj.mainFamilyMembersWorkProvince != null
+        ) {
+          this.moreList[0].names.mainFamilyMembersWork =
+            obj.mainFamilyMembersWorkProvinceStr +
+            obj.mainFamilyMembersWorkCityStr +
+            obj.mainFamilyMembersWorkRegionStr;
+        }
       },
       deep: true
     }
@@ -630,8 +678,10 @@ export default {
       // return false;
       if (text == "现住地(省市区)") {
         this.cityVisable = true;
+        this.cityType = 0;
+        var obj = this.areaList[0];
         this.areaList = [
-          { values: [] },
+          obj,
           { values: [] },
           { values: [] },
           { values: [] },
@@ -639,17 +689,28 @@ export default {
         ];
         return false;
       }
-      if (text == "现住地(省市区)") {
+      if (text == "籍贯(省市区)") {
         this.cityVisable = true;
-        this.areaList = [
-          { values: [] },
-          { values: [] },
-          { values: [] },
-          { values: [] },
-          { values: [] }
-        ];
+        this.cityType = 1;
+        var obj = this.areaList[0];
+        this.areaList = [obj, { values: [] }, { values: [] }];
         return false;
       }
+      if (text == "户籍地(省市区)") {
+        this.cityVisable = true;
+        this.cityType = 2;
+        var obj = this.areaList[0];
+        this.areaList = [obj, { values: [] }, { values: [] }];
+        return false;
+      }
+      if (text == "家庭主要成员工作地(省市区)") {
+        this.cityVisable = true;
+        this.cityType = 3;
+        var obj = this.areaList[0];
+        this.areaList = [obj, { values: [] }, { values: [] }];
+        return false;
+      }
+
       // console.log(text.indexOf("日期") != -1);
       if (text.indexOf("日期") != -1) {
         // console.log("riqi");
@@ -935,13 +996,13 @@ export default {
           }
           if (this.userEditType == 0) {
             that.subLoading = false;
-            that.submitType = null;
-            that.basicId = res.ret.id;
             var data = {
               basicsId: that.basicId,
               ...item
             };
             return editBasicByBasicid(data).then(res => {
+              that.submitType = null;
+              that.basicId = res.ret.id;
               console.log(res);
               if (res.code != 200) {
                 Notify({ type: "warning", message: "编辑失败请稍后重试" });
@@ -1015,19 +1076,30 @@ export default {
     },
     // 更改导航类型
     changeNavType(index) {
-      if (this.userEditType == 1) {
-        if (!this.basicId) {
-          Notify({ type: "warning", message: "请先选择基本信息" });
+      if (index != 0) {
+        if (this.userEditType == 0) {
+          if (!this.basicId) {
+            Notify({ type: "warning", message: "请先选择基本信息" });
+            return false;
+          }
+          this.navType = index;
           return false;
         }
-        this.navType = index;
         return false;
       }
+
       // console.log(index);
       if (index == 0) {
+        if (this.userEditType == 0) {
+          return false;
+        }
+        console.log(22222);
         this.getBasicByBasicid();
       } else if (index == 1) {
         this.getFlowByid();
+        if (this.userEditType == 0) {
+          return false;
+        }
       } else if (index == 2) {
       } else if (index == 3) {
       }
@@ -1070,25 +1142,40 @@ export default {
         // console.log(res);
         // //当请求成功时
         const regionList = res.ret;
+        // console.log(this.areaList);
         this.areaList[index].values = [
           { name: "请选择" },
           ...regionList //ES6新语法
         ];
         if (index == 0) {
-          //当请求的是三级内的内容时
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
-          this.areaList[index + 3].values = [];
-          this.areaList[index + 4].values = [];
+          if (this.cityType == 0) {
+            //当请求的是wu级内的内容时
+            this.areaList[index + 1].values = [];
+            this.areaList[index + 2].values = [];
+            this.areaList[index + 3].values = [];
+            this.areaList[index + 4].values = [];
+          } else {
+            //当请求的是三级内的内容时
+            this.areaList[index + 1].values = [];
+            this.areaList[index + 2].values = [];
+          }
         } else if (index == 1) {
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
-          this.areaList[index + 3].values = [];
+          if (this.cityType == 0) {
+            this.areaList[index + 1].values = [];
+            this.areaList[index + 2].values = [];
+            this.areaList[index + 3].values = [];
+          } else {
+            this.areaList[index + 1].values = [];
+          }
         } else if (index == 2) {
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
+          if (this.cityType == 0) {
+            this.areaList[index + 1].values = [];
+            this.areaList[index + 2].values = [];
+          }
         } else if (index == 3) {
-          this.areaList[index + 1].values = [];
+          if (this.cityType) {
+            this.areaList[index + 1].values = [];
+          }
         }
         this.areaList = [...this.areaList]; //更新areaList
       });
@@ -1097,8 +1184,14 @@ export default {
     onAreaChange(picker, values, index) {
       // values 选择的内容 index当前选择的列数的索引
       // console.log(values, index);
-      if (index < 4) {
-        this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
+      if (this.cityType == 0) {
+        if (index < 4) {
+          this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
+        }
+      } else {
+        if (index < 2) {
+          this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
+        }
       }
       // else {
       //   this.cityVisable = false;
@@ -1112,86 +1205,623 @@ export default {
     //点击确定
     onAreaConfirm(value) {
       // console.log(value);
-      // console.log(value[4], value[3], value[2], value[1], value[0]);
+      console.log(value[2], value[1], value[0], this.cityType);
       // 都有内容
-      if (value[4] && value[3] && value[2] && value[1] && value[0]) {
-        console.log("有内容");
-        // 如果是直辖市的特殊情况
-        if (
-          // 都选择了内容的情况下
-          value[4].code &&
-          value[3].code &&
-          value[2].code &&
-          value[1].code &&
-          value[0].code
-        ) {
-          this.$set(
-            this.houseInfo,
-            "currentResidenceCommunityStr",
-            value[4].name
-          );
-          this.$set(this.houseInfo, "currentResidenceStreetStr", value[3].name);
-          this.$set(this.houseInfo, "currentResidenceRegionStr", value[2].name);
-          this.$set(this.houseInfo, "currentResidenceCityStr", value[1].name);
-          this.$set(
-            this.houseInfo,
-            "currentResidenceProvinceStr",
-            value[0].name
-          );
-          this.$set(this.houseInfo, "currentResidenceCommunity", value[4].code);
-          this.$set(this.houseInfo, "currentResidenceStreet", value[3].code);
-          this.$set(this.houseInfo, "currentResidenceRegion", value[2].code);
-          this.$set(this.houseInfo, "currentResidenceCity", value[1].code);
-          this.$set(this.houseInfo, "currentResidenceProvince", value[0].code);
-          // console.log(this.houseInfo);
+      if (this.cityType == 3) {
+        if (value[2] && value[1] && value[0]) {
+          // console.log("有内容");
+          // 如果是直辖市的特殊情况
+          if (
+            // 都选择了内容的情况下
+            value[2].code &&
+            value[1].code &&
+            value[0].code
+          ) {
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkRegionStr",
+              value[2].name
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkCityStr",
+              value[1].name
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkProvinceStr",
+              value[0].name
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkRegion",
+              value[2].code
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkCity",
+              value[1].code
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkProvince",
+              value[0].code
+            );
+            // console.log(this.houseInfo);
+          } else {
+            if (this.houseEditType == 0) {
+              // console.log("有 清空");
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkRegionStr",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkCityStr",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkProvinceStr",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkRegion",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkCity",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkProvince",
+                ""
+              );
+            }
+          }
         } else {
-          if (this.houseEditType == 0) {
-            // console.log("有 清空");
-            this.$set(this.houseInfo, "currentResidenceCommunityStr", "");
-            this.$set(this.houseInfo, "currentResidenceStreetStr", "");
-            this.$set(this.houseInfo, "currentResidenceRegionStr", "");
-            this.$set(this.houseInfo, "currentResidenceCityStr", "");
-            this.$set(this.houseInfo, "currentResidenceProvinceStr", "");
-            this.$set(this.houseInfo, "currentResidenceCommunity", "");
-            this.$set(this.houseInfo, "currentResidenceStreet", "");
-            this.$set(this.houseInfo, "currentResidenceRegion", "");
-            this.$set(this.houseInfo, "currentResidenceCity", "");
-            this.$set(this.houseInfo, "currentResidenceProvince", "");
+          if (value[2].name == "市辖区") {
+            // console.log("市辖区");
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkRegionStr",
+              value[2].name
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkCityStr",
+              value[1].name
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkProvinceStr",
+              value[0].name
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkRegion",
+              value[2].code
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkCity",
+              value[1].code
+            );
+            this.$set(
+              this.moreList[0].names,
+              "mainFamilyMembersWorkProvince",
+              value[0].code
+            );
+          } else {
+            if (this.houseEditType == 0) {
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkRegionStr",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkCityStr",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkProvinceStr",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkRegion",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkCity",
+                ""
+              );
+              this.$set(
+                this.moreList[0].names,
+                "mainFamilyMembersWorkProvince",
+                ""
+              );
+            }
           }
         }
-      } else {
-        if (value[2].name == "市辖区") {
-          // console.log("市辖区");
-          this.$set(this.houseInfo, "currentResidenceCommunityStr", "");
-          this.$set(this.houseInfo, "currentResidenceStreetStr", "");
-          this.$set(this.houseInfo, "currentResidenceRegionStr", value[2].name);
-          this.$set(this.houseInfo, "currentResidenceCityStr", value[1].name);
-          this.$set(
-            this.houseInfo,
-            "currentResidenceProvinceStr",
-            value[0].name
-          );
-          this.$set(this.houseInfo, "currentResidenceCommunity", "");
-          this.$set(this.houseInfo, "currentResidenceStreet", "");
-          this.$set(this.houseInfo, "currentResidenceRegion", value[2].code);
-          this.$set(this.houseInfo, "currentResidenceCity", value[1].code);
-          this.$set(this.houseInfo, "currentResidenceProvince", value[0].code);
+        console.log(this.moreList[0].names);
+      } else if (this.cityType == 2) {
+        if (value[2] && value[1] && value[0]) {
+          // console.log("有内容");
+          // 如果是直辖市的特殊情况
+          if (
+            // 都选择了内容的情况下
+            value[2].code &&
+            value[1].code &&
+            value[0].code
+          ) {
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "placeDomicileRegionStr",
+              value[2].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "placeDomicileCityStr",
+              value[1].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "placeDomicileProvinceStr",
+              value[0].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "placeDomicileRegion",
+              value[2].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "placeDomicileCity",
+              value[1].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "placeDomicileProvince",
+              value[0].code
+            );
+            // console.log(this.houseInfo);
+          } else {
+            if (this.houseEditType == 0) {
+              // console.log("有 清空");
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileRegionStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileCityStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileProvinceStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileRegion",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileCity",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileProvince",
+                ""
+              );
+            }
+          }
         } else {
-          if (this.houseEditType == 0) {
-            this.$set(this.houseInfo, "currentResidenceCommunityStr", "");
-            this.$set(this.houseInfo, "currentResidenceStreetStr", "");
-            this.$set(this.houseInfo, "currentResidenceRegionStr", "");
-            this.$set(this.houseInfo, "currentResidenceCityStr", "");
-            this.$set(this.houseInfo, "currentResidenceProvinceStr", "");
-            this.$set(this.houseInfo, "currentResidenceCommunity", "");
-            this.$set(this.houseInfo, "currentResidenceStreet", "");
-            this.$set(this.houseInfo, "currentResidenceRegion", "");
-            this.$set(this.houseInfo, "currentResidenceCity", "");
-            this.$set(this.houseInfo, "currentResidenceProvince", "");
+          if (value[2].name == "市辖区") {
+            // console.log("市辖区");
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceRegionStr",
+              value[2].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceCityStr",
+              value[1].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceProvinceStr",
+              value[0].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceRegion",
+              value[2].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceCity",
+              value[1].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceProvince",
+              value[0].code
+            );
+          } else {
+            if (this.houseEditType == 0) {
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileRegionStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileCityStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileProvinceStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileRegion",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileCity",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "placeDomicileProvince",
+                ""
+              );
+            }
+          }
+        }
+      } else if (this.cityType == 1) {
+        if (value[2] && value[1] && value[0]) {
+          // console.log("有内容");
+          // 如果是直辖市的特殊情况
+          if (
+            // 都选择了内容的情况下
+            value[2].code &&
+            value[1].code &&
+            value[0].code
+          ) {
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceRegionStr",
+              value[2].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceCityStr",
+              value[1].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceProvinceStr",
+              value[0].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceRegion",
+              value[2].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceCity",
+              value[1].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "nativePlaceProvince",
+              value[0].code
+            );
+            // console.log(this.houseInfo);
+          } else {
+            if (this.houseEditType == 0) {
+              // console.log("有 清空");
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "nativePlaceRegionStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "nativePlaceCityStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "nativePlaceProvinceStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "nativePlaceRegion",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "nativePlaceCity",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "nativePlaceProvince",
+                ""
+              );
+            }
+          }
+        } else {
+          if (value[2].name == "市辖区") {
+            // console.log("市辖区");
+            this.$set(this.basicInfo, "nativePlaceRegionStr", value[2].name);
+            this.$set(this.basicInfo, "nativePlaceCityStr", value[1].name);
+            this.$set(this.basicInfo, "nativePlaceProvinceStr", value[0].name);
+            this.$set(this.basicInfo, "nativePlaceRegion", value[2].code);
+            this.$set(this.basicInfo, "nativePlaceCity", value[1].code);
+            this.$set(this.basicInfo, "nativePlaceProvince", value[0].code);
+          } else {
+            if (this.houseEditType == 0) {
+              this.$set(this.basicInfo, "nativePlaceRegionStr", "");
+              this.$set(this.basicInfo, "nativePlaceCityStr", "");
+              this.$set(this.basicInfo, "nativePlaceProvinceStr", "");
+              this.$set(this.basicInfo, "nativePlaceRegion", "");
+              this.$set(this.basicInfo, "nativePlaceCity", "");
+              this.$set(this.basicInfo, "nativePlaceProvince", "");
+            }
+          }
+        }
+      } else if (this.cityType == 0) {
+        if (value[4] && value[3] && value[2] && value[1] && value[0]) {
+          console.log("有内容");
+          // 如果是直辖市的特殊情况
+          if (
+            // 都选择了内容的情况下
+            value[4].code &&
+            value[3].code &&
+            value[2].code &&
+            value[1].code &&
+            value[0].code
+          ) {
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCommunityStr",
+              value[4].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceStreetStr",
+              value[3].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceRegionStr",
+              value[2].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCityStr",
+              value[1].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceProvinceStr",
+              value[0].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCommunity",
+              value[4].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceStreet",
+              value[3].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceRegion",
+              value[2].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCity",
+              value[1].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceProvince",
+              value[0].code
+            );
+            // console.log(this.houseInfo);
+          } else {
+            if (this.houseEditType == 0) {
+              // console.log("有 清空");
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCommunityStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceStreetStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceRegionStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCityStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceProvinceStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCommunity",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceStreet",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceRegion",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCity",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceProvince",
+                ""
+              );
+            }
+          }
+        } else {
+          if (value[2].name == "市辖区") {
+            // console.log("市辖区");
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCommunityStr",
+              ""
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceStreetStr",
+              ""
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceRegionStr",
+              value[2].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCityStr",
+              value[1].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceProvinceStr",
+              value[0].name
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCommunity",
+              ""
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceStreet",
+              ""
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceRegion",
+              value[2].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceCity",
+              value[1].code
+            );
+            this.$set(
+              this.basicInfo.governRealPopulation,
+              "currentResidenceProvince",
+              value[0].code
+            );
+          } else {
+            if (this.houseEditType == 0) {
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCommunityStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceStreetStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceRegionStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCityStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceProvinceStr",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCommunity",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceStreet",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceRegion",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceCity",
+                ""
+              );
+              this.$set(
+                this.basicInfo.governRealPopulation,
+                "currentResidenceProvince",
+                ""
+              );
+            }
           }
         }
       }
+
       this.cityVisable = false;
+      console.log(this.basicInfo);
     }
   }
 };

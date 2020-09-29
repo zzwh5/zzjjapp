@@ -61,7 +61,8 @@
             name="门牌号"
             label="门牌号"
             placeholder="请输入"
-            :rules="[{ required: false }]"
+            required
+            :rules="[{ required: true }]"
           />
           <!-- 占位 -->
           <span></span>
@@ -127,7 +128,11 @@ export default {
       estateInfo: {
         // 通过用户登录信息获得
         orgId: "370481115",
-        orgName: "滕州市"
+        orgName: "龙阳镇",
+        province: "370000000000",
+        provinceStr: "山东省",
+        city: "370400000000",
+        cityStr: "枣庄市"
       },
       // 弹框的开关
       show: false,
@@ -137,9 +142,17 @@ export default {
       cityVisable: false,
       //自定义数据五级结构
       areaList: [
-        { values: [] },
-        { values: [] },
-        { values: [] },
+        {
+          values: [
+            {
+              name: "请选择"
+            },
+            {
+              code: "370481000000",
+              name: "滕州市"
+            }
+          ]
+        },
         { values: [] },
         { values: [] }
       ]
@@ -170,7 +183,7 @@ export default {
       this.getEstateInfo();
     }
     // 省市区
-    this.getArea("", 0);
+    // this.getArea("", 0);
   },
   methods: {
     // 返回上一级路由
@@ -267,16 +280,7 @@ export default {
           //当请求的是三级内的内容时
           this.areaList[index + 1].values = [];
           this.areaList[index + 2].values = [];
-          this.areaList[index + 3].values = [];
-          this.areaList[index + 4].values = [];
         } else if (index == 1) {
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
-          this.areaList[index + 3].values = [];
-        } else if (index == 2) {
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
-        } else if (index == 3) {
           this.areaList[index + 1].values = [];
         }
         this.areaList = [...this.areaList]; //更新areaList
@@ -286,7 +290,7 @@ export default {
     onAreaChange(picker, values, index) {
       // values 选择的内容 index当前选择的列数的索引
       // console.log(values, index);
-      if (index < 4) {
+      if (index < 2) {
         this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
       }
       // else {
@@ -303,27 +307,21 @@ export default {
       console.log(value);
       // console.log(value[4], value[3], value[2], value[1], value[0]);
       // 都有内容
-      if (value[4] && value[3] && value[2] && value[1] && value[0]) {
+      if (value[2] && value[1] && value[0]) {
         console.log("有内容");
         // 如果是直辖市的特殊情况
         if (
           // 都选择了内容的情况下
-          value[4].code &&
-          value[3].code &&
           value[2].code &&
           value[1].code &&
           value[0].code
         ) {
-          this.$set(this.estateInfo, "communityStr", value[4].name);
-          this.$set(this.estateInfo, "streetStr", value[3].name);
-          this.$set(this.estateInfo, "districtStr", value[2].name);
-          this.$set(this.estateInfo, "cityStr", value[1].name);
-          this.$set(this.estateInfo, "provinceStr", value[0].name);
-          this.$set(this.estateInfo, "community", value[4].code);
-          this.$set(this.estateInfo, "street", value[3].code);
-          this.$set(this.estateInfo, "district", value[2].code);
-          this.$set(this.estateInfo, "city", value[1].code);
-          this.$set(this.estateInfo, "province", value[0].code);
+          this.$set(this.estateInfo, "communityStr", value[2].name);
+          this.$set(this.estateInfo, "streetStr", value[1].name);
+          this.$set(this.estateInfo, "districtStr", value[0].name);
+          this.$set(this.estateInfo, "community", value[2].code);
+          this.$set(this.estateInfo, "street", value[1].code);
+          this.$set(this.estateInfo, "district", value[0].code);
           console.log(this.estateInfo);
         } else {
           if (this.estateEditType == 0) {
@@ -331,42 +329,18 @@ export default {
             this.$set(this.estateInfo, "communityStr", "");
             this.$set(this.estateInfo, "streetStr", "");
             this.$set(this.estateInfo, "districtStr", "");
-            this.$set(this.estateInfo, "cityStr", "");
-            this.$set(this.estateInfo, "provinceStr", "");
             this.$set(this.estateInfo, "community", "");
             this.$set(this.estateInfo, "street", "");
             this.$set(this.estateInfo, "district", "");
-            this.$set(this.estateInfo, "city", "");
-            this.$set(this.estateInfo, "province", "");
           }
         }
       } else {
-        if (value[2].name == "市辖区") {
-          console.log("市辖区");
-          this.$set(this.estateInfo, "communityStr", "");
-          this.$set(this.estateInfo, "streetStr", "");
-          this.$set(this.estateInfo, "districtStr", value[2].name);
-          this.$set(this.estateInfo, "cityStr", value[1].name);
-          this.$set(this.estateInfo, "provinceStr", value[0].name);
-          this.$set(this.estateInfo, "community", "");
-          this.$set(this.estateInfo, "street", "");
-          this.$set(this.estateInfo, "district", value[2].code);
-          this.$set(this.estateInfo, "city", value[1].code);
-          this.$set(this.estateInfo, "province", value[0].code);
-        } else {
-          if (this.estateEditType == 0) {
-            this.$set(this.estateInfo, "communityStr", "");
-            this.$set(this.estateInfo, "streetStr", "");
-            this.$set(this.estateInfo, "districtStr", "");
-            this.$set(this.estateInfo, "cityStr", "");
-            this.$set(this.estateInfo, "provinceStr", "");
-            this.$set(this.estateInfo, "community", "");
-            this.$set(this.estateInfo, "street", "");
-            this.$set(this.estateInfo, "district", "");
-            this.$set(this.estateInfo, "city", "");
-            this.$set(this.estateInfo, "province", "");
-          }
-        }
+        this.$set(this.estateInfo, "communityStr", "");
+        this.$set(this.estateInfo, "streetStr", "");
+        this.$set(this.estateInfo, "districtStr", "");
+        this.$set(this.estateInfo, "community", "");
+        this.$set(this.estateInfo, "street", "");
+        this.$set(this.estateInfo, "district", "");
       }
       this.cityVisable = false;
     }

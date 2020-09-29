@@ -2,6 +2,8 @@ import request from '@/service/request'
 import qs from 'qs'
 
 const api = {
+  // 根据楼栋id获取楼栋和小区信息
+  getEstateFloor: '/smartCity/governBuilding/findGovernHousingEstateBybuildingId',
   // 获取小区
   getEstat: '/smartCity/governHousingEstate/findGovernHousingEstatePage',
   // 获取小区信息
@@ -23,6 +25,15 @@ const api = {
   editHouse: '/smartCity/governRentingHouse/insertGovernRentingHouse',
   // 获取住户列表
   getUserList: '/smartCity/governRentingHouseDetails/findGovernRentingHouseDetailsPage',
+}
+
+//  根据楼栋id获取楼栋和小区信息
+export function getEstateFloor(parameter) {
+  return request({
+    url: api.getEstateFloor,
+    method: 'post',
+    data: qs.stringify(parameter)
+  })
 }
 
 // 小区

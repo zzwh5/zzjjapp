@@ -82,7 +82,7 @@
 </template>
 <script>
 // 接口引入
-import { detailHouse, editHouse, detailFloor } from "@/api/house";
+import { detailHouse, editHouse, getEstateFloor } from "@/api/house";
 import { getAddress, getSelect } from "@/api/common";
 // 提示框
 import { Notify } from "vant";
@@ -108,19 +108,12 @@ const columns = [
     dataIndex: "houseNumber",
     id: 3,
     isSelect: false,
-    isRequire: false
+    isRequire: true
   },
   {
     title: "房屋编号",
     dataIndex: "houseCodes",
     id: 4,
-    isSelect: false,
-    isRequire: false
-  },
-  {
-    title: "房屋地址",
-    dataIndex: "houseAddress",
-    id: 5,
     isSelect: false,
     isRequire: false
   },
@@ -230,9 +223,10 @@ export default {
       houseInfo: {
         // 通过用户登录信息获得
         orgId: "370481115",
-        orgName: "滕州市",
+        orgName: "龙阳镇",
         buildingId: sessionStorage.getItem("residentId")
       },
+      address: "",
       // 最高楼层
       maxFloor: 0,
       // 最低楼层
@@ -263,9 +257,8 @@ export default {
     this.getArea("", 0);
     if (this.houseEditType != 0) {
       this.getHouseInfo();
-    } else {
-      this.getFloorDetail();
     }
+    this.getFloorDetail();
   },
   watch: {
     // 监听楼栋信息的变化 更改addressStr
@@ -321,11 +314,12 @@ export default {
     // 获取楼栋详情
     getFloorDetail() {
       var obj = {
-        id: this.residentId
+        buildingId: this.residentId
       };
-      return detailFloor(obj).then(res => {
-        // console.log(res);
+      return getEstateFloor(obj).then(res => {
+        console.log(res);
         this.maxFloor = res.ret.theUpperNumber;
+        this.address = res.ret.streetCommunity;
       });
     },
     // 提交表单
@@ -335,11 +329,12 @@ export default {
       var that = this;
       // 如果填了楼层要判断最高楼层
       if (this.houseInfo.floor) {
-        if (this.houseInfo.floor > this.maxFloor) {
+        if (this.houseInfo.floor > this.maxFloor && this.maxFloor != -1) {
           Notify({ type: "warning", message: "所填楼层大于当前楼栋最高楼层" });
           return false;
         }
       }
+      this.houseInfo.houseAddress = this.address + this.houseInfo.houseNumber;
       if (this.houseEditType == 1) {
         Dialog.alert({
           message: "您确定提交修改吗？",

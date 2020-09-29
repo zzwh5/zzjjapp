@@ -294,6 +294,8 @@ export default {
           });
           that.loading = false;
           that.pageNo = Number(this.pageNo) + 1;
+          // total后台查询比较慢  不返了
+
           if (res.result.total == that.list.length) {
             that.finished = true;
           }

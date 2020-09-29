@@ -69,6 +69,7 @@
             label-align="left"
             colon
             label="小区名称"
+            placeholder="请输入"
             required
             readonly
             :rules="[{ required: true,trigger:'o' }]"
@@ -80,8 +81,11 @@
           <van-field
             v-model="residentInfo.buildingName"
             label-align="left"
+            placeholder="请输入"
             :label="residentType==0?'楼栋号':residentType==1|| residentType ==4 || residentType ==5?'楼栋名称':'门牌号'"
             colon
+            required
+            :rules="[{ required: true}]"
           />
           <!-- 占位 -->
           <span></span>
@@ -93,13 +97,17 @@
             :label="item.title"
             label-align="left"
             placeholder="请输入"
-            :required="item.dataIndex=='buildingCode'"
-            :rules="item.dataIndex=='buildingCode'?[{ required: true}]:[]"
+            :required="item.isRequire"
+            :rules="item.isRequire?[{ required: true}]:[]"
           />
           <!-- 占位 -->
           <span></span>
         </div>
-        <div class="info_item" @click="changeAddress()">
+        <div
+          class="info_item"
+          v-if="residentType == 1 || residentType ==2 || residentType ==3"
+          @click="changeAddress()"
+        >
           <van-field
             v-model="residentInfo.addressStr"
             name="镇街"
@@ -158,7 +166,7 @@
 </template>
 <script>
 // 引入接口
-import { detailFloor, editFloor, getEstat } from "@/api/house";
+import { detailFloor, editFloor, getEstat, detailEstate } from "@/api/house";
 import { getAddress } from "@/api/common";
 // 提示框
 import { Notify } from "vant";
@@ -168,28 +176,33 @@ const columns = [
   {
     title: "楼栋编号",
     dataIndex: "buildingCode",
-    id: 1
+    id: 1,
+    isRequire: true
   },
   {
     title: "地上层数",
     dataIndex: "theUpperNumber",
-    id: 2
+    id: 2,
+    isRequire: true
   },
 
   {
     title: "地下层数",
     dataIndex: "numberOfUnderground",
-    id: 3
+    id: 3,
+    isRequire: false
   },
   {
     title: "年代",
     dataIndex: "time",
-    id: 4
+    id: 4,
+    isRequire: false
   },
   {
     title: "不动产编码",
     dataIndex: "buildingRealEstate",
-    id: 5
+    id: 5,
+    isRequire: false
   }
 ];
 
@@ -210,11 +223,16 @@ export default {
       floorEditType: sessionStorage.getItem("floorEditType"),
       // 当前的楼栋的id
       id: sessionStorage.getItem("residentId"),
+      estateId: sessionStorage.getItem("estateId"),
       // 楼栋的信息
       residentInfo: {
         // 通过用户登录信息获得
-        orgId: "370481",
-        orgName: "滕州市"
+        orgId: "370481115",
+        orgName: "龙阳镇",
+        province: "370000000000",
+        provinceStr: "山东省",
+        city: "370400000000",
+        cityStr: "枣庄市"
       },
       // 不同的楼栋的公共字段
       columns: columns,
@@ -226,9 +244,17 @@ export default {
       cityVisable: false,
       //自定义数据五级结构
       areaList: [
-        { values: [] },
-        { values: [] },
-        { values: [] },
+        {
+          values: [
+            {
+              name: "请选择"
+            },
+            {
+              code: "370481000000",
+              name: "滕州市"
+            }
+          ]
+        },
         { values: [] },
         { values: [] }
       ]
@@ -239,7 +265,7 @@ export default {
     residentInfo: {
       handler: function(value, old) {
         // console.log("changeAddress");
-        if (value.provinceStr == null || !value.provinceStr) {
+        if (value.communityStr == null || !value.communityStr) {
           // console.log(1111);
           return false;
         }
@@ -255,7 +281,7 @@ export default {
   },
   created() {
     // 省市区
-    this.getArea("", 0);
+    // this.getArea(this.code, 0);
     if (this.floorEditType != 0) {
       this.getResidentInfo();
       return false;
@@ -303,39 +329,56 @@ export default {
     },
     // 提交表单
     onSubmit(values) {
-      // console.log(this.residentInfo, this.floorEditType);
-      // return false;
       var that = this;
-      if (this.floorEditType == 1) {
-        Dialog.alert({
-          message: "您确定提交修改吗？",
-          showCancelButton: true,
-          cancel: () => {
-            console.log("cancel");
-          }
-        })
-          .then(() => {
-            return editFloor(that.residentInfo).then(res => {
-              // console.log(res);
-              if (res.code != 200) {
-                Notify({ type: "warning", message: res.msg });
-                return;
-              }
-              that.$router.go(-1);
-            });
-          })
-          .catch(() => {});
-
-        return;
-      }
-      // console.log(this.residentInfo);
-      return editFloor(this.residentInfo).then(res => {
+      // console.log(this.residentType);
+      var obj = {
+        id: this.estateId
+      };
+      return detailEstate(obj).then(res => {
         // console.log(res);
-        if (res.code != 200) {
-          Notify({ type: "warning", message: res.msg });
+        if (
+          this.residentType == 0 ||
+          this.residentType == 4 ||
+          this.residentType == 5
+        ) {
+          that.residentInfo.district = res.ret.district;
+          that.residentInfo.street = res.ret.street;
+          that.residentInfo.community = res.ret.community;
+        }
+
+        console.log(this.residentInfo, this.floorEditType);
+        // return false;
+        if (this.floorEditType == 1) {
+          Dialog.alert({
+            message: "您确定提交修改吗？",
+            showCancelButton: true,
+            cancel: () => {
+              console.log("cancel");
+            }
+          })
+            .then(() => {
+              return editFloor(that.residentInfo).then(res => {
+                // console.log(res);
+                if (res.code != 200) {
+                  Notify({ type: "warning", message: res.msg });
+                  return;
+                }
+                that.$router.go(-1);
+              });
+            })
+            .catch(() => {});
+
           return;
         }
-        that.$router.go(-1);
+        // console.log(this.residentInfo);
+        return editFloor(this.residentInfo).then(res => {
+          // console.log(res);
+          if (res.code != 200) {
+            Notify({ type: "warning", message: res.msg });
+            return;
+          }
+          that.$router.go(-1);
+        });
       });
     },
     // 弹框展示
@@ -380,16 +423,7 @@ export default {
           //当请求的是三级内的内容时
           this.areaList[index + 1].values = [];
           this.areaList[index + 2].values = [];
-          this.areaList[index + 3].values = [];
-          this.areaList[index + 4].values = [];
         } else if (index == 1) {
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
-          this.areaList[index + 3].values = [];
-        } else if (index == 2) {
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
-        } else if (index == 3) {
           this.areaList[index + 1].values = [];
         }
         this.areaList = [...this.areaList]; //更新areaList
@@ -399,7 +433,7 @@ export default {
     onAreaChange(picker, values, index) {
       // values 选择的内容 index当前选择的列数的索引
       // console.log(values, index);
-      if (index < 4) {
+      if (index < 2) {
         this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
       }
       // else {
@@ -414,29 +448,23 @@ export default {
     //点击确定
     onAreaConfirm(value) {
       // console.log(value);
-      // console.log(value[4], value[3], value[2], value[1], value[0]);
+      // return false;
       // 都有内容
-      if (value[4] && value[3] && value[2] && value[1] && value[0]) {
+      if (value[2] && value[1] && value[0]) {
         console.log("有内容");
         // 如果是直辖市的特殊情况
         if (
           // 都选择了内容的情况下
-          value[4].code &&
-          value[3].code &&
           value[2].code &&
           value[1].code &&
           value[0].code
         ) {
-          this.$set(this.residentInfo, "communityStr", value[4].name);
-          this.$set(this.residentInfo, "streetStr", value[3].name);
-          this.$set(this.residentInfo, "districtStr", value[2].name);
-          this.$set(this.residentInfo, "cityStr", value[1].name);
-          this.$set(this.residentInfo, "provinceStr", value[0].name);
-          this.$set(this.residentInfo, "community", value[4].code);
-          this.$set(this.residentInfo, "street", value[3].code);
-          this.$set(this.residentInfo, "district", value[2].code);
-          this.$set(this.residentInfo, "city", value[1].code);
-          this.$set(this.residentInfo, "province", value[0].code);
+          this.$set(this.residentInfo, "communityStr", value[2].name);
+          this.$set(this.residentInfo, "streetStr", value[1].name);
+          this.$set(this.residentInfo, "districtStr", value[0].name);
+          this.$set(this.residentInfo, "community", value[2].code);
+          this.$set(this.residentInfo, "street", value[1].code);
+          this.$set(this.residentInfo, "district", value[0].code);
           console.log(this.residentInfo);
         } else {
           if (this.floorEditType == 0) {
@@ -444,44 +472,21 @@ export default {
             this.$set(this.residentInfo, "communityStr", "");
             this.$set(this.residentInfo, "streetStr", "");
             this.$set(this.residentInfo, "districtStr", "");
-            this.$set(this.residentInfo, "cityStr", "");
-            this.$set(this.residentInfo, "provinceStr", "");
             this.$set(this.residentInfo, "community", "");
             this.$set(this.residentInfo, "street", "");
             this.$set(this.residentInfo, "district", "");
-            this.$set(this.residentInfo, "city", "");
-            this.$set(this.residentInfo, "province", "");
           }
         }
       } else {
-        if (value[2].name == "市辖区") {
-          console.log("市辖区");
-          this.$set(this.residentInfo, "communityStr", "");
-          this.$set(this.residentInfo, "streetStr", "");
-          this.$set(this.residentInfo, "districtStr", value[2].name);
-          this.$set(this.residentInfo, "cityStr", value[1].name);
-          this.$set(this.residentInfo, "provinceStr", value[0].name);
-          this.$set(this.residentInfo, "community", "");
-          this.$set(this.residentInfo, "street", "");
-          this.$set(this.residentInfo, "district", value[2].code);
-          this.$set(this.residentInfo, "city", value[1].code);
-          this.$set(this.residentInfo, "province", value[0].code);
-        } else {
-          if (this.floorEditType == 0) {
-            this.$set(this.residentInfo, "communityStr", "");
-            this.$set(this.residentInfo, "streetStr", "");
-            this.$set(this.residentInfo, "districtStr", "");
-            this.$set(this.residentInfo, "cityStr", "");
-            this.$set(this.residentInfo, "provinceStr", "");
-            this.$set(this.residentInfo, "community", "");
-            this.$set(this.residentInfo, "street", "");
-            this.$set(this.residentInfo, "district", "");
-            this.$set(this.residentInfo, "city", "");
-            this.$set(this.residentInfo, "province", "");
-          }
-        }
+        this.$set(this.residentInfo, "communityStr", "");
+        this.$set(this.residentInfo, "streetStr", "");
+        this.$set(this.residentInfo, "provinceStr", "");
+        this.$set(this.residentInfo, "community", "");
+        this.$set(this.residentInfo, "street", "");
+        this.$set(this.residentInfo, "district", "");
       }
       this.cityVisable = false;
+      console.log(this.residentInfo);
     }
   }
 };

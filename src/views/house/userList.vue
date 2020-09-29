@@ -91,10 +91,14 @@ export default {
         pageNo: this.pageNo,
         pageSize: this.pageSize,
         orgId: this.orgId,
-        houseId: this.houseId
+        houseId: this.id
       };
       return getUserList(obj).then(res => {
         // console.log(res);
+        if (!res.ret.data) {
+          that.finished = true;
+          return false;
+        }
         res.result.data.forEach((el, i) => {
           that.list.push(el);
         });

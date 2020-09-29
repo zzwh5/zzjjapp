@@ -56,7 +56,7 @@ const rear = [
   {
     id: 10,
     title: '家庭主要成员工作地(省市区)',
-    dataIndex: 'mainFamilyMembersWorkAddress',
+    dataIndex: 'mainFamilyMembersWork',
     isSelect: true,
   },
   {
