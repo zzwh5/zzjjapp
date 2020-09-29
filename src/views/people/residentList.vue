@@ -12,23 +12,23 @@
     </div>
     <!-- 房主信息 -->
     <div class="people_item">
-      <div class="peopleType">住户</div>
+      <div class="peopleType">户主</div>
       <div class="peopleMsg">
         <div class="msg_top">
-          <div class="peopleName">苏伟</div>
+          <div class="peopleName">丛玉荣</div>
           <div class="isResident">
             常住人口
-            <span>3人</span>
+            <span>1人</span>
           </div>
         </div>
         <div class="msg_bottom">
           <div class="numberOrAddress">
             户主证件号：
-            <span>370829199710131015</span>
+            <span>37048119610214156X</span>
           </div>
           <div class="numberOrAddress">
             住 户 地 址：
-            <span>测试地址测试地址测试地址测测测测试地址测试地址测试地址测测测</span>
+            <span>山东省枣庄市滕州市龙阳镇龙阳村 51号</span>
           </div>
         </div>
       </div>
@@ -40,21 +40,21 @@
       <div class="zhuhu_item">
         <div class="avater">
           <!-- <img src="https://image.baidu.com/search/detail?ct=503316480&z=undefined&tn=baiduimagedetail&ipn=d&word=%E6%AF%94%E5%9F%BA%E5%B0%BC&step_word=&ie=utf-8&in=&cl=2&lm=-1&st=undefined&hd=undefined&latest=undefined&copyright=undefined&cs=1368272940,3215149429&os=3202387521,3637661848&simid=54324146,652366876&pn=89&rn=1&di=99660&ln=356&fr=&fmq=1601299326233_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&is=0,0&istype=0&ist=&jit=&bdtype=0&spn=0&pi=0&gsm=1e&objurl=http%3A%2F%2Fwww.zhucefw.com%2Fimages%2FT1Uu.OFaJgXXXXXXXX_%2521%25210-item_pic.jpg&rpstart=0&rpnum=0&adpicid=0&force=undefined" /> -->
-          苏
+          丛
         </div>
         <div class="message">
           <div class="msg_top">
-            <div class="msg_name">苏伟</div>
+            <div class="msg_name">丛玉荣</div>
             <div class="isHuzhu">户主</div>
           </div>
           <div class="typeNumber">
             <div class="type">
               人口类型
-              <span style="margin-left:10px;">常驻人口</span>
+              <span style="margin-left:10px;color:#0072E7">常驻人口</span>
             </div>
             <div class="type">
               证件号码
-              <span style="margin-left:10px;">370829199710131015</span>
+              <span style="margin-left:10px;color:#0072E7">37048119610214156X</span>
             </div>
           </div>
         </div>
@@ -68,10 +68,11 @@ export default {
     return {};
   },
   methods: {
-    // 返回上一级路由
+    // 返回上一级
     goback() {
       this.$router.go(-1);
     },
+
     // 点击了新增
     headAdd() {
       console.log("点击了新增");
