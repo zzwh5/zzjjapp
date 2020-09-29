@@ -639,6 +639,17 @@ export default {
         ];
         return false;
       }
+      if (text == "现住地(省市区)") {
+        this.cityVisable = true;
+        this.areaList = [
+          { values: [] },
+          { values: [] },
+          { values: [] },
+          { values: [] },
+          { values: [] }
+        ];
+        return false;
+      }
       // console.log(text.indexOf("日期") != -1);
       if (text.indexOf("日期") != -1) {
         // console.log("riqi");
