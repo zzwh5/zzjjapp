@@ -41,28 +41,25 @@
         @load="onLoad"
         offset="30"
       >
-        <div class="people_item">
+        <div class="people_item" @click="goPeopleDetail">
             <div class="peopleType">
-              住户
+              户主
             </div>
             <div class="peopleMsg">
               <div class="msg_top">
-                <div class="peopleName">苏伟</div>
-                <div class="isResident">常住人口<span>3人</span></div>
+                <div class="peopleName">丛玉荣</div>
+                <div class="isResident">常住人口<span>1人</span></div>
               </div>
               <div class="msg_bottom">
-                <div class="numberOrAddress">户主证件号：<span>370829199710131015</span></div>
-                <div class="numberOrAddress">住 户 地 址：<span>测试地址测试地址测试地址测测测测试地址测试地址测试地址测测测</span></div>
+                <div class="numberOrAddress">户主证件号：<span>37048119610214156X</span></div>
+                <div class="numberOrAddress">住 户 地 址：<span>山东省枣庄市滕州市龙阳镇龙阳村 	51号</span></div>
               </div>
             </div>
         </div>
       </van-list>
     </div>
-    <div class="showLoading">
-      <van-loading type="spinner" color="#1989fa" style="position:fixed; top:0; bottom:0; left:0;right:0;margin:auto;" />
-    </div>
   </div>
-</template>>
+</template>
 <script>
 import { getGovernRentingHouse, searchPeopleByidCard } from "@/api/people";
 export default {
@@ -73,7 +70,7 @@ export default {
       peopleData: [],
       error: false,
       loading: false,
-      finished: false,
+      finished: true,
       // orgid 应该是用户登录之后拿到的
       orgId: "370481",
       pageSize: 10,
@@ -83,6 +80,10 @@ export default {
     }
   },
   methods:{
+    //  跳转详情
+    goPeopleDetail () {
+      this.$router.push({ name: "ResidentList" });
+    },
     // 顶部导航栏新增事件
     headAdd() {
       console.log('点击新增按钮');
@@ -127,7 +128,7 @@ export default {
     }
   },
   created(){
-    this.getPeopleData()
+    // this.getPeopleData()
   }
 }
 </script>
@@ -180,7 +181,7 @@ export default {
       font-size: 13px;
       font-weight: 500;
       margin: 9px auto;
-      background: #e1e1e1;
+      background: #5EACFB;
       border-radius: 31px;
       display: flex;
       align-items: center;
@@ -192,8 +193,8 @@ export default {
         width: 90%;
         height: 28px;
         border: none;
-        color: #8d8d8d;
-        background: #e1e1e1;
+        color: #C1E3FF;
+        background: #5EACFB;
       }
       img {
         width: 16px;
