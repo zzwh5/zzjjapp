@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import House from "../views/House.vue";
+import People from "../views/People.vue";
 
 Vue.use(VueRouter);
 
@@ -133,6 +134,28 @@ const routes = [
       }
     ]
   },
+  {
+    path: "/people",
+    name: "People",
+    component: People,
+    redirect: '/people/index',
+    children: [
+      {
+        path: "index",
+        name: "Index",
+        component: require("../views/people/index.vue").default
+      },
+      {
+        path: "residentList",
+        name: "ResidentList",
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () =>
+          import(/* webpackChunkName: "about" */ "../views/people/residentList.vue")
+      },
+    ]
+  }
 ];
 
 const router = new VueRouter({
