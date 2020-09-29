@@ -12,8 +12,8 @@
     </div>
     <!-- 搜索框 -->
     <div class="search">
-      <input type="text" placeholder="请输入搜索关键字" v-model="searchText" />
-      <img @click="searchByidCard" src="@/assets/search.png" alt />
+      <input type="text" placeholder="请输入姓名" v-model="searchText" />
+      <img @click="searchByName" src="@/assets/search.png" alt />
     </div>
     <!--  -->
     <div class="peopleList">
@@ -32,38 +32,44 @@
             </div>
           </div>
       </div>-->
-      <van-list
-        v-model="loading"
-        :finished="finished"
-        finished-text="没有更多数据"
-        :error.sync="error"
-        error-text="请求失败，点击重新加载"
-        @load="onLoad"
-        offset="30"
-      >
-        <div class="people_item" @click="goPeopleDetail">
-          <div class="peopleType">户主</div>
-          <div class="peopleMsg">
-            <div class="msg_top">
-              <div class="peopleName">丛玉荣</div>
-              <div class="isResident">
-                常住人口
-                <span>1人</span>
-              </div>
-            </div>
-            <div class="msg_bottom">
-              <div class="numberOrAddress">
-                户主证件号：
-                <span>37048119610214156X</span>
-              </div>
-              <div class="numberOrAddress">
-                住 户 地 址：
-                <span>山东省枣庄市滕州市龙阳镇龙阳村 51号</span>
+      <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+        <van-list
+          v-model="loading"
+          :finished="finished"
+          finished-text="没有更多数据"
+          :error.sync="error"
+          error-text="请求失败，点击重新加载"
+          @load="onLoad"
+          offset="30"
+        >
+          <!-- <template v-for="item in peopleData" :key="item.basicsId" > -->
+          <div v-for="item in peopleData" :key="item.basicsId">
+            <div class="people_item" @click="goPeopleDetail(item.id, item.basicsId, item.houseAddress)">
+              <div class="peopleType">{{ item.governRegisteredPopulation ? '户主' : '' }}</div>
+              <div class="peopleMsg">
+                <div class="msg_top">
+                  <div class="peopleName">{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName : '' }}</div>
+                  <div class="isResident">
+                    常住人口
+                    <span>{{ item.num ? item.num : 0 }}人</span>
+                  </div>
+                </div>
+                <div class="msg_bottom">
+                  <div class="numberOrAddress">
+                    户主证件号：
+                    <span>{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderIdCard : '' }}</span>
+                  </div>
+                  <div class="numberOrAddress">
+                    房 屋 地 址：
+                    <span>{{ item.houseAddress }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </van-list>
+          <!-- </template> -->
+        </van-list>
+      </van-pull-refresh>
     </div>
   </div>
 </template>
@@ -78,8 +84,9 @@ export default {
       error: false,
       loading: false,
       finished: true,
+      isLoading: false,
       // orgid 应该是用户登录之后拿到的
-      orgId: "370481",
+      orgId: "370481115",
       pageSize: 10,
       pageNo: 1,
       // 搜索信息
@@ -87,19 +94,37 @@ export default {
     };
   },
   methods: {
+    //  下拉刷新
+    onRefresh() {
+       this.pageSize = 10
+        this.pageNo = 1
+        this.searchText = ''
+        this.peopleData = []
+        this.isLoading = true;
+        this.getPeopleData()
+      setTimeout(() => {
+        Toast('刷新成功');
+        this.isLoading = false;
+      }, 1000);
+    },
     goHouse() {
       this.$router.push({ name: "House" });
     },
     //  跳转详情
-    goPeopleDetail() {
+    goPeopleDetail(id, basicsId, houseAddress) {
+      sessionStorage.setItem('id', id)
+      sessionStorage.setItem('zhuhuBasicsId', basicsId)
+      sessionStorage.setItem('zhuhuHouseAddress', houseAddress)
       this.$router.push({ name: "ResidentList" });
     },
     // 顶部导航栏新增事件
     headAdd() {
       console.log("点击新增按钮");
+       sessionStorage.setItem("userEditType", 0);
+      this.$router.push({ name: 'EditUser'})
     },
     onLoad() {
-      // this.getPeopleData()
+      this.getPeopleData()
     },
     // 获取房屋人口数据
     getPeopleData() {
@@ -108,39 +133,42 @@ export default {
       data.pageSize = this.pageSize;
       data.pageNo = this.pageNo;
       data.orgId = this.orgId;
+      data.governRegisteredPopulation = {}
+      data.governRegisteredPopulation.householderName = this.searchText
+      // data.householderName = this.searchText
       //  把搜索数据也加上
-      // data.householderIdCard = this.householderIdCard
+      that.loading = true
       return getGovernRentingHouse(data)
         .then(res => {
-          console.log("打印请求的数据", res);
-          this.loading = false;
+          // console.log("打印请求的数据", res);
+          this.isLoading = false;
+          this.loading =  false
           if (res.code === 200) {
-            this.peopleData = res.result.data;
-            if (res.result.total == that.peopleData.length) {
+            that.peopleData.push(...res.result.data)
+            that.pageNo++
+            console.log(that.peopleData)
+            that.finished = false
+            if (!res.result.data) {
               that.finished = true;
             }
           }
         })
         .catch(res => {
           that.finished = true;
+          this.loading =  false;
         });
     },
-    //  根据身份证号查询搜索数据
-    searchByidCard() {
-      var data = {};
-      data.householderIdCard = this.searchText;
-      data.orgId = this.orgId;
-      var that = this;
-      return searchPeopleByidCard(data).then(res => {
-        console.log(res, "搜索得到的数据");
-        if (res.code === 200) {
-          that.peopleData = res.ret;
-        }
-      });
+    //  根据姓名查询搜索数据
+    searchByName() {
+      this.pageNo = 1
+      this.pageSize = 10
+      this.peopleData = []
+      this.getPeopleData()
     }
+
   },
   created() {
-    // this.getPeopleData()
+    this.getPeopleData()
   }
 };
 </script>
@@ -228,6 +256,7 @@ export default {
       justify-content: space-between;
       box-shadow: 0px 0px 21px 0px rgba(44, 44, 44, 0.1);
       border-radius: 5px;
+      margin: 10px 0;
       .peopleType {
         width: 20px;
         height: 100%;
@@ -291,7 +320,7 @@ export default {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            & > span {
+            &>span {
               color: #29292a;
             }
           }

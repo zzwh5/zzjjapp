@@ -3,7 +3,10 @@ import qs from 'qs'
 const api = {
   // 查询对应网格下所有房间和房间人员
   getGovernRentingHouse: '/smartCity/governRentingHouse/findGovernRentingHouseAndPersonPage',
-  searchPeopleByidCard: '/smartCity/governRegisteredPopulation/findGovernRegisteredPopulationByIdCard'
+  searchPeopleByidCard: '/smartCity/governRegisteredPopulation/findGovernRegisteredPopulationByIdCard',
+  // 获取房屋里面的住户
+  getHousePeople: '/smartCity/governRentingHouseDetails/findGovernRentingHouseDetailsPage',
+  getZhuhu: '/smartCity/governRegisteredPopulation/getOneByBasicsId'
 }
 
 // 查询对应网格下所有房间和房间人员
@@ -21,5 +24,22 @@ export function searchPeopleByidCard (parameter) {
     url: api.searchPeopleByidCard,
     method: 'post',
     data: parameter
+  })
+}
+
+// 获取房屋住户
+export function getHousePeople(parameter) {
+  return request({
+    url: api.getHousePeople,
+    method: 'post',
+    data: parameter
+  })
+}
+// 获取住户
+export function getZhuhu (parameter) {
+  return request({
+    url: api.getZhuhu,
+    method: 'post',
+    data: qs.stringify(parameter)
   })
 }
