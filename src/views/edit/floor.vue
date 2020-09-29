@@ -92,6 +92,9 @@
             colon
             :label="item.title"
             label-align="left"
+            placeholder="请输入"
+            :required="item.dataIndex=='buildingCode'"
+            :rules="item.dataIndex=='buildingCode'?[{ required: true}]:[]"
           />
           <!-- 占位 -->
           <span></span>

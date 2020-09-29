@@ -27,74 +27,176 @@
     <div class="info">
       <!-- 基本信息 -->
       <div class="content_basic" v-if="navType == 0">
-        <div class="info_item" v-for="item in basic" :key="item.id">
-          <div v-if="basicInfo[item.dataIndex]">
-            <van-field
-              v-model="basicInfo[item.dataIndex]"
-              :name="item.dataIndex"
-              :label="item.title"
-              :readonly="item.isSelect"
-              colon
-            />
-            <!-- 占位 -->
-            <span></span>
+        <van-form ref="Form" @submit="onSubmit" @failed="failed">
+          <div class="info_item" v-for="item in basic" :key="item.id">
+            <div v-if="basicInfo[item.dataIndex]">
+              <van-field
+                autofocus
+                v-if="item.isSelect"
+                v-model="basicInfo[item.dataIndex]"
+                :name="item.dataIndex"
+                :label="item.title"
+                :readonly="item.isSelect"
+                colon
+                :required="item.isRequire"
+                :rules="item.isRequire?[{ required: true,trigger:'o' }]:[]"
+                @click="showName(basicInfo,item.title,item.dataIndex)"
+              />
+              <van-field
+                v-else
+                v-model="basicInfo[item.dataIndex]"
+                :name="item.dataIndex"
+                :label="item.title"
+                :readonly="item.isSelect"
+                colon
+                :required="item.isRequire"
+              />
+              <!-- 占位 -->
+              <span></span>
+            </div>
+            <div v-else>
+              <van-field
+                v-if="item.isSelect"
+                v-model="basicInfo.governRealPopulation[item.dataIndex]"
+                :name="item.dataIndex"
+                :label="item.title"
+                :readonly="item.isSelect"
+                colon
+                :required="item.isRequire"
+                :rules="item.isRequire?[{ required: true,trigger:'o' }]:[]"
+                @click="showName(basicInfo,item.title,item.dataIndex,true)"
+              />
+              <van-field
+                v-else
+                v-model="basicInfo.governRealPopulation[item.dataIndex]"
+                :name="item.dataIndex"
+                :label="item.title"
+                :readonly="item.isSelect"
+                colon
+                :required="item.isRequire"
+              />
+              <!-- 占位 -->
+              <span></span>
+            </div>
           </div>
-          <div v-else>
-            <van-field
-              v-model="basicInfo.governRealPopulation[item.dataIndex]"
-              :name="item.dataIndex"
-              :label="item.title"
-              :readonly="item.isSelect"
-              colon
-            />
-            <!-- 占位 -->
-            <span></span>
-          </div>
+        </van-form>
+        <div
+          style="width:100%;margin-top:10px;display:flex;aligin-items:center; justify-content: flex-end;"
+        >
+          <van-button
+            plain
+            size="mini"
+            :loading="item.loading"
+            type="info"
+            loading-text="提交中..."
+            text="提交"
+            @click.native="submit('basicInfo',basicInfo)"
+          />
         </div>
       </div>
       <!-- 暂住信息 -->
       <div class="content_flow" v-if="navType == 1">
-        <div class="info_item" v-for="item in flow" :key="item.id">
-          <van-field
-            v-model="flowInfo[item.dataIndex]"
-            :name="item.dataIndex"
-            :label="item.title"
-            :readonly="item.isSelect"
-            colon
-          />
-          <!-- 占位 -->
-          <span></span>
-        </div>
+        <van-form ref="Form1" @submit="onSubmit" @failed="failed">
+          <div class="info_item" v-for="item in flow" :key="item.id">
+            <van-field
+              autofocus
+              v-if="item.isSelect"
+              v-model="flowInfo[item.dataIndex]"
+              :name="item.dataIndex"
+              :label="item.title"
+              readonly
+              colon
+              :required="item.isRequire"
+            />
+            <van-field
+              v-else
+              v-model="flowInfo[item.dataIndex]"
+              :name="item.dataIndex"
+              :label="item.title"
+              :readonly="item.isSelect"
+              colon
+              :required="item.isRequire"
+              :rules="item.isRequire?[{ required: true,trigger:'o' }]:[]"
+              @click="showName(flowInfo,item.governRealPopulation.title,item.governRealPopulation.dataIndex)"
+            />
+            <!-- 占位 -->
+            <span></span>
+          </div>
+        </van-form>
       </div>
       <!-- 特殊人群 -->
       <div class="content_special" v-if="navType == 2">
         <van-collapse v-model="activeName" accordion>
           <van-collapse-item
-            v-for="(item,index) in specialList"
+            v-for="(item) in specialList"
             :key="item.id"
             :title="item.title"
             :name="item.name"
             :is-link="false"
-            :disabled="item.turn"
+            :disabled="!item.turn"
           >
-            <!-- value="value" -->
             <template #value>
-              <van-button hairline type="info" style="width:56px;height:31px;border-radius:5px;">是</van-button>
-              <van-button hairline type="danger" style="width:56px;height:31px;border-radius:5px;">否</van-button>
+              <van-button
+                hairline
+                :color="item.turn?'#1B88F7':'#EBEBEB'"
+                style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#fff':'#000')}"
+                @click.native.prevent.stop="item.turn =true"
+              >是</van-button>
+              <van-button
+                :color="item.turn?'#EBEBEB':'#1B88F7'"
+                hairline
+                type="danger"
+                style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#000':'#fff')}"
+                @click.native.prevent.stop="delSpecial(item)"
+              >否</van-button>
             </template>
-            <div class="info_item" v-for="items in item.type" :key="items.id">
-              <!-- {{specialList[index][item.type]}} -->
-              <div v-if="specialList[index].type.length>0">
-                <van-field
-                  v-model="[item.name][item.dataIndex]"
-                  :name="items.dataIndex"
-                  :label="items.title"
-                  readonly
-                  colon
-                />
+            <van-form :ref="item.name" @submit="onSubmit" @failed="failed">
+              <div class="info_item" v-for="items in item.type" :key="items.id">
+                <div>
+                  <van-field
+                    autofocus
+                    v-if="items.isSelect"
+                    v-model="item.names[items.dataIndex]"
+                    :name="items.dataIndex"
+                    :label="items.title"
+                    :readonly="items.isSelect"
+                    colon
+                    placeholder="请输入"
+                    :required="items.isRequire"
+                    :rules="items.isRequire?[{ required: true,trigger:'o' }]:[]"
+                    @click="showName(item.names,items.title,items.dataIndex)"
+                  />
+                  <van-field
+                    v-else
+                    autofocus
+                    v-model="item.names[items.dataIndex]"
+                    :name="items.dataIndex"
+                    :label="items.title"
+                    :readonly="items.isSelect"
+                    colon
+                    placeholder="请输入"
+                    :required="items.isRequire"
+                    :rules="items.isRequire?[{ required: true,trigger:'o' }]:[]"
+                  />
+                  <!-- 占位 -->
+                  <span></span>
+                </div>
               </div>
-              <!-- 占位 -->
-              <span></span>
+            </van-form>
+            <div
+              style="width:100%;margin-top:10px;display:flex;aligin-items:center; justify-content: flex-end;"
+            >
+              <van-button
+                plain
+                size="mini"
+                :loading="item.loading"
+                type="info"
+                loading-text="提交中..."
+                text="提交"
+                @click.native="submit(item.name,item)"
+              />
             </div>
           </van-collapse-item>
         </van-collapse>
@@ -108,48 +210,118 @@
             :title="item.title"
             :name="item.name"
             :is-link="false"
-            :disabled="item.turn"
+            :disabled="!item.turn"
           >
             <!-- value="value" -->
             <template #value>
               <van-button
-                v-if="!item.turn"
-                plain
                 hairline
-                type="info"
+                :color="item.turn?'#1B88F7':'#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#fff':'#000')}"
+                @click.native.prevent.stop="item.turn =true"
               >是</van-button>
               <van-button
-                v-else
-                plain
+                :color="item.turn?'#EBEBEB':'#1B88F7'"
                 hairline
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#000':'#fff')}"
+                @click.native.prevent.stop="delSpecial(item)"
               >否</van-button>
             </template>
-            <div class="info_item" v-for="items in item.type" :key="items.id">
-              <van-field
-                v-model="[item.name][item.dataIndex]"
-                :name="items.dataIndex"
-                :label="items.title"
-                readonly
-                colon
+            <van-form :ref="item.name" @submit="onSubmit" @failed="failed">
+              <div class="info_item" v-for="items in item.type" :key="items.id">
+                <van-field
+                  autofocus
+                  v-if="items.isSelect"
+                  v-model="item.names[items.dataIndex]"
+                  :name="items.dataIndex"
+                  :label="items.title"
+                  :readonly="items.isSelect"
+                  colon
+                  :required="items.isRequire"
+                  @click="showName(item.names,items.title,items.dataIndex)"
+                  :rules="items.isRequire?[{ required: true,trigger:'o' }]:[]"
+                />
+                <van-field
+                  autofocus
+                  v-else
+                  v-model="item.names[items.dataIndex]"
+                  :name="items.dataIndex"
+                  :label="items.title"
+                  :readonly="items.isSelect"
+                  colon
+                  :required="items.isRequire"
+                />
+                <!-- 占位 -->
+                <span></span>
+              </div>
+            </van-form>
+            <div
+              style="width:100%;margin-top:10px;display:flex;aligin-items:center; justify-content: flex-end;"
+            >
+              <van-button
+                plain
+                size="mini"
+                :loading="item.loading"
+                type="info"
+                loading-text="提交中..."
+                text="提交"
+                @click.native="submit(item.name,item,item.name)"
               />
-              <!-- 占位 -->
-              <span></span>
             </div>
           </van-collapse-item>
         </van-collapse>
       </div>
     </div>
+
+    <!-- 下拉框弹框 -->
+    <van-dialog v-model="show" title :showConfirmButton="false" closeOnClickOverlay>
+      <div class="orgname">
+        <p>{{dialogText}}</p>
+        <p
+          v-for="item in dialogList"
+          :key="item.id"
+          @click="changeInfo(item.dictionaryValue,item.dictionaryName)"
+        >{{item.dictionaryName}}</p>
+      </div>
+    </van-dialog>
+    <!-- 时间选择弹框 -->
+    <van-calendar :show-confirm="false" v-model="Timeshow" :minDate="minDate" @confirm="onConfirm" />
+    <!-- 省市区选择弹框 -->
+    <!-- 省市区  -->
+    <van-popup v-model="cityVisable" position="bottom">
+      <van-picker
+        show-toolbar
+        title="请选择地区"
+        value-key="name"
+        :columns="areaList"
+        @change="onAreaChange"
+        @cancel="onCancel"
+        @confirm="onAreaConfirm"
+      />
+    </van-popup>
   </div>
 </template>
 <script>
+// 解析时间
+import moment from "moment";
+import { getAddress, getSelect } from "@/api/common";
+// 提示框
+import { Notify } from "vant";
+// 引入弹框
+import { Dialog } from "vant";
 // 引入接口
 import {
   getBasicByBasicid,
   getFlowByBasicid,
-  getSpecialByBasicid
+  getSpecialByBasicid,
+  editSpecialByBasicid,
+  delSpecialByBasicid,
+  editBasicByBasicid,
+  editGover,
+  editFlowByBasicid
 } from "@/api/common";
 // 引入基本信息
 import basic from "@/until/basic";
@@ -191,10 +363,14 @@ export default {
   name: "EditUser",
   data() {
     return {
+      // 是不是基本信息的档案管理的下拉框
+      isGover: false,
       // 住户信息的编辑类型
       userEditType: sessionStorage.getItem("userEditType"),
       // basicId
       basicId: sessionStorage.getItem("basicId"),
+      // 当前模块的id 只有在保存后才有这个id 不然不能删除
+      ids: "",
       // 当前的房屋id  修改的时候用
       id: sessionStorage.getItem("houseId"),
       // navList 列表
@@ -222,38 +398,17 @@ export default {
       basicInfo: { governRealPopulation: {} },
       // 暂住信息
       flowInfo: {},
-      // 刑满释放人员
-      releasedFromPrison: {},
-      // 社区矫正人员
-      communityCorrection: {},
-      // 肇事人员
-      psychosis: {},
-      // 吸毒人员
-      drugs: {},
-      // 艾滋病人员
-      aids: {},
-      // 信访重点人员
-      letter: {},
-      // 重点青少年
-      teenager: {},
-      // 留守人员
-      rear: {},
-      // 境外人员
-      overseasReople: {},
-      // 三无老人
-      sanwu: {},
-      // 空巢老人
-      empty: {},
-      // 死亡人口
-      death: {},
-      // 残疾人员
-      disability: {},
-      // 低保人员
-      basicLivingAllowance: {},
-      // 特困人员
-      exceptionalPoverty: {},
-      // 就业/失业
-      service: {},
+      // 弹框的开关
+      show: false,
+      // 弹框内容类型
+      dialogType: "orgName",
+      dialogText: "",
+      // 弹框的下拉数组
+      dialogList: [],
+      // 时间选择开关
+      Timeshow: false,
+      // 其实日期
+      minDate: new Date(1800, 0, 1),
       // 特殊人群折叠面板展开的项
       activeName: null,
       // 扩展信息折叠面板展开的项
@@ -264,50 +419,64 @@ export default {
           id: 1,
           title: "刑满释放人口",
           type: releasedFromPrison,
-          name: "releasedFromPrison",
-          turn: false
+          name: "releasedFromPrisonInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 2,
           title: "社区矫正人口",
           type: communityCorrection,
-          name: "communityCorrection",
-          turn: false
+          name: "communityCorrectionInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 3,
           title: "肇事肇祸等严重精神障碍患者人口",
           type: psychosis,
-          name: "psychosis",
-          turn: false
+          name: "psychosisInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 4,
           title: "吸毒人口",
           type: drugs,
-          name: "drugs",
-          turn: false
+          name: "drugsInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 5,
           title: "艾滋病人口",
           type: aids,
           name: "aids",
-          turn: false
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 6,
           title: "信访重点人口",
           type: letter,
-          name: "letter",
-          turn: false
+          name: "letterInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 7,
           title: "重点青少年",
           type: teenager,
-          name: "teenager",
-          turn: false
+          name: "teenagerInfo",
+          names: {},
+          turn: true,
+          loading: false
         }
       ],
       moreList: [
@@ -315,87 +484,256 @@ export default {
           id: 1,
           title: "留守人员",
           type: rear,
-          name: "rear",
-          turn: false
+          name: "rearInfo",
+          turn: true,
+          loading: false,
+          names: {}
         },
         {
           id: 2,
           title: "境外人员",
           type: overseasReople,
-          name: "overseasReople",
-          turn: false
+          name: "overseasReopleInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 3,
           title: "三无老人",
           type: sanwu,
-          name: "sanwu",
-          turn: false
+          name: "sanwuInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 4,
           title: "空巢老人",
           type: empty,
-          name: "empty",
-          turn: false
+          name: "emptyInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 5,
           title: "死亡人口",
           type: death,
-          name: "death",
-          turn: false
+          name: "deathInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 6,
           title: "残疾人员",
           type: disability,
-          name: "disability",
-          turn: false
+          name: "disabilityInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 7,
           title: "低保人员",
           type: basicLivingAllowance,
-          name: "basicLivingAllowance",
-          turn: false
+          name: "basicLivingAllowanceInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 8,
           title: "特困人员",
           type: exceptionalPoverty,
-          name: "exceptionalPoverty",
-          turn: false
+          name: "exceptionalPovertyInfo",
+          names: {},
+          turn: true,
+          loading: false
         },
         {
           id: 9,
           title: "就业/失业",
           type: service,
-          name: "service",
-          turn: false
+          name: "serviceInfo",
+          names: {},
+          turn: true,
+          loading: false
         }
       ],
       // 基本信息
       basic: basic,
       // 流动人口
-      flow: flow
+      flow: flow,
+      // form表单提交的item
+      item: "",
+      // 当前提交的类型 主要是为了区分有无折叠版的模块
+      submitType: null,
+      subLoading: false,
+      //遮罩层显示或隐藏
+      cityVisable: false,
+      //自定义数据五级结构
+      areaList: [
+        { values: [] },
+        { values: [] },
+        { values: [] },
+        { values: [] },
+        { values: [] }
+      ]
     };
   },
   created() {
-    this.getBasicByBasicid();
-    this.getSpecialIsSelect();
-    this.getMoreIsSelect();
+    if (this.userEditType != 0) {
+      // 省市区
+      this.getArea("", 0);
+      this.getBasicByBasicid();
+      this.getSpecialIsSelect();
+      this.getMoreIsSelect();
+    }
+  },
+  watch: {
+    // 监听楼栋信息的变化 更改addressStr
+    houseInfo: {
+      handler: function(value, old) {
+        // console.log("changeAddress");
+        if (
+          value.currentResidenceProvinceStr == null ||
+          !value.currentResidenceProvinceStr
+        ) {
+          // console.log(1111);
+          return false;
+        }
+        this.houseInfo.currentResidence =
+          this.houseInfo.currentResidenceProvinceStr +
+          this.houseInfo.currentResidenceCityStr +
+          this.houseInfo.currentResidenceRegionStr +
+          this.houseInfo.currentResidenceStreetStr +
+          this.houseInfo.currentResidenceCommunityStr;
+        // console.log(this.houseInfo.currentResidence);
+      },
+      deep: true
+    }
   },
   methods: {
     // 返回上一级
     goback() {
       this.$router.go(-1);
     },
-    // 前往编辑住户信息的页面
-    editInfo() {
-      // 更改当前的楼栋编辑类型
-      sessionStorage.setItem("userEditType", 1);
-      this.$router.push({ name: "EditUser" });
+    // 弹框展示
+    showName(item, text, type, turn) {
+      if (turn) {
+        this.isGover = true;
+      }
+      console.log(item, text, type);
+      this.item = item;
+      // return false;
+      if (text == "现住地(省市区)") {
+        this.cityVisable = true;
+        this.areaList = [
+          { values: [] },
+          { values: [] },
+          { values: [] },
+          { values: [] },
+          { values: [] }
+        ];
+        return false;
+      }
+      // console.log(text.indexOf("日期") != -1);
+      if (text.indexOf("日期") != -1) {
+        // console.log("riqi");
+        this.Timeshow = true;
+        this.dialogType = type;
+        this.dialogText = text;
+        return false;
+      }
+      if (
+        text.indexOf("是否") != -1 ||
+        text.indexOf("人户一致标识") != -1 ||
+        text.indexOf("有无") != -1
+      ) {
+        text = "标识";
+      }
+      if (text == "房屋类型") {
+        this.dialogList = [
+          {
+            id: 1,
+            dictionaryValue: 0,
+            dictionaryName: "自住房"
+          },
+          {
+            id: 2,
+            dictionaryValue: 1,
+            dictionaryName: "出租房"
+          },
+          {
+            id: 3,
+            dictionaryValue: 2,
+            dictionaryName: "自住+出租房"
+          },
+          {
+            id: 4,
+            dictionaryValue: 3,
+            dictionaryName: "空置房"
+          },
+          {
+            id: 5,
+            dictionaryValue: 4,
+            dictionaryName: "其他"
+          }
+        ];
+        this.dialogType = type;
+        this.dialogText = text;
+        this.show = true;
+        return false;
+      }
+      if (text == "房主联系类型") {
+        text = "联系类型";
+      }
+      if (text == "隐患类型") {
+        text = "安全隐患类型";
+      }
+      if (text.indexOf("联系类型") != -1) {
+        text = "联系类型";
+      }
+      if (text.indexOf("性别") != -1) {
+        text = "性别";
+      }
+      console.log(text);
+      // return false;
+      return getSelect(text).then(res => {
+        console.log(res);
+        this.dialogList = res.ret.dictionaryList;
+        // return false;
+        this.dialogType = type;
+        this.dialogText = text;
+        this.show = true;
+      });
+    },
+    // 点击弹框的下拉框 更改 houseInfo的内容
+    changeInfo(value, text) {
+      if (this.isGover) {
+        console.log(this.item);
+        this.item.governRealPopulation[this.dialogType] = text;
+        // console.log(this.houseInfo[text]);
+        // console.log(this.dialogType);
+        // return;
+        var type = this.dialogType.split("Str");
+        this.item.governRealPopulation[type] = value;
+        this.show = false;
+        // console.log(this.item[type]);
+        this.isGover = [];
+        this.item = {};
+        return false;
+      }
+      this.item[this.dialogType] = text;
+      // console.log(this.houseInfo[text]);
+      // console.log(this.dialogType);
+      // return;
+      var type = this.dialogType.split("Str");
+      this.item[type] = value;
+      this.show = false;
+      // console.log(this.item[type]);
     },
     // 解析地址
     parseAddress(obj) {
@@ -480,6 +818,179 @@ export default {
         that.basicInfo = res.ret ? res.ret : { governRealPopulation: {} };
       });
     },
+    //  如果不是对应的特殊人群或者实有人口 取消选中状态 并且调用删除接口
+    delSpecial(item) {
+      // 收起所有的折叠面板
+      this.activeName = null;
+      this.activeNames = null;
+      // console.log(item.names);
+      // item.names 是对应的保存字段的对象
+      this.ids = item.names.id;
+      if (this.ids == "") {
+        Notify({ type: "warning", message: "当前模块未提交" });
+        return false;
+      }
+      item.turn = false;
+      var name = item.name.split("Info")[0];
+      var obj = {
+        ids: this.ids,
+        name: "del" + name
+      };
+      return delSpecialByBasicid(obj).then(res => {
+        // console.log(res);
+        if (res.code != 200) {
+          Notify({ type: "warning", message: "取消失败请稍后重试！" });
+          return false;
+        }
+        // 清空 字段对象
+        item.names = {};
+        Notify({ type: "success", message: "取消成功" });
+      });
+    },
+    // 提交对应的模块
+    submit(name, item) {
+      // console.log("dianji");
+      if (name == "basicInfo") {
+        this.submitType = 0;
+      } else if (name == "flowInfo") {
+        this.submitType = 1;
+      }
+      item.loading = true;
+      this.item = item;
+      // console.log(this.$refs.releasedFromPrisonInfo);
+      if (this.submitType == 0) {
+        // console.log(this.$refs.Form);
+        this.$refs.Form.submit();
+        // console.log("提交基本信息");
+        return false;
+      }
+      if (this.submitType == 1) {
+        this.$refs.Form1.submit();
+        // console.log("提交信息");
+        return false;
+      }
+      this.$refs[name][0].submit();
+    },
+    // 提交表单的时候如果有必填字段没有填的话
+    failed() {
+      var that = this;
+      // console.log("验证不通过");
+      Notify({ type: "warning", message: "请输入必填字段" });
+      this.specialList.forEach(item => {
+        item.loading = false;
+      });
+      this.moreList.forEach(item => {
+        item.loading = false;
+      });
+      that.subLoading = false;
+      that.submitType = null;
+    },
+    // 时间格式化
+    formatDate(time) {
+      var date = moment
+        .parseZone(time)
+        .local()
+        .format("YYYY-MM-DD HH:mm:ss");
+      // console.log(date)
+      return date;
+    },
+    // 点击选中的时间
+    onConfirm(date) {
+      this.Timeshow = false;
+      if (this.isGover) {
+        // console.log(2222);
+        this.item.governRealPopulation[this.dialogType] = this.formatDate(date);
+        this.isGover = false;
+        return false;
+      }
+      console.log(this.item);
+      this.item[this.dialogType] = this.formatDate(date);
+    },
+    onSubmit() {
+      var that = this;
+      // console.log("dayin");
+      // return false;
+      var item = this.item;
+      // return false;
+      // console.log(editGover, editBasicByBasicid);
+      // return false;
+      if (this.submitType == 0) {
+        var obj = item.governRealPopulation;
+        return editGover(obj).then(res => {
+          console.log(res);
+          if (res.code != 200) {
+            Notify({ type: "warning", message: "编辑失败请稍后重试" });
+            return;
+          }
+          if (this.userEditType == 0) {
+            that.subLoading = false;
+            that.submitType = null;
+            that.basicId = res.ret.id;
+            var data = {
+              basicsId: that.basicId,
+              ...item
+            };
+            return editBasicByBasicid(data).then(res => {
+              console.log(res);
+              if (res.code != 200) {
+                Notify({ type: "warning", message: "编辑失败请稍后重试" });
+              }
+            });
+          }
+        });
+        return false;
+      }
+      if (this.submitType == 1) {
+        var obj = {
+          basicsId: this.basicId,
+          ...item
+        };
+        return editFlowByBasicid(obj).then(res => {
+          //  console.log(res)
+          that.subLoading = false;
+          that.submitType = null;
+        });
+        return false;
+      }
+      var name = item.name.split("Info")[0];
+      var obj = {
+        basicsId: this.basicId,
+        name: "edit" + name,
+        ...item.names
+      };
+      if (this.userEditType == 1) {
+        Dialog.alert({
+          message: "您确定提交修改吗？",
+          showCancelButton: true,
+          cancel: () => {
+            console.log("cancel");
+          }
+        })
+          .then(() => {
+            return editSpecialByBasicid(obj).then(res => {
+              // console.log(res);
+              item.loading = false;
+              if (res.code !== 200) {
+                Notify({ type: "warning", message: "编辑失败请稍后重试" });
+                return false;
+              }
+            });
+          })
+          .catch(() => {});
+        return;
+      }
+      // console.log(obj);
+      // return false;
+      return editSpecialByBasicid(obj).then(res => {
+        // console.log(res);
+        item.loading = false;
+        if (res.code !== 200) {
+          Notify({ type: "warning", message: "添加失败请稍后重试" });
+          return false;
+        }
+        that.ids = res.ret.id;
+      });
+    },
     // 获取流动人口信息
     getFlowByid() {
       var that = this;
@@ -493,7 +1004,14 @@ export default {
     },
     // 更改导航类型
     changeNavType(index) {
-      this.navType = index;
+      if (this.userEditType == 1) {
+        if (!this.basicId) {
+          Notify({ type: "warning", message: "请先选择基本信息" });
+          return false;
+        }
+        this.navType = index;
+        return false;
+      }
       // console.log(index);
       if (index == 0) {
         this.getBasicByBasicid();
@@ -505,15 +1023,16 @@ export default {
     },
     // 切换特殊人群
     getSpecialIsSelect() {
+      var that = this;
       this.specialList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name
+          name: item.name.split("Info")[0]
         };
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? false : true;
-          item.type = res.ret ? res.ret : [];
+          item.turn = res.ret ? true : false;
+          item.names = res.ret ? res.ret : [];
           // console.log(item.turn);
         });
       });
@@ -524,39 +1043,144 @@ export default {
       this.moreList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name
+          name: item.name.split("Info")[0]
         };
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? false : true;
-          that[item.name] = res.ret ? res.ret : [];
+          item.turn = res.ret ? true : false;
+          item.names = res.ret ? res.ret : [];
           // console.log(item.type);
         });
       });
     },
-    // 展示下拉框
-    // 弹框展示
-    showName(text, type) {
-      console.log(text);
-      if (text == "现住地") {
-        this.cityVisable = true;
-        return false;
-      }
-      if (text == "房主联系类型") {
-        text = "联系类型";
-      }
-      if (text == "隐患类型") {
-        text = "安全隐患类型";
-      }
-
-      return getSelect(text).then(res => {
-        console.log(res);
-        this.dialogList = res.ret.dictionaryList;
-        // return false;
-        this.dialogType = type;
-        this.dialogText = text;
-        this.show = true;
+    //网络请求地区数据(难点在如何拼装三级结构)
+    getArea(parentId, index) {
+      return getAddress(parentId).then(res => {
+        // console.log(res);
+        // //当请求成功时
+        const regionList = res.ret;
+        this.areaList[index].values = [
+          { name: "请选择" },
+          ...regionList //ES6新语法
+        ];
+        if (index == 0) {
+          //当请求的是三级内的内容时
+          this.areaList[index + 1].values = [];
+          this.areaList[index + 2].values = [];
+          this.areaList[index + 3].values = [];
+          this.areaList[index + 4].values = [];
+        } else if (index == 1) {
+          this.areaList[index + 1].values = [];
+          this.areaList[index + 2].values = [];
+          this.areaList[index + 3].values = [];
+        } else if (index == 2) {
+          this.areaList[index + 1].values = [];
+          this.areaList[index + 2].values = [];
+        } else if (index == 3) {
+          this.areaList[index + 1].values = [];
+        }
+        this.areaList = [...this.areaList]; //更新areaList
       });
+    },
+    //当地区选择变化时
+    onAreaChange(picker, values, index) {
+      // values 选择的内容 index当前选择的列数的索引
+      // console.log(values, index);
+      if (index < 4) {
+        this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
+      }
+      // else {
+      //   this.cityVisable = false;
+      // }
+    },
+    //点击取消
+    onCancel() {
+      this.cityVisable = false;
+    },
+
+    //点击确定
+    onAreaConfirm(value) {
+      // console.log(value);
+      // console.log(value[4], value[3], value[2], value[1], value[0]);
+      // 都有内容
+      if (value[4] && value[3] && value[2] && value[1] && value[0]) {
+        console.log("有内容");
+        // 如果是直辖市的特殊情况
+        if (
+          // 都选择了内容的情况下
+          value[4].code &&
+          value[3].code &&
+          value[2].code &&
+          value[1].code &&
+          value[0].code
+        ) {
+          this.$set(
+            this.houseInfo,
+            "currentResidenceCommunityStr",
+            value[4].name
+          );
+          this.$set(this.houseInfo, "currentResidenceStreetStr", value[3].name);
+          this.$set(this.houseInfo, "currentResidenceRegionStr", value[2].name);
+          this.$set(this.houseInfo, "currentResidenceCityStr", value[1].name);
+          this.$set(
+            this.houseInfo,
+            "currentResidenceProvinceStr",
+            value[0].name
+          );
+          this.$set(this.houseInfo, "currentResidenceCommunity", value[4].code);
+          this.$set(this.houseInfo, "currentResidenceStreet", value[3].code);
+          this.$set(this.houseInfo, "currentResidenceRegion", value[2].code);
+          this.$set(this.houseInfo, "currentResidenceCity", value[1].code);
+          this.$set(this.houseInfo, "currentResidenceProvince", value[0].code);
+          // console.log(this.houseInfo);
+        } else {
+          if (this.houseEditType == 0) {
+            // console.log("有 清空");
+            this.$set(this.houseInfo, "currentResidenceCommunityStr", "");
+            this.$set(this.houseInfo, "currentResidenceStreetStr", "");
+            this.$set(this.houseInfo, "currentResidenceRegionStr", "");
+            this.$set(this.houseInfo, "currentResidenceCityStr", "");
+            this.$set(this.houseInfo, "currentResidenceProvinceStr", "");
+            this.$set(this.houseInfo, "currentResidenceCommunity", "");
+            this.$set(this.houseInfo, "currentResidenceStreet", "");
+            this.$set(this.houseInfo, "currentResidenceRegion", "");
+            this.$set(this.houseInfo, "currentResidenceCity", "");
+            this.$set(this.houseInfo, "currentResidenceProvince", "");
+          }
+        }
+      } else {
+        if (value[2].name == "市辖区") {
+          // console.log("市辖区");
+          this.$set(this.houseInfo, "currentResidenceCommunityStr", "");
+          this.$set(this.houseInfo, "currentResidenceStreetStr", "");
+          this.$set(this.houseInfo, "currentResidenceRegionStr", value[2].name);
+          this.$set(this.houseInfo, "currentResidenceCityStr", value[1].name);
+          this.$set(
+            this.houseInfo,
+            "currentResidenceProvinceStr",
+            value[0].name
+          );
+          this.$set(this.houseInfo, "currentResidenceCommunity", "");
+          this.$set(this.houseInfo, "currentResidenceStreet", "");
+          this.$set(this.houseInfo, "currentResidenceRegion", value[2].code);
+          this.$set(this.houseInfo, "currentResidenceCity", value[1].code);
+          this.$set(this.houseInfo, "currentResidenceProvince", value[0].code);
+        } else {
+          if (this.houseEditType == 0) {
+            this.$set(this.houseInfo, "currentResidenceCommunityStr", "");
+            this.$set(this.houseInfo, "currentResidenceStreetStr", "");
+            this.$set(this.houseInfo, "currentResidenceRegionStr", "");
+            this.$set(this.houseInfo, "currentResidenceCityStr", "");
+            this.$set(this.houseInfo, "currentResidenceProvinceStr", "");
+            this.$set(this.houseInfo, "currentResidenceCommunity", "");
+            this.$set(this.houseInfo, "currentResidenceStreet", "");
+            this.$set(this.houseInfo, "currentResidenceRegion", "");
+            this.$set(this.houseInfo, "currentResidenceCity", "");
+            this.$set(this.houseInfo, "currentResidenceProvince", "");
+          }
+        }
+      }
+      this.cityVisable = false;
     }
   }
 };
@@ -675,6 +1299,48 @@ export default {
     padding-top: 0;
     padding-bottom: 0;
     line-height: 48px;
+  }
+  /deep/.van-overlay {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  /deep/.van-dialog {
+    width: 90%;
+    border-radius: 9px;
+    max-height: 60vh;
+    overflow-y: scroll;
+    div {
+      p {
+        padding-left: 17px;
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333333;
+        box-sizing: border-box;
+        width: 100%;
+        height: 39px;
+        border-bottom: 1px solid #e5e5e5;
+      }
+      p:nth-child(1) {
+        width: 100%;
+        height: 49px;
+        background: #eeeeee;
+      }
+      p:last-child {
+        border: none;
+      }
+    }
+    .orgname {
+      p:nth-child(1) {
+        width: 100%;
+        height: 49px;
+        background: #eeeeee;
+      }
+      p:nth-child(2) {
+        width: 100%;
+        height: 44px;
+      }
+    }
   }
 }
 </style>

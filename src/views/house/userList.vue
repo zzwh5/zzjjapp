@@ -82,7 +82,7 @@ export default {
     // 新增住户信息
     addUser() {
       sessionStorage.setItem("userEditType", 0);
-      this.$router.push({ name: "UserInfo" });
+      this.$router.push({ name: "EditUser" });
     },
     // 获取住户列表
     getUserList() {

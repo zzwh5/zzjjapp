@@ -5,7 +5,7 @@
       <div class="head_back" @click="goback">
         <img src="@/assets/back.png" alt />
       </div>
-      <div class="head_text">小区房户</div>
+      <div class="head_text">房户列表</div>
       <div class="head_add" @click="addHouse">
         <img src="@/assets/add.png" alt />
       </div>

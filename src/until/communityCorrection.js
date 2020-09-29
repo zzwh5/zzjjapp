@@ -39,25 +39,29 @@ const communityCorrection = [
     id: 7,
     title: '原判刑开始日期',
     dataIndex: 'originalSentenceStartingDate',
-    isSelect: false
+    isSelect: true,
+    isRequire: true
   },
   {
     id: 8,
     title: '原判刑结束日期',
     dataIndex: 'originalSentenceEndDate',
-    isSelect: false
+    isSelect: true,
+    isRequire: true
   },
   {
     id: 9,
     title: '矫正开始日期',
     dataIndex: 'correctionStartDate',
-    isSelect: false
+    isSelect: true,
+    isRequire: true
   },
   {
     id: 10,
     title: '矫正结束日期',
     dataIndex: 'correctionEndDate',
-    isSelect: false
+    isSelect: true,
+    isRequire: true
   },
   {
     id: 11,

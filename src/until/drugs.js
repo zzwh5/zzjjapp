@@ -3,7 +3,8 @@ const drugs = [
     id: 1,
     title: '初次发现日期',
     dataIndex: 'firstDiscoveryDate',
-    isSelect: false
+    isSelect: true,
+    isRequire: true
   },
   {
     id: 2,

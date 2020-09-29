@@ -10,11 +10,11 @@
       </div>
     </div>
     <div class="search">
-      <input type="text" placeholder="请输入搜索关键字" />
+      <input type="text" placeholder="请输入搜索关键字" @input="Input" />
       <img src="@/assets/search.png" alt />
     </div>
     <div class="tabs">
-      <van-tabs @click="onClick" animated v-model="type">
+      <van-tabs @change="onClick" animated v-model="type">
         <van-tab title="整套小区">
           <van-list
             v-model="loading"
@@ -118,6 +118,8 @@ export default {
   name: "House",
   data() {
     return {
+      // 顶部的搜索框内容
+      values: "",
       // orgid 应该是用户登录之后拿到的
       orgId: "370481",
       // 楼栋类型
@@ -153,10 +155,35 @@ export default {
   },
   mounted() {},
   methods: {
+    // 顶部搜索
+    Input(e) {
+      var that = this;
+      this.list = [];
+      this.loading = true;
+      // console.log(e.data);
+      this.values = e.data;
+      var index = this.type;
+      if (index == 0) {
+        that.getEstat();
+      } else {
+        if (index == 1) {
+          that.buildingTypeList = [1];
+        } else if (index == 2) {
+          that.buildingTypeList = [2];
+        } else if (index == 3) {
+          that.buildingTypeList = [3, 4, 5];
+        }
+        that.getFloor();
+      }
+    },
     // 点击tab切换的时候
     onClick(index, title) {
+      // console.log(index == this.type);
+      // if (index == this.type) {
+      //   return false;
+      // }
       var that = this;
-      // console.log(name, title);
+      console.log(this.loading);
       // console.log(this.pageNo);
       // console.log(index);
       // 为了下次进来还在当前的tab下面所以 设置一个本地存储 hType
@@ -170,21 +197,23 @@ export default {
       // console.log(this.list);
       // 允许继续请求数据
       this.finished = false;
-      this.loading = false;
-      setTimeout(function() {
-        if (index == 0) {
-          // that.getEstat();
-        } else {
-          if (index == 1) {
-            that.buildingTypeList = [1];
-          } else if (index == 2) {
-            that.buildingTypeList = [2];
-          } else if (index == 3) {
-            that.buildingTypeList = [3, 4, 5];
-          }
-          // that.getFloor();
+      // this.loading = false;
+      this.loading = true;
+      // setTimeout(function() {
+      if (index == 0) {
+        that.getEstat();
+      } else {
+        if (index == 1) {
+          that.buildingTypeList = [1];
+        } else if (index == 2) {
+          that.buildingTypeList = [2];
+        } else if (index == 3) {
+          that.buildingTypeList = [3, 4, 5];
         }
-      }, 100);
+        that.getFloor();
+      }
+      // this.$router.go(0);
+      // }, 100);
     },
     // 点击顶部的add新增
     headAdd() {
@@ -226,7 +255,7 @@ export default {
     },
     // 下拉到底部请求数据
     onLoad() {
-      console.log(this.finished);
+      // console.log(this.finished);
       var that = this;
       // this.pageNo = Number(this.pageNo) + 1;
       // if (this.pageNo == 1) {
@@ -245,7 +274,8 @@ export default {
       var obj = {
         pageNo: this.pageNo,
         pageSize: this.pageSize,
-        orgId: this.orgId
+        orgId: this.orgId,
+        villageName: this.values
       };
       return getEstat(obj)
         .then(res => {
@@ -276,7 +306,8 @@ export default {
         pageNo: this.pageNo,
         pageSize: this.pageSize,
         orgId: this.orgId,
-        buildingTypeList: this.buildingTypeList
+        buildingTypeList: this.buildingTypeList,
+        buildingName: this.values
       };
       return getFloor(obj)
         .then(res => {

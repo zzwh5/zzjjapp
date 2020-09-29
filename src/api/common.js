@@ -9,16 +9,99 @@ const api = {
   select: '/smartCity/dictionaryGroup/findDictionaryGroupByCode',
   // 根据basicId查找
   getBasicByBasicid: '/smartCity/governRegisteredPopulation/getOneByBasicsId',
+  // 编辑基本信息(户籍人口)
+  editBasicByBasicid: '/smartCity/governRegisteredPopulation/insertGovernRegisteredPopulation',
+  // 编辑档案管理信息
+  editGover: '/smartCity/governRealPopulation/insertGovernRealPopulation',
   // 流动人口
   getFlowByBasicid: '/smartCity/governFloatingPopulation/getOneByBasicsId',
+  // 编辑流动人口
+  editFlowByBasicid: '/smartCity/governFloatingPopulation/insertGovernFloatingPopulation',
+  // 查询
+  // 特殊人群
   releasedFromPrison: '/smartCity/governReleasePrisoners/getOneByBasicsId',
   communityCorrection: '/smartCity/governCommunityCorrectionStaff/getOneByBasicsId',
-  psychosis: '/smartCity/governMentalDisorders/findGovernMentalDisordersPage',
-  drugs: '/smartCity/governDrugAddicts/findGovernDrugAddictsPage',
-  aids: '/smartCity/governAidsRiskPersonnel/findGovernAidsRiskPersonnelPage',
-  letter: '/smartCity/governKeyPetitioners/findGovernKeyPetitionersPage',
-  teenager: '/smartCity/governKeyYouth/findGovernKeyYouthPage',
+  psychosis: '/smartCity/governMentalDisorders/getOneByBasicsId',
+  drugs: '/smartCity/governDrugAddicts/getOneByBasicsId',
+  aids: '/smartCity/governAidsRiskPersonnel/getOneByBasicsId',
+  letter: '/smartCity/governKeyPetitioners/getOneByBasicsId',
+  teenager: '/smartCity/governKeyYouth/getOneByBasicsId',
+  // 实有人口
+  // 留守人员
+  rear: '/smartCity/governLeftBehindPopulation/getOneByBasicsId',
+  // 境外人员
+  overseasReople: '/smartCity/governOverseasPersonnel/getOneByBasicsId',
+  // 三无老人
+  sanwu: '/smartCity/governThreeNonElderly/getOneByBasicsId',
+  // 空巢老人
+  empty: '/smartCity/governEmptyNester/getOneByBasicsId',
+  // 死亡人口
+  death: '/smartCity/governDeadPopulation/getOneByBasicsId',
+  // 残疾人员
+  disability: '/smartCity/governDisabledPersons/getOneByBasicsId',
+  // 低保人员
+  basicLivingAllowance: '/smartCity/governSubsistenceAllowances/getOneByBasicsId',
+  // 特困人员
+  exceptionalPoverty: '/smartCity/governExtremelyPoorPeople/getOneByBasicsId',
+  // 就业/失业
+  service: '/smartCity/governEmploymentServices/getOneByBasicsId',
 
+  // 编辑
+  // 特殊人群
+  editreleasedFromPrison: '/smartCity/governReleasePrisoners/insertGovernReleasePrisoners',
+  editcommunityCorrection: '/smartCity/governCommunityCorrectionStaff/insertGovernCommunityCorrectionStaff',
+  editpsychosis: '/smartCity/governMentalDisorders/insertGovernMentalDisorders',
+  editdrugs: '/smartCity/governDrugAddicts/insertGovernDrugAddicts',
+  editaids: '/smartCity/governAidsRiskPersonnel/insertGovernAidsRiskPersonnel',
+  editletter: '/smartCity/governKeyPetitioners/insertGovernKeyPetitioners',
+  editteenager: '/smartCity/governKeyYouth/insertGovernKeyYouth',
+  // 实有人口
+  // 留守人员
+  editrear: '/smartCity/governLeftBehindPopulation/insertGovernLeftBehindPopulation',
+  // 境外人员
+  editoverseasReople: '/smartCity/governOverseasPersonnel/insertGovernOverseasPersonnel',
+  // 三无老人
+  editsanwu: '/smartCity/governThreeNonElderly/insertGovernThreeNonElderly',
+  // 空巢老人
+  editempty: '/smartCity/governEmptyNester/insertGovernEmptyNester',
+  // 死亡人口
+  editdeath: '/smartCity/governDeadPopulation/insertGovernDeadPopulation',
+  // 残疾人员
+  editdisability: '/smartCity/governDisabledPersons/insertGovernDisabledPersons',
+  // 低保人员
+  editbasicLivingAllowance: '/smartCity/governSubsistenceAllowances/insertGovernSubsistenceAllowances',
+  // 特困人员
+  editexceptionalPoverty: '/smartCity/governExtremelyPoorPeople/insertGovernExtremelyPoorPeople',
+  // 就业/失业
+  editservice: '/smartCity/governEmploymentServices/insertGovernEmploymentServices',
+  // 删除
+  // 特殊人群
+  delreleasedFromPrison: '/smartCity/governReleasePrisoners/deleteGovernReleasePrisoners',
+  delcommunityCorrection: 'smartCity/governCommunityCorrectionStaff/deleteGovernCommunityCorrectionStaff',
+  delpsychosis: '/smartCity/governMentalDisorders/deleteGovernMentalDisorders',
+  deldrugs: '/smartCity/governDrugAddicts/deleteGovernDrugAddicts',
+  delaids: '/smartCity/governAidsRiskPersonnel/deleteGovernAidsRiskPersonnel',
+  delletter: '/smartCity/governKeyPetitioners/deleteGovernKeyPetitioners',
+  delteenager: '/smartCity/governVisitRecord/deleteGovernVisitRecord',
+  // 实有人口
+  // 留守人员
+  delrear: '/smartCity/governLeftBehindPopulation/deleteGovernLeftBehindPopulation',
+  // 境外人员
+  deloverseasReople: '/smartCity/governOverseasPersonnel/deleteGovernOverseasPersonnel',
+  // 三无老人
+  delsanwu: '/smartCity/governThreeNonElderly/deleteGovernThreeNonElderly',
+  // 空巢老人
+  delempty: '/smartCity/governEmptyNester/deleteGovernEmptyNester',
+  // 死亡人口
+  deldeath: '/smartCity/governDeadPopulation/deleteGovernDeadPopulation',
+  // 残疾人员
+  deldisability: '/smartCity/governDisabledPersons/deleteGovernDisabledPersons',
+  // 低保人员
+  delbasicLivingAllowance: '/smartCity/governSubsistenceAllowances/deleteGovernSubsistenceAllowances',
+  // 特困人员
+  delexceptionalPoverty: '/smartCity/governExtremelyPoorPeople/deleteGovernExtremelyPoorPeople',
+  // 就业/失业
+  delservice: '/smartCity/governEmploymentServices/deleteGovernEmploymentServices'
 }
 
 // 下拉数据请求的code参考数组
@@ -317,9 +400,62 @@ export function getSpecialByBasicid(parameter) {
   var data = {
     basicsId: basicsId
   }
+  // console.log(api[name])
   return request({
-    url: api.getFlowByBasicid,
+    url: api[name],
     method: 'post',
     data: qs.stringify(data)
+  })
+}
+
+// 更改对应模块的信息
+export function editSpecialByBasicid(parameter) {
+  var { name, basicsId } = parameter
+  var data = parameter
+  delete data.name
+  console.log(data)
+  return request({
+    url: api[name],
+    method: 'post',
+    data: data
+  })
+}
+
+// 删除对应的模块
+export function delSpecialByBasicid(parameter) {
+  var arr = [parameter.ids];
+  var { name } = parameter
+  console.log(name)
+
+  return request({
+    url: api[name],
+    method: 'post',
+    data: arr
+  })
+}
+
+
+// 编辑档案管理信息(户籍人口)
+export function editBasicByBasicid(parameter) {
+  return request({
+    url: api.editBasicByBasicid,
+    method: 'post',
+    data: parameter
+  })
+}
+//编辑 档案中心
+export function editGover(parameter) {
+  return request({
+    url: api.editGover,
+    method: 'post',
+    data: parameter
+  })
+}
+// 编辑流动人口
+export function editFlowByBasicid(parameter) {
+  return request({
+    url: api.editFlowByBasicid,
+    method: 'post',
+    data: parameter
   })
 }

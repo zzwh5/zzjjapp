@@ -13,6 +13,10 @@
         <img src="@/assets/image/edit.png" alt />
       </div>
     </div>
+    <div class="btn">
+      <div>单栋民房</div>
+      <van-button plain type="info" size="small" @click.native="goHouseInfo">查看房屋信息</van-button>
+    </div>
     <div class="info">
       <div class="info_item" v-if="residentType == 0 || residentType ==4 || residentType ==5">
         <van-field
@@ -125,10 +129,18 @@ export default {
         this.residentType = res.ret.buildingType;
       });
     },
+    // 前往查看房户列表页面
+    goHouseInfo() {
+      // 更改当前的楼栋编辑类型
+      // 再session中设置楼栋id
+      sessionStorage.setItem("residentId", this.id);
+      // console.log(residentId);
+      this.$router.push({ name: "Resident" });
+    },
     // 前往编辑和新增楼栋
     editFloor() {
       // 更改当前的楼栋编辑类型
-      sessionStorage.setItem("floorEditType", 1);
+      sessionStorage.setItem("floorEditType", this.residentInfo.id);
       this.$router.push({ name: "EditFloor" });
     }
   }
@@ -173,6 +185,16 @@ export default {
         height: 18px;
       }
     }
+  }
+  .btn {
+    margin-top: 1%;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 2% 4%;
   }
   .info {
     width: 100%;

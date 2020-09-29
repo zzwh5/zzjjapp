@@ -27,13 +27,15 @@ const overseasReople = [
     id: 5,
     title: '抵达日期',
     dataIndex: 'arrivalDate',
-    isSelect: false
+    isSelect: true,
+    isRequire: true
   },
   {
     id: 6,
     title: '预计离开日期',
     dataIndex: 'expectedDepartureDate',
-    isSelect: false
+    isSelect: true,
+    isRequire: true
   },
 ]
 export default overseasReople

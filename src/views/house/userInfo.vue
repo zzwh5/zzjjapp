@@ -34,6 +34,7 @@
               :label="item.title"
               :readonly="item.isSelect"
               colon
+              :required="item.isRequire"
             />
             <!-- 占位 -->
             <span></span>
@@ -45,6 +46,7 @@
               :label="item.title"
               :readonly="item.isSelect"
               colon
+              :required="item.isRequire"
             />
             <!-- 占位 -->
             <span></span>
@@ -60,6 +62,7 @@
             :label="item.title"
             readonly
             colon
+            :required="item.isRequire"
           />
           <!-- 占位 -->
           <span></span>
@@ -69,43 +72,56 @@
       <div class="content_special" v-if="navType == 2">
         <van-collapse v-model="activeName" accordion>
           <van-collapse-item
-            v-for="(item,index) in specialList"
+            v-for="(item) in specialList"
             :key="item.id"
             :title="item.title"
             :name="item.name"
             :is-link="false"
-            :disabled="item.turn"
+            :disabled="!item.turn"
           >
-            <!-- value="value" -->
             <template #value>
               <van-button
-                v-if="!item.turn"
-                plain
                 hairline
-                type="info"
+                :color="item.turn?'#1B88F7':'#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#fff':'#000')}"
+                @click.native.prevent.stop="item.turn =true"
               >是</van-button>
               <van-button
-                v-else
-                plain
+                :color="item.turn?'#EBEBEB':'#1B88F7'"
                 hairline
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#000':'#fff')}"
+                @click.native.prevent.stop="delSpecial(item)"
               >否</van-button>
             </template>
             <div class="info_item" v-for="items in item.type" :key="items.id">
-              <!-- {{specialList[index][item.type]}} -->
-              <div v-if="specialList[index].type.length>0">
+              <div>
                 <van-field
-                  v-model="[item.name][item.dataIndex]"
+                  v-model="item.names[items.dataIndex]"
                   :name="items.dataIndex"
                   :label="items.title"
-                  readonly
+                  :readonly="items.isSelect"
                   colon
+                  :required="items.isRequire"
                 />
+                <!-- 占位 -->
+                <span></span>
               </div>
-              <!-- 占位 -->
-              <span></span>
+            </div>
+            <div
+              style="width:100%;margin-top:10px;display:flex;aligin-items:center; justify-content: flex-end;"
+            >
+              <van-button
+                plain
+                size="mini"
+                :loading="item.loading"
+                type="info"
+                loading-text="提交中..."
+                text="提交"
+                @click.native="submit(item.name,item)"
+              />
             </div>
           </van-collapse-item>
         </van-collapse>
@@ -119,32 +135,34 @@
             :title="item.title"
             :name="item.name"
             :is-link="false"
-            :disabled="item.turn"
+            :disabled="!item.turn"
           >
             <!-- value="value" -->
             <template #value>
               <van-button
-                v-if="!item.turn"
-                plain
                 hairline
-                type="info"
+                :color="item.turn?'#1B88F7':'#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#fff':'#000')}"
+                @click.native.prevent.stop="item.turn =true"
               >是</van-button>
               <van-button
-                v-else
-                plain
+                :color="item.turn?'#EBEBEB':'#1B88F7'"
                 hairline
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
+                :style="{color:(item.turn?'#000':'#fff')}"
+                @click.native.prevent.stop="delSpecial(item)"
               >否</van-button>
             </template>
             <div class="info_item" v-for="items in item.type" :key="items.id">
               <van-field
-                v-model="[item.name][item.dataIndex]"
+                v-model="item.names[items.dataIndex]"
                 :name="items.dataIndex"
                 :label="items.title"
-                readonly
+                :readonly="items.isSelect"
                 colon
+                :required="items.isRequire"
               />
               <!-- 占位 -->
               <span></span>
@@ -168,6 +186,7 @@ import basic from "@/until/basic";
 import flow from "@/until/flow";
 // 刑满释放人员
 import releasedFromPrison from "@/until/releasedFromPrison";
+// console.log(releasedFromPrison);
 // 社区矫正人员
 import communityCorrection from "@/until/communityCorrection";
 // 肇事人员
@@ -231,38 +250,6 @@ export default {
       basicInfo: { governRealPopulation: {} },
       // 暂住信息
       flowInfo: {},
-      // 刑满释放人员
-      releasedFromPrison: {},
-      // 社区矫正人员
-      communityCorrection: {},
-      // 肇事人员
-      psychosis: {},
-      // 吸毒人员
-      drugs: {},
-      // 艾滋病人员
-      aids: {},
-      // 信访重点人员
-      letter: {},
-      // 重点青少年
-      teenager: {},
-      // 留守人员
-      rear: {},
-      // 境外人员
-      overseasReople: {},
-      // 三无老人
-      sanwu: {},
-      // 空巢老人
-      empty: {},
-      // 死亡人口
-      death: {},
-      // 残疾人员
-      disability: {},
-      // 低保人员
-      basicLivingAllowance: {},
-      // 特困人员
-      exceptionalPoverty: {},
-      // 就业/失业
-      service: {},
       // 特殊人群折叠面板展开的项
       activeName: null,
       // 扩展信息折叠面板展开的项
@@ -273,50 +260,64 @@ export default {
           id: 1,
           title: "刑满释放人口",
           type: releasedFromPrison,
-          name: "releasedFromPrison",
-          turn: false
+          name: "releasedFromPrisonInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 2,
           title: "社区矫正人口",
           type: communityCorrection,
-          name: "communityCorrection",
-          turn: false
+          name: "communityCorrectionInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 3,
           title: "肇事肇祸等严重精神障碍患者人口",
           type: psychosis,
-          name: "psychosis",
-          turn: false
+          name: "psychosisInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 4,
           title: "吸毒人口",
           type: drugs,
-          name: "drugs",
-          turn: false
+          name: "drugsInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 5,
           title: "艾滋病人口",
           type: aids,
           name: "aids",
-          turn: false
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 6,
           title: "信访重点人口",
           type: letter,
-          name: "letter",
-          turn: false
+          name: "letterInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 7,
           title: "重点青少年",
           type: teenager,
-          name: "teenager",
-          turn: false
+          name: "teenagerInfo",
+          names: {},
+          turn: false,
+          loading: false
         }
       ],
       moreList: [
@@ -324,64 +325,82 @@ export default {
           id: 1,
           title: "留守人员",
           type: rear,
-          name: "rear",
-          turn: false
+          name: "rearInfo",
+          turn: false,
+          loading: false,
+          names: {}
         },
         {
           id: 2,
           title: "境外人员",
           type: overseasReople,
-          name: "overseasReople",
-          turn: false
+          name: "overseasReopleInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 3,
           title: "三无老人",
           type: sanwu,
-          name: "sanwu",
-          turn: false
+          name: "sanwuInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 4,
           title: "空巢老人",
           type: empty,
-          name: "empty",
-          turn: false
+          name: "emptyInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 5,
           title: "死亡人口",
           type: death,
-          name: "death",
-          turn: false
+          name: "deathInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 6,
           title: "残疾人员",
           type: disability,
-          name: "disability",
-          turn: false
+          name: "disabilityInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 7,
           title: "低保人员",
           type: basicLivingAllowance,
-          name: "basicLivingAllowance",
-          turn: false
+          name: "basicLivingAllowanceInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 8,
           title: "特困人员",
           type: exceptionalPoverty,
-          name: "exceptionalPoverty",
-          turn: false
+          name: "exceptionalPovertyInfo",
+          names: {},
+          turn: false,
+          loading: false
         },
         {
           id: 9,
           title: "就业/失业",
           type: service,
-          name: "service",
-          turn: false
+          name: "serviceInfo",
+          names: {},
+          turn: false,
+          loading: false
         }
       ],
       // 基本信息
@@ -394,6 +413,7 @@ export default {
     this.getBasicByBasicid();
     this.getSpecialIsSelect();
     this.getMoreIsSelect();
+    // console.log(releasedFromPrison);
   },
   methods: {
     // 返回上一级
@@ -514,15 +534,16 @@ export default {
     },
     // 切换特殊人群
     getSpecialIsSelect() {
+      var that = this;
       this.specialList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name
+          name: item.name.split("Info")[0]
         };
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? false : true;
-          item.type = res.ret ? res.ret : [];
+          item.turn = res.ret ? true : false;
+          item.names = res.ret ? res.ret : [];
           // console.log(item.turn);
         });
       });
@@ -533,17 +554,16 @@ export default {
       this.moreList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name
+          name: item.name.split("Info")[0]
         };
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? false : true;
-          that[item.name] = res.ret ? res.ret : [];
+          item.turn = res.ret ? true : false;
+          item.names = res.ret ? res.ret : [];
           // console.log(item.type);
         });
       });
-    },
-    // 展示下拉框
+    }, // 展示下拉框
     // 弹框展示
     showName(text, type) {
       console.log(text);

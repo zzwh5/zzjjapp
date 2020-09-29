@@ -1,7 +1,7 @@
 const teenager = [
   {
     title: '人员类型',
-    dataIndex: 'personnelType',
+    dataIndex: 'personnelTypeStr',
     isSelect: true
   },
   {
@@ -21,12 +21,12 @@ const teenager = [
   },
   {
     title: '与监护人关系',
-    dataIndex: 'guardianRelationship',
+    dataIndex: 'guardianRelationshipStr',
     isSelect: true
   },
   {
     title: '监护人联系类型',
-    dataIndex: 'guardianContactType',
+    dataIndex: 'guardianContactTypeStr',
     isSelect: true
   },
   {
@@ -35,19 +35,9 @@ const teenager = [
     isSelect: false
   },
   {
-    title: '监护人居住-省',
-    dataIndex: 'guardianResidenceProvince',
-    isSelect: false
-  },
-  {
-    title: '监护人居住-市',
-    dataIndex: 'guardianResidenceCity',
-    isSelect: false
-  },
-  {
-    title: '监护人居住-区',
-    dataIndex: 'guardianResidenceRegion',
-    isSelect: false
+    title: '监护人居住(省市区)',
+    dataIndex: 'guardianResidenceProvinces',
+    isSelect: true
   },
   {
     title: '监护人居住详址',
@@ -56,7 +46,7 @@ const teenager = [
   },
   {
     title: '是否违法犯罪',
-    dataIndex: 'illegalCriminal',
+    dataIndex: 'illegalCriminalStr',
     isSelect: true
   },
   {
@@ -71,7 +61,7 @@ const teenager = [
   },
   {
     title: '帮扶人联系类型',
-    dataIndex: 'helpersContactType',
+    dataIndex: 'helpersContactTypeStr',
     isSelect: true
   },
   {
