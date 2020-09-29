@@ -229,7 +229,7 @@ export default {
       // 房屋的信息
       houseInfo: {
         // 通过用户登录信息获得
-        orgId: "370481",
+        orgId: "370481115",
         orgName: "滕州市",
         buildingId: sessionStorage.getItem("residentId")
       },

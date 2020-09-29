@@ -126,7 +126,7 @@ export default {
       // 小区信息
       estateInfo: {
         // 通过用户登录信息获得
-        orgId: "370481",
+        orgId: "370481115",
         orgName: "滕州市"
       },
       // 弹框的开关

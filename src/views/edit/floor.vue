@@ -197,7 +197,7 @@ export default {
   name: "EditFloor",
   data() {
     return {
-      orgId: "370481",
+      orgId: "370481115",
       // 搜索中用户输入的小区名
       value: "",
       // 小区名称列表

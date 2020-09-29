@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="header">
-      <div class="head_back">
+      <div class="head_back" @click="goPeople">
         <img src="@/assets/back.png" alt />
       </div>
       <div class="head_text">房屋管理</div>
@@ -121,7 +121,7 @@ export default {
       // 顶部的搜索框内容
       values: "",
       // orgid 应该是用户登录之后拿到的
-      orgId: "370481",
+      orgId: "370481115",
       // 楼栋类型
       buildingTypeList: [1],
       // 列表数组
@@ -155,6 +155,10 @@ export default {
   },
   mounted() {},
   methods: {
+    // 测试用
+    goPeople() {
+      this.$router.push({ name: "People" });
+    },
     // 顶部搜索
     Input(e) {
       var that = this;

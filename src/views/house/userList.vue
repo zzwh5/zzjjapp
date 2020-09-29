@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       // orgid
-      orgId: "370481",
+      orgId: "370481115",
       // 房屋id
       id: sessionStorage.getItem("houseId"),
       // 下拉到底部
