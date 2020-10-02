@@ -20,6 +20,7 @@ NProgress.configure({ showSpinner: false, ease: 'ease', speed: 3000 })
 router.beforeEach((to, from, next) => {
   //进度条开始
   NProgress.start();
+  console.log(to)
   next()
 })
 //后置路由守卫

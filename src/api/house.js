@@ -25,6 +25,8 @@ const api = {
   editHouse: '/smartCity/governRentingHouse/insertGovernRentingHouse',
   // 获取住户列表
   getUserList: '/smartCity/governRentingHouseDetails/findGovernRentingHouseDetailsPage',
+  // 增加住户信息
+  editUserInfo: '/smartCity/governRentingHouseDetails/insertGovernRentingHouseDetails'
 }
 
 //  根据楼栋id获取楼栋和小区信息
@@ -135,3 +137,13 @@ export function getUserList(parameter) {
   })
 }
 
+
+// 添加住户信息
+
+export function editUserInfo(parameter) {
+  return request({
+    url: api.editUserInfo,
+    method: 'post',
+    data: parameter
+  })
+}

@@ -167,56 +167,64 @@ const basic = [
     title: '人户一致标识',
     dataIndex: 'householdIdentityStr',
     isSelect: true,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   },
   {
     id: 25,
     title: '户号',
     dataIndex: 'accountNumber',
     isSelect: false,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   },
   {
     id: 26,
     title: '户主公民身份证号',
     dataIndex: 'householderIdCard',
     isSelect: false,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   },
   {
     id: 27,
     title: '户主姓名',
     dataIndex: 'householderName',
     isSelect: false,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   },
   {
     id: 28,
     title: '户主性别',
     dataIndex: 'householderGenderStr',
     isSelect: true,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   },
   {
     id: 29,
     title: '与户主关系',
     dataIndex: 'householderRelationshipStr',
     isSelect: true,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   },
   {
     id: 30,
     title: '户主联系类型',
     dataIndex: 'householderContactTypeStr',
     isSelect: true,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   },
   {
     id: 31,
     title: '户主联系方式',
     dataIndex: 'householderContactInformation',
     isSelect: false,
-    isRequire: false
+    isRequire: false,
+    isSpecial: true
   }
 ]
 

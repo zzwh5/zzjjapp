@@ -15,11 +15,13 @@
       <div class="peopleType">{{ huzhuData.governRealPopulation ? '户主' : '' }}</div>
       <div class="peopleMsg">
         <div class="msg_top">
-          <div class="peopleName">{{ huzhuData.governRealPopulation ? huzhuData.governRealPopulation.fullName : '' }}</div>
+          <div
+            class="peopleName"
+          >{{ huzhuData.governRealPopulation ? huzhuData.governRealPopulation.fullName : '' }}</div>
           <!-- <div class="isResident">
             常住人口
             <span>1人</span>
-          </div> -->
+          </div>-->
         </div>
         <div class="msg_bottom">
           <div class="numberOrAddress">
@@ -39,28 +41,33 @@
     <div class="zhuhuMsg">
       <div v-for="item in zhuhuData" :key="item.id" @click="goAddMsg(item)">
         <div class="zhuhu_item">
-          <div class="avater">
-            {{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName.trim().slice(0,1) : '' }}
-          </div>
+          <div
+            class="avater"
+          >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName.trim().slice(0,1) : '' }}</div>
           <div class="message">
             <div class="msg_top">
-              <div class="msg_name">{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName : '' }}</div>
-              <div class="isHuzhu">{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderRelationshipStr : '' }}</div>
+              <div
+                class="msg_name"
+              >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName : '' }}</div>
+              <div
+                class="isHuzhu"
+              >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderRelationshipStr : '' }}</div>
             </div>
             <div class="typeNumber">
               <!-- <div class="type">
                 与户主关系
                 <span style="margin-left:10px;color:#0072E7">{{  }}</span>
-              </div> -->
+              </div>-->
               <div class="type">
                 证件号码
-                <span style="margin-left:10px;color:#0072E7">{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderIdCard : '' }}</span>
+                <span
+                  style="margin-left:10px;color:#0072E7"
+                >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderIdCard : '' }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
     </div>
   </div>
 </template>
@@ -69,66 +76,71 @@ import { getHousePeople, getZhuhu } from "@/api/people";
 export default {
   data() {
     return {
-      orgId: '370481115',
-      id: '',
-      zhuhuBasicsId: '',
-      houseAddress: '',
+      orgId: "370481115",
+      id: "",
+      zhuhuBasicsId: "",
+      houseAddress: "",
       zhuhuData: [],
       huzhuData: []
-    }
+    };
   },
-  created(){
-    this.id = sessionStorage.getItem('id')
-    this.zhuhuBasicsId = sessionStorage.getItem('zhuhuBasicsId')
-    this.houseAddress = sessionStorage.getItem('zhuhuHouseAddress')
-    console.log(this.id)
-    this.getZhuhuData()
-    this.getData()
+  created() {
+    this.id = sessionStorage.getItem("id");
+    this.zhuhuBasicsId = sessionStorage.getItem("zhuhuBasicsId");
+    this.houseAddress = sessionStorage.getItem("zhuhuHouseAddress");
+    console.log(this.id);
+    this.getZhuhuData();
+    this.getData();
   },
   methods: {
     //  跳转用户讯息
-    goAddMsg(item){
-      sessionStorage.setItem("basicId", item.governRegisteredPopulation.basicsId)
-      this.$router.push({name: 'HouseInfo'})
+    goAddMsg(item) {
+      sessionStorage.setItem(
+        "basicId",
+        item.governRegisteredPopulation.basicsId
+      );
+      this.$router.push({ name: "UserInfo" });
     },
     // 返回上一级
     goback() {
       this.$router.go(-1);
     },
     // 查询数据
-    getData(){
-      var data = {}
-      data.orgId = this.orgId
-      data.houseId = this.id
-      return getHousePeople(data).then(res => {
-        if(res.code === 200){
-          console.log(res)
-          if(res.code === 200){
-              this.zhuhuData = res.ret
-          }else{
-            Notify({ type: "warning", message: res.msg });
+    getData() {
+      var data = {};
+      data.orgId = this.orgId;
+      data.houseId = this.id;
+      return getHousePeople(data)
+        .then(res => {
+          if (res.code === 200) {
+            console.log(res);
+            if (res.code === 200) {
+              this.zhuhuData = res.ret;
+            } else {
+              Notify({ type: "warning", message: res.msg });
+            }
           }
-        }
-      }).catch(res => {
-        Notify({ type: "warning", message: '系统错误' });
-      })
+        })
+        .catch(res => {
+          Notify({ type: "warning", message: "系统错误" });
+        });
     },
     // 获取房主信息
-    getZhuhuData(){
+    getZhuhuData() {
       var data = {
         basicsId: this.zhuhuBasicsId
-      }
+      };
       getZhuhu(data).then(res => {
-        if(res.code === 200){
-            console.log(res)
-            this.huzhuData = res.ret
-            if(res.ret === null){
-              Notify({ type: "warning", message: '暂无数据' });
-            }
-        }else{
-          console.log(res)
+        if (res.code === 200) {
+          console.log(res);
+          this.huzhuData = res.ret;
+          if (res.ret === null) {
+            Notify({ type: "warning", message: "暂无数据" });
+          }
+        } else {
+          console.log(res);
         }
-      })
+      });
     },
     // 点击了新增
     headAdd() {

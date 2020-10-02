@@ -51,7 +51,7 @@ export default {
       // 房屋id
       id: sessionStorage.getItem("houseId"),
       // 下拉到底部
-      finished: false,
+      finished: true,
       loading: false,
       // 用户列表
       list: [],
@@ -60,15 +60,18 @@ export default {
       pageNo: 0
     };
   },
+  created() {
+    this.getUserList();
+  },
   methods: {
     // 返回
     goback() {
       this.$router.go(-1);
     },
     onLoad() {
-      this.pageNo = Number(this.pageNo) + 1;
-      console.log("bottom");
-      this.getUserList();
+      // this.pageNo = Number(this.pageNo) + 1;
+      // console.log("bottom");
+      // this.getUserList();
     },
     // 查看住户信息
     userInfo(item) {
@@ -95,17 +98,19 @@ export default {
       };
       return getUserList(obj).then(res => {
         // console.log(res);
-        if (!res.ret.data) {
+        if (!res.ret) {
+          console.log(1111);
           that.finished = true;
           return false;
         }
-        res.result.data.forEach((el, i) => {
+        res.ret.forEach((el, i) => {
           that.list.push(el);
         });
         that.loading = false;
-        if (res.result.total == that.list.length) {
-          that.finished = true;
-        }
+        console.log(this.list);
+        // if (res.result.total == that.list.length) {
+        //   that.finished = true;
+        // }
       });
     }
   }

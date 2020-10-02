@@ -27,12 +27,13 @@
       <!-- 基本信息 -->
       <div class="content_basic" v-if="navType == 0">
         <div class="info_item" v-for="item in basic" :key="item.id">
-          <div v-if="basicInfo[item.dataIndex]">
+          <!-- {{item.isSpecial == true}} -->
+          <div v-if="item.isSpecial">
             <van-field
               v-model="basicInfo[item.dataIndex]"
               :name="item.dataIndex"
               :label="item.title"
-              :readonly="item.isSelect"
+              readonly
               colon
               :required="item.isRequire"
             />
@@ -44,7 +45,7 @@
               v-model="basicInfo.governRealPopulation[item.dataIndex]"
               :name="item.dataIndex"
               :label="item.title"
-              :readonly="item.isSelect"
+              readonly
               colon
               :required="item.isRequire"
             />
@@ -102,7 +103,7 @@
                   v-model="item.names[items.dataIndex]"
                   :name="items.dataIndex"
                   :label="items.title"
-                  :readonly="items.isSelect"
+                  readonly
                   colon
                   :required="items.isRequire"
                 />
@@ -160,7 +161,7 @@
                 v-model="item.names[items.dataIndex]"
                 :name="items.dataIndex"
                 :label="items.title"
-                :readonly="items.isSelect"
+                readonly
                 colon
                 :required="items.isRequire"
               />
@@ -218,7 +219,7 @@ import exceptionalPoverty from "@/until/exceptionalPoverty";
 // 就业/失业
 import service from "@/until/service";
 export default {
-  name: "UserInfo",
+  name: "HouseInfo",
   data() {
     return {
       // basicId

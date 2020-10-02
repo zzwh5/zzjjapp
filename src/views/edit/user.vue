@@ -29,7 +29,8 @@
       <div class="content_basic" v-if="navType == 0">
         <van-form ref="Form" @submit="onSubmit" @failed="failed">
           <div class="info_item" v-for="item in basic" :key="item.id">
-            <div v-if="basicInfo[item.dataIndex]">
+            <!-- {{item.dataIndex in basicInfo.governRealPopulation}} -->
+            <div v-if="item.isSpecial">
               <van-field
                 autofocus
                 v-if="item.isSelect"
@@ -321,6 +322,7 @@
 // 解析时间
 import moment from "moment";
 import { getAddress, getSelect } from "@/api/common";
+import { editUserInfo } from "@/api/house";
 // 提示框
 import { Notify } from "vant";
 // 引入弹框
@@ -376,6 +378,7 @@ export default {
   name: "EditUser",
   data() {
     return {
+      orgId: "370481115",
       // 是不是基本信息的档案管理的下拉框
       isGover: false,
       // 住户信息的编辑类型
@@ -783,18 +786,26 @@ export default {
       });
     },
     // 点击弹框的下拉框 更改 houseInfo的内容
-    changeInfo(value, text) {
+    changeInfo(value, text, turn) {
       if (this.isGover) {
         console.log(this.item);
-        this.item.governRealPopulation[this.dialogType] = text;
-        // console.log(this.houseInfo[text]);
-        // console.log(this.dialogType);
-        // return;
         var type = this.dialogType.split("Str");
+        this.basic.forEach(itme => {
+          if (itme.dataIndex == this.dialogType) {
+            if (itme.isSpecial) {
+              this.basicInfo[this.dialogType] = text;
+              this.basicInfo[type] = value;
+            } else {
+              this.basicInfo.governRealPopulation[this.dialogType] = text;
+              this.basicInfo.governRealPopulation[type] = value;
+            }
+          }
+        });
+        this.item.governRealPopulation[this.dialogType] = text;
         this.item.governRealPopulation[type] = value;
         this.show = false;
         // console.log(this.item[type]);
-        this.isGover = [];
+        this.isGover = false;
         this.item = {};
         return false;
       }
@@ -980,7 +991,7 @@ export default {
     },
     onSubmit() {
       var that = this;
-      // console.log("dayin");
+      console.log("dayin");
       // return false;
       var item = this.item;
       // return false;
@@ -988,27 +999,37 @@ export default {
       // return false;
       if (this.submitType == 0) {
         var obj = item.governRealPopulation;
+        obj.orgId = this.orgId;
         return editGover(obj).then(res => {
           console.log(res);
           if (res.code != 200) {
             Notify({ type: "warning", message: "编辑失败请稍后重试" });
             return;
           }
-          if (this.userEditType == 0) {
-            that.subLoading = false;
-            var data = {
-              basicsId: that.basicId,
-              ...item
+          this.basicId = res.ret.id;
+          // if (this.userEditType == 0) {
+          that.subLoading = false;
+          var data = {
+            basicsId: that.basicId,
+            ...item
+          };
+          return editBasicByBasicid(data).then(res => {
+            that.submitType = null;
+            // that.basicId = res.ret.id;
+            console.log(res);
+            if (res.code != 200) {
+              Notify({ type: "warning", message: "编辑失败请稍后重试" });
+            }
+            var info = {
+              houseId: this.id,
+              basicsId: this.basicId
             };
-            return editBasicByBasicid(data).then(res => {
-              that.submitType = null;
-              that.basicId = res.ret.id;
-              console.log(res);
-              if (res.code != 200) {
-                Notify({ type: "warning", message: "编辑失败请稍后重试" });
-              }
+            return editUserInfo(info).then(res => {
+              // console.log(res);
+              this.$router.go(-1);
             });
-          }
+          });
+          // }
         });
         return false;
       }
@@ -1076,8 +1097,8 @@ export default {
     },
     // 更改导航类型
     changeNavType(index) {
-      if (index != 0) {
-        if (this.userEditType == 0) {
+      if (this.userEditType == 0) {
+        if (index != 0) {
           if (!this.basicId) {
             Notify({ type: "warning", message: "请先选择基本信息" });
             return false;
@@ -1087,13 +1108,13 @@ export default {
         }
         return false;
       }
-
+      this.navType = index;
       // console.log(index);
       if (index == 0) {
-        if (this.userEditType == 0) {
-          return false;
-        }
-        console.log(22222);
+        // if (this.userEditType == 0) {
+        //   return false;
+        // }
+        // console.log(22222);
         this.getBasicByBasicid();
       } else if (index == 1) {
         this.getFlowByid();
