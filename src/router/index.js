@@ -13,7 +13,7 @@ const routes = [
     redirect: '/house',
   },
   {
-    path: "login",
+    path: "/login",
     name: "Login",
     component: require("../views/login/login.vue").default
   },

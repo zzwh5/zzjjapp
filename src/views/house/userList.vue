@@ -7,7 +7,8 @@
       </div>
       <div class="head_text">住户列表</div>
       <div class="head_add" @click="addUser">
-        <img src="@/assets/add.png" alt />
+        <!-- {{ onlySee }} -->
+        <img src="@/assets/add.png" alt v-if="!onlySee" />
       </div>
     </div>
     <div class="content">
@@ -19,18 +20,27 @@
         offset="30"
       >
         <div class="user_list">
-          <div class="user_item" v-for="item in list" :key="item.id" @click="userInfo(item)">
-            <div class="user_items" v-if="item.governRegisteredPopulation">
-              <div class="item_l">{{(item.governRegisteredPopulation.householderName).substr(0,1)}}</div>
+          <div
+            class="user_item"
+            v-for="item in list"
+            :key="item.id"
+            @click="userInfo(item)"
+          >
+            <div class="user_items" v-if="item.governRealPopulation">
+              <div class="item_l">
+                {{ item.governRealPopulation.householderName.substr(0, 1) }}
+              </div>
               <div class="item_r">
                 <div class="name">
-                  <p>{{item.governRegisteredPopulation.householderName}}</p>
-                  <p>{{item.governRegisteredPopulation.householderRelationshipStr}}</p>
+                  <p>{{ item.governRealPopulation.householderName }}</p>
+                  <p>
+                    {{ item.governRealPopulation.householderRelationshipStr }}
+                  </p>
                 </div>
                 <div class="line"></div>
                 <p class="idcard">
                   <span>证件号</span>
-                  <span>{{item.governRegisteredPopulation.householderIdCard}}</span>
+                  <span>{{ item.governRealPopulation.householderIdCard }}</span>
                 </p>
               </div>
             </div>
@@ -46,8 +56,10 @@ export default {
   name: "UserList",
   data() {
     return {
+      // 当前的权限是不是只是只查看
+      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // orgid
-      orgId: "370481115",
+      orgId: sessionStorage.getItem("orgId"),
       // 房屋id
       id: sessionStorage.getItem("houseId"),
       // 下拉到底部
@@ -77,10 +89,7 @@ export default {
     userInfo(item) {
       // console.log(item);
       this.$router.push({ name: "UserInfo" });
-      sessionStorage.setItem(
-        "basicId",
-        item.governRegisteredPopulation.basicsId
-      );
+      sessionStorage.setItem("basicId", item.basicsId);
     },
     // 新增住户信息
     addUser() {
@@ -99,7 +108,7 @@ export default {
       return getUserList(obj).then(res => {
         // console.log(res);
         if (!res.ret) {
-          console.log(1111);
+          // console.log(1111);
           that.finished = true;
           return false;
         }
@@ -107,7 +116,8 @@ export default {
           that.list.push(el);
         });
         that.loading = false;
-        console.log(this.list);
+        // console.log(this.list);
+        this.$forceUpdate(); //强制性渲染
         // if (res.result.total == that.list.length) {
         //   that.finished = true;
         // }

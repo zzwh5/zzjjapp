@@ -15,12 +15,12 @@
     <div class="nav">
       <div
         class="nav_item"
-        v-for="(item,i) in navList"
-        :class="navType==i?'active':''"
+        v-for="(item, i) in navList"
+        :class="navType == i ? 'active' : ''"
         :key="item.id"
         @click="changeNavType(i)"
       >
-        <p class="text">{{item.title}}</p>
+        <p class="text">{{ item.title }}</p>
         <p class="line"></p>
       </div>
     </div>
@@ -40,8 +40,11 @@
                 :readonly="item.isSelect"
                 colon
                 :required="item.isRequire"
-                :rules="item.isRequire?[{ required: true,trigger:'o' }]:[]"
-                @click="showName(basicInfo,item.title,item.dataIndex)"
+                :rules="
+                  item.isRequire ? [{ required: true, trigger: 'o' }] : []
+                "
+                placeholder="请选择"
+                @click="showName(basicInfo, item.title, item.dataIndex)"
               />
               <van-field
                 v-else
@@ -50,6 +53,8 @@
                 :label="item.title"
                 :readonly="item.isSelect"
                 colon
+                placeholder="请输入"
+                :rules="item.isRequire ? [{ required: true }] : []"
                 :required="item.isRequire"
               />
               <!-- 占位 -->
@@ -64,8 +69,11 @@
                 :readonly="item.isSelect"
                 colon
                 :required="item.isRequire"
-                :rules="item.isRequire?[{ required: true,trigger:'o' }]:[]"
-                @click="showName(basicInfo,item.title,item.dataIndex,true)"
+                :rules="
+                  item.isRequire ? [{ required: true, trigger: 'o' }] : []
+                "
+                placeholder="请选择"
+                @click="showName(basicInfo, item.title, item.dataIndex, true)"
               />
               <van-field
                 v-else
@@ -75,6 +83,8 @@
                 :readonly="item.isSelect"
                 colon
                 :required="item.isRequire"
+                placeholder="请输入"
+                :rules="item.isRequire ? [{ required: true }] : []"
               />
               <!-- 占位 -->
               <span></span>
@@ -91,7 +101,7 @@
             type="info"
             loading-text="提交中..."
             text="提交"
-            @click.native="submit('basicInfo',basicInfo)"
+            @click.native="submit('basicInfo', basicInfo)"
           />
         </div>
       </div>
@@ -117,8 +127,14 @@
               :readonly="item.isSelect"
               colon
               :required="item.isRequire"
-              :rules="item.isRequire?[{ required: true,trigger:'o' }]:[]"
-              @click="showName(flowInfo,item.governRealPopulation.title,item.governRealPopulation.dataIndex)"
+              :rules="item.isRequire ? [{ required: true, trigger: 'o' }] : []"
+              @click="
+                showName(
+                  flowInfo,
+                  item.governRealPopulation.title,
+                  item.governRealPopulation.dataIndex
+                )
+              "
             />
             <!-- 占位 -->
             <span></span>
@@ -134,7 +150,7 @@
             type="info"
             loading-text="提交中..."
             text="提交"
-            @click.native="submit('flowInfo',flowInfo)"
+            @click.native="submit('flowInfo', flowInfo)"
           />
         </div>
       </div>
@@ -142,7 +158,7 @@
       <div class="content_special" v-if="navType == 2">
         <van-collapse v-model="activeName" accordion>
           <van-collapse-item
-            v-for="(item) in specialList"
+            v-for="item in specialList"
             :key="item.id"
             :title="item.title"
             :name="item.name"
@@ -152,19 +168,21 @@
             <template #value>
               <van-button
                 hairline
-                :color="item.turn?'#1B88F7':'#EBEBEB'"
+                :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#fff':'#000')}"
-                @click.native.prevent.stop="item.turn =true"
-              >是</van-button>
+                :style="{ color: item.turn ? '#fff' : '#000' }"
+                @click.native.prevent="item.turn = true"
+                >是</van-button
+              >
               <van-button
-                :color="item.turn?'#EBEBEB':'#1B88F7'"
+                :color="item.turn ? '#EBEBEB' : '#1B88F7'"
                 hairline
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#000':'#fff')}"
+                :style="{ color: item.turn ? '#000' : '#fff' }"
                 @click.native.prevent.stop="delSpecial(item)"
-              >否</van-button>
+                >否</van-button
+              >
             </template>
             <van-form :ref="item.name" @submit="onSubmit" @failed="failed">
               <div class="info_item" v-for="items in item.type" :key="items.id">
@@ -179,8 +197,10 @@
                     colon
                     placeholder="请输入"
                     :required="items.isRequire"
-                    :rules="items.isRequire?[{ required: true,trigger:'o' }]:[]"
-                    @click="showName(item.names,items.title,items.dataIndex)"
+                    :rules="
+                      items.isRequire ? [{ required: true, trigger: 'o' }] : []
+                    "
+                    @click="showName(item.names, items.title, items.dataIndex)"
                   />
                   <van-field
                     v-else
@@ -192,7 +212,9 @@
                     colon
                     placeholder="请输入"
                     :required="items.isRequire"
-                    :rules="items.isRequire?[{ required: true,trigger:'o' }]:[]"
+                    :rules="
+                      items.isRequire ? [{ required: true, trigger: 'o' }] : []
+                    "
                   />
                   <!-- 占位 -->
                   <span></span>
@@ -209,7 +231,7 @@
                 type="info"
                 loading-text="提交中..."
                 text="提交"
-                @click.native="submit(item.name,item)"
+                @click.native="submit(item.name, item)"
               />
             </div>
           </van-collapse-item>
@@ -230,19 +252,21 @@
             <template #value>
               <van-button
                 hairline
-                :color="item.turn?'#1B88F7':'#EBEBEB'"
+                :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#fff':'#000')}"
-                @click.native.prevent.stop="item.turn =true"
-              >是</van-button>
+                :style="{ color: item.turn ? '#fff' : '#000' }"
+                @click.native.prevent.stop="item.turn = true"
+                >是</van-button
+              >
               <van-button
-                :color="item.turn?'#EBEBEB':'#1B88F7'"
+                :color="item.turn ? '#EBEBEB' : '#1B88F7'"
                 hairline
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#000':'#fff')}"
+                :style="{ color: item.turn ? '#000' : '#fff' }"
                 @click.native.prevent.stop="delSpecial(item)"
-              >否</van-button>
+                >否</van-button
+              >
             </template>
             <van-form :ref="item.name" @submit="onSubmit" @failed="failed">
               <div class="info_item" v-for="items in item.type" :key="items.id">
@@ -255,8 +279,10 @@
                   :readonly="items.isSelect"
                   colon
                   :required="items.isRequire"
-                  @click="showName(item.names,items.title,items.dataIndex)"
-                  :rules="items.isRequire?[{ required: true,trigger:'o' }]:[]"
+                  @click="showName(item.names, items.title, items.dataIndex)"
+                  :rules="
+                    items.isRequire ? [{ required: true, trigger: 'o' }] : []
+                  "
                 />
                 <van-field
                   autofocus
@@ -282,7 +308,7 @@
                 type="info"
                 loading-text="提交中..."
                 text="提交"
-                @click.native="submit(item.name,item,item.name)"
+                @click.native="submit(item.name, item, item.name)"
               />
             </div>
           </van-collapse-item>
@@ -291,18 +317,30 @@
     </div>
 
     <!-- 下拉框弹框 -->
-    <van-dialog v-model="show" title :showConfirmButton="false" closeOnClickOverlay>
+    <van-dialog
+      v-model="show"
+      title
+      :showConfirmButton="false"
+      closeOnClickOverlay
+    >
       <div class="orgname">
-        <p>{{dialogText}}</p>
+        <p>{{ dialogText }}</p>
         <p
           v-for="item in dialogList"
           :key="item.id"
-          @click="changeInfo(item.dictionaryValue,item.dictionaryName)"
-        >{{item.dictionaryName}}</p>
+          @click="changeInfo(item.dictionaryValue, item.dictionaryName)"
+        >
+          {{ item.dictionaryName }}
+        </p>
       </div>
     </van-dialog>
     <!-- 时间选择弹框 -->
-    <van-calendar :show-confirm="false" v-model="Timeshow" :minDate="minDate" @confirm="onConfirm" />
+    <van-calendar
+      :show-confirm="false"
+      v-model="Timeshow"
+      :minDate="minDate"
+      @confirm="onConfirm"
+    />
     <!-- 省市区选择弹框 -->
     <!-- 省市区  -->
     <van-popup v-model="cityVisable" position="bottom">
@@ -329,7 +367,7 @@ import { Notify } from "vant";
 import { Dialog } from "vant";
 // 引入接口
 import {
-  getBasicByBasicid,
+  getGoverByBasicid,
   getFlowByBasicid,
   getSpecialByBasicid,
   editSpecialByBasicid,
@@ -378,7 +416,7 @@ export default {
   name: "EditUser",
   data() {
     return {
-      orgId: "370481115",
+      orgId: sessionStorage.getItem("orgId"),
       // 是不是基本信息的档案管理的下拉框
       isGover: false,
       // 住户信息的编辑类型
@@ -606,7 +644,7 @@ export default {
     if (this.userEditType != 0) {
       // 省市区
       this.getArea("", 0);
-      this.getBasicByBasicid();
+      this.getGoverByBasicid();
       this.getSpecialIsSelect();
       this.getMoreIsSelect();
     }
@@ -888,17 +926,24 @@ export default {
       return obj;
     },
     // 获取基本信息
-    getBasicByBasicid() {
+    getGoverByBasicid() {
       var that = this;
       var obj = {
-        basicsId: this.basicId
+        id: this.basicId
       };
-      return getBasicByBasicid(obj).then(res => {
+      return getGoverByBasicid(obj).then(res => {
         // console.log(res);
-        that.basicInfo = res.ret ? res.ret : { governRealPopulation: {} };
         res.ret = that.parseAddress(res.ret);
-        // console.log(res);
-        that.basicInfo = res.ret ? res.ret : { governRealPopulation: {} };
+        if (!res.ret) {
+          that.basicInfo = { governRealPopulation: {} };
+          return;
+        }
+        that.basicInfo = {
+          ...res.ret,
+          governRealPopulation: {
+            ...res.ret
+          }
+        };
       });
     },
     //  如果不是对应的特殊人群或者实有人口 取消选中状态 并且调用删除接口
@@ -991,15 +1036,19 @@ export default {
     },
     onSubmit() {
       var that = this;
-      console.log("dayin");
+      // console.log("dayin");
       // return false;
       var item = this.item;
       // return false;
       // console.log(editGover, editBasicByBasicid);
       // return false;
       if (this.submitType == 0) {
-        var obj = item.governRealPopulation;
+        var obj = {
+          ...item.governRealPopulation,
+          ...item
+        };
         obj.orgId = this.orgId;
+        // console.log(obj);
         return editGover(obj).then(res => {
           console.log(res);
           if (res.code != 200) {
@@ -1007,29 +1056,19 @@ export default {
             return;
           }
           this.basicId = res.ret.id;
-          // if (this.userEditType == 0) {
           that.subLoading = false;
           var data = {
             basicsId: that.basicId,
             ...item
           };
-          return editBasicByBasicid(data).then(res => {
-            that.submitType = null;
-            // that.basicId = res.ret.id;
-            console.log(res);
-            if (res.code != 200) {
-              Notify({ type: "warning", message: "编辑失败请稍后重试" });
-            }
-            var info = {
-              houseId: this.id,
-              basicsId: this.basicId
-            };
-            return editUserInfo(info).then(res => {
-              // console.log(res);
-              this.$router.go(-1);
-            });
+          that.submitType = null;
+          var info = {
+            houseId: this.id,
+            basicsId: this.basicId
+          };
+          return editUserInfo(info).then(res => {
+            console.log("新增成功");
           });
-          // }
         });
         return false;
       }
@@ -1097,6 +1136,7 @@ export default {
     },
     // 更改导航类型
     changeNavType(index) {
+      console.log(this.userEditType);
       if (this.userEditType == 0) {
         if (index != 0) {
           if (!this.basicId) {
@@ -1106,6 +1146,7 @@ export default {
           this.navType = index;
           return false;
         }
+        this.navType = index;
         return false;
       }
       this.navType = index;
@@ -1115,7 +1156,7 @@ export default {
         //   return false;
         // }
         // console.log(22222);
-        this.getBasicByBasicid();
+        this.getGoverByBasicid();
       } else if (index == 1) {
         this.getFlowByid();
         if (this.userEditType == 0) {

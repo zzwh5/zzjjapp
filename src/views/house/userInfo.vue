@@ -7,19 +7,19 @@
       </div>
       <div class="head_text">查看住户信息</div>
       <div class="head_add" @click="editInfo">
-        <img src="@/assets/image/edit.png" alt />
+        <img src="@/assets/image/edit.png" v-if="!onlySee" alt />
       </div>
     </div>
     <!-- 导航列表 -->
     <div class="nav">
       <div
         class="nav_item"
-        v-for="(item,i) in navList"
-        :class="navType==i?'active':''"
+        v-for="(item, i) in navList"
+        :class="navType == i ? 'active' : ''"
         :key="item.id"
         @click="changeNavType(i)"
       >
-        <p class="text">{{item.title}}</p>
+        <p class="text">{{ item.title }}</p>
         <p class="line"></p>
       </div>
     </div>
@@ -73,7 +73,7 @@
       <div class="content_special" v-if="navType == 2">
         <van-collapse v-model="activeName" accordion>
           <van-collapse-item
-            v-for="(item) in specialList"
+            v-for="item in specialList"
             :key="item.id"
             :title="item.title"
             :name="item.name"
@@ -83,19 +83,21 @@
             <template #value>
               <van-button
                 hairline
-                :color="item.turn?'#1B88F7':'#EBEBEB'"
+                :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#fff':'#000')}"
-                @click.native.prevent.stop="item.turn =true"
-              >是</van-button>
+                :style="{ color: item.turn ? '#fff' : '#000' }"
+                @click.native.prevent.stop="item.turn = true"
+                >是</van-button
+              >
               <van-button
-                :color="item.turn?'#EBEBEB':'#1B88F7'"
+                :color="item.turn ? '#EBEBEB' : '#1B88F7'"
                 hairline
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#000':'#fff')}"
+                :style="{ color: item.turn ? '#000' : '#fff' }"
                 @click.native.prevent.stop="delSpecial(item)"
-              >否</van-button>
+                >否</van-button
+              >
             </template>
             <div class="info_item" v-for="items in item.type" :key="items.id">
               <div>
@@ -121,7 +123,7 @@
                 type="info"
                 loading-text="提交中..."
                 text="提交"
-                @click.native="submit(item.name,item)"
+                @click.native="submit(item.name, item)"
               />
             </div>
           </van-collapse-item>
@@ -142,19 +144,21 @@
             <template #value>
               <van-button
                 hairline
-                :color="item.turn?'#1B88F7':'#EBEBEB'"
+                :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#fff':'#000')}"
-                @click.native.prevent.stop="item.turn =true"
-              >是</van-button>
+                :style="{ color: item.turn ? '#fff' : '#000' }"
+                @click.native.prevent.stop="item.turn = true"
+                >是</van-button
+              >
               <van-button
-                :color="item.turn?'#EBEBEB':'#1B88F7'"
+                :color="item.turn ? '#EBEBEB' : '#1B88F7'"
                 hairline
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
-                :style="{color:(item.turn?'#000':'#fff')}"
+                :style="{ color: item.turn ? '#000' : '#fff' }"
                 @click.native.prevent.stop="delSpecial(item)"
-              >否</van-button>
+                >否</van-button
+              >
             </template>
             <div class="info_item" v-for="items in item.type" :key="items.id">
               <van-field
@@ -177,7 +181,7 @@
 <script>
 // 引入接口
 import {
-  getBasicByBasicid,
+  getGoverByBasicid,
   getFlowByBasicid,
   getSpecialByBasicid
 } from "@/api/common";
@@ -222,6 +226,8 @@ export default {
   name: "HouseInfo",
   data() {
     return {
+      // 当前的权限是不是只是只查看
+      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // basicId
       basicId: sessionStorage.getItem("basicId"),
       // 当前的房屋id  修改的时候用
@@ -411,14 +417,19 @@ export default {
     };
   },
   created() {
-    this.getBasicByBasicid();
+    this.getGoverByBasicid();
     this.getSpecialIsSelect();
     this.getMoreIsSelect();
     // console.log(releasedFromPrison);
   },
+  // 销毁前
+  beforeDestroy() {
+    // console.log("销毁");
+  },
   methods: {
     // 返回上一级
     goback() {
+      sessionStorage.removeItem("basicId");
       this.$router.go(-1);
     },
     // 前往编辑住户信息的页面
@@ -497,17 +508,25 @@ export default {
       return obj;
     },
     // 获取基本信息
-    getBasicByBasicid() {
+    getGoverByBasicid() {
       var that = this;
       var obj = {
-        basicsId: this.basicId
+        id: this.basicId
       };
-      return getBasicByBasicid(obj).then(res => {
+      return getGoverByBasicid(obj).then(res => {
         // console.log(res);
-        that.basicInfo = res.ret ? res.ret : { governRealPopulation: {} };
         res.ret = that.parseAddress(res.ret);
-        // console.log(res);
-        that.basicInfo = res.ret ? res.ret : { governRealPopulation: {} };
+        if (!res.ret) {
+          that.basicInfo = { governRealPopulation: {} };
+          return;
+        }
+        that.basicInfo = {
+          ...res.ret,
+          governRealPopulation: {
+            ...res.ret
+          }
+        };
+        // console.log(this.basicInfo.governRealPopulation);
       });
     },
     // 获取流动人口信息
@@ -526,7 +545,7 @@ export default {
       this.navType = index;
       // console.log(index);
       if (index == 0) {
-        this.getBasicByBasicid();
+        this.getGoverByBasicid();
       } else if (index == 1) {
         this.getFlowByid();
       } else if (index == 2) {

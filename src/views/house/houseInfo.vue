@@ -7,7 +7,7 @@
       </div>
       <div class="head_text">查看房户信息</div>
       <div class="head_add" @click="editHouse">
-        <img src="@/assets/image/edit.png" alt />
+        <img src="@/assets/image/edit.png" v-if="!onlySee" alt />
       </div>
     </div>
     <div class="info">
@@ -149,6 +149,8 @@ export default {
   name: "HouseInfo",
   data() {
     return {
+      // 当前的权限是不是只是只查看
+      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // 当前的房屋id  修改的时候用
       id: sessionStorage.getItem("houseId"),
       // 基本信息
@@ -172,13 +174,29 @@ export default {
       return detailHouse(obj).then(res => {
         // console.log(res);
         this.basicInfo = res.ret;
-        var province = this.basicInfo.currentResidenceProvinceStr;
-        var city = this.basicInfo.currentResidenceCityStr;
-        var region = this.basicInfo.currentResidenceRegionStr;
-        var street = this.basicInfo.currentResidenceStreetStr;
-        var community = this.basicInfo.currentResidenceCommunityStr;
+        var province =
+          this.basicInfo.currentResidenceProvinceStr == null
+            ? ""
+            : this.basicInfo.currentResidenceProvinceStr;
+        var city =
+          this.basicInfo.currentResidenceCityStr == null
+            ? ""
+            : this.basicInfo.currentResidenceCityStr;
+        var region =
+          this.basicInfo.currentResidenceRegionStr == null
+            ? ""
+            : this.basicInfo.currentResidenceRegionStr;
+        var street =
+          this.basicInfo.currentResidenceStreetStr == null
+            ? ""
+            : this.basicInfo.currentResidenceStreetStr;
+        var community =
+          this.basicInfo.currentResidenceCommunityStr == null
+            ? ""
+            : this.basicInfo.currentResidenceCommunityStr;
         this.basicInfo.currentResidence =
-          province + city + region + street + community;
+          "" + province + city + region + street + community;
+        // console.log(this.basicInfo.currentResidence);
       });
     },
     // 前往 房屋信息编辑页面

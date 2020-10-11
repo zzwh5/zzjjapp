@@ -7,13 +7,13 @@
       </div>
       <div class="head_text">房户列表</div>
       <div class="head_add" @click="addHouse">
-        <img src="@/assets/add.png" alt />
+        <img src="@/assets/add.png" v-if="!onlySee" alt />
       </div>
     </div>
     <div class="info">
-      <div class="info_name">小区名称:{{residentObj.housingEstateName}}</div>
-      <div class="info_floor">{{residentObj.buildingName}}号楼</div>
-      <div class="info_time">建于{{residentObj.time}}年</div>
+      <div class="info_name">小区名称:{{ residentObj.housingEstateName }}</div>
+      <div class="info_floor">{{ residentObj.buildingName }}号楼</div>
+      <div class="info_time">建于{{ residentObj.time }}年</div>
     </div>
     <nodata :text="nodataText" v-if="!residentObj.governRentingHouseMap" />
     <div class="resident_list" v-if="residentObj.governRentingHouseMap">
@@ -21,34 +21,43 @@
         <div class="cells">
           <div
             class="cell_item"
-            v-for="(item,index) in residentObj.governRentingHouseMap"
-            :class="cellType==index?'active':''"
+            v-for="(item, index) in residentObj.governRentingHouseMap"
+            :class="cellType == index ? 'active' : ''"
             :key="item.id"
             @click="changeCellType(index)"
-          >{{index}}单元</div>
+          >
+            {{ index }}单元
+          </div>
         </div>
       </div>
       <div class="house">
         <div
           class="tier"
-          v-for="(value,key) in residentObj.governRentingHouseMap[cellType]"
+          v-for="(value, key) in residentObj.governRentingHouseMap[cellType]"
           :key="key"
         >
-          <div class="tier_title">{{key}}楼</div>
+          <div class="tier_title">{{ key }}楼</div>
           <div class="tier_floor">
             <div
               class="floor_item"
-              :class="item.houseNumber == houseNumber?'active':''"
+              :class="item.houseNumber == houseNumber ? 'active' : ''"
               v-for="item in value"
               :key="item.id"
               @click="changFloor(item)"
-            >{{item.houseNumber}}</div>
+            >
+              {{ item.houseNumber }}
+            </div>
           </div>
         </div>
       </div>
     </div>
     <!-- 底部弹框 -->
-    <van-popup v-model="dialog" position="bottom" round :style="{ height: '21%' }">
+    <van-popup
+      v-model="dialog"
+      position="bottom"
+      round
+      :style="{ height: '21%' }"
+    >
       <div @click="goResidentInfo">查看房户信息</div>
       <div @click="goUserList">查看住户列表</div>
       <div @click="dialog = false">取消</div>
@@ -67,6 +76,8 @@ export default {
   name: "Resident",
   data() {
     return {
+      // 当前的权限是不是只是只查看
+      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // 没有数据的提示
       nodataText: "没有更多数据",
       // 当前楼栋的id

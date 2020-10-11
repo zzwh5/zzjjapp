@@ -7,23 +7,26 @@
       </div>
       <div class="head_text" v-if="residentType == 0">
         小区楼栋
-        <span v-if="floorEditType==1">修改</span>
-        <span v-if="floorEditType==0">增加</span>
+        <span v-if="floorEditType == 1">修改</span>
+        <span v-if="floorEditType == 0">增加</span>
       </div>
       <div class="head_text" v-if="residentType == 1">
         单栋楼房
-        <span v-if="floorEditType==1">修改</span>
-        <span v-if="floorEditType==0">增加</span>
+        <span v-if="floorEditType == 1">修改</span>
+        <span v-if="floorEditType == 0">增加</span>
       </div>
       <div class="head_text" v-if="residentType == 2">
         单栋民房
-        <span v-if="floorEditType==1">修改</span>
-        <span v-if="floorEditType==0">增加</span>
+        <span v-if="floorEditType == 1">修改</span>
+        <span v-if="floorEditType == 0">增加</span>
       </div>
-      <div class="head_text" v-if="residentType == 3 || residentType ==4 || residentType ==5">
+      <div
+        class="head_text"
+        v-if="residentType == 3 || residentType == 4 || residentType == 5"
+      >
         别墅
-        <span v-if="floorEditType==1">修改</span>
-        <span v-if="floorEditType==0">增加</span>
+        <span v-if="floorEditType == 1">修改</span>
+        <span v-if="floorEditType == 0">增加</span>
       </div>
       <div class="head_add" @click="save">
         <img src="@/assets/image/save.png" alt />
@@ -39,14 +42,14 @@
             placeholder="所属网格位置"
             required
             readonly
-            :rules="[{ required: true,trigger:'o' }]"
+            :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
         </div>
         <div
           class="info_item"
           @click="showName('residentType')"
-          v-if="residentType==3 || residentType==4 || residentType==5"
+          v-if="residentType == 3 || residentType == 4 || residentType == 5"
         >
           <van-field
             v-model="residentInfo.buildingTypeStr"
@@ -55,14 +58,14 @@
             placeholder="楼栋类型"
             required
             readonly
-            :rules="[{ required: true,trigger:'o' }]"
+            :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
         </div>
         <div
           class="info_item"
           @click="showName('housingEstateName')"
-          v-if="residentType == 0 || residentType ==4 || residentType ==5"
+          v-if="residentType == 0 || residentType == 4 || residentType == 5"
         >
           <van-field
             v-model="residentInfo.housingEstateName"
@@ -72,7 +75,7 @@
             placeholder="请输入"
             required
             readonly
-            :rules="[{ required: true,trigger:'o' }]"
+            :rules="[{ required: true, trigger: 'o' }]"
           />
           <!-- 占位 -->
           <span></span>
@@ -82,10 +85,16 @@
             v-model="residentInfo.buildingName"
             label-align="left"
             placeholder="请输入"
-            :label="residentType==0?'楼栋号':residentType==1|| residentType ==4 || residentType ==5?'楼栋名称':'门牌号'"
+            :label="
+              residentType == 0
+                ? '楼栋号'
+                : residentType == 1 || residentType == 4 || residentType == 5
+                ? '楼栋名称'
+                : '门牌号'
+            "
             colon
             required
-            :rules="[{ required: true}]"
+            :rules="[{ required: true }]"
           />
           <!-- 占位 -->
           <span></span>
@@ -98,14 +107,14 @@
             label-align="left"
             placeholder="请输入"
             :required="item.isRequire"
-            :rules="item.isRequire?[{ required: true}]:[]"
+            :rules="item.isRequire ? [{ required: true }] : []"
           />
           <!-- 占位 -->
           <span></span>
         </div>
         <div
           class="info_item"
-          v-if="residentType == 1 || residentType ==2 || residentType ==3"
+          v-if="residentType == 1 || residentType == 2 || residentType == 3"
           @click="changeAddress()"
         >
           <van-field
@@ -115,7 +124,7 @@
             placeholder="请选择"
             required
             readonly
-            :rules="[{ required: true,trigger:'o' }]"
+            :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
         </div>
@@ -134,20 +143,34 @@
     </div>
 
     <!-- 弹框 -->
-    <van-dialog v-model="show" title :showConfirmButton="false" closeOnClickOverlay>
+    <van-dialog
+      v-model="show"
+      title
+      :showConfirmButton="false"
+      closeOnClickOverlay
+    >
       <div class="orgname" v-if="dialogType == 'orgName'">
         <p>请选择所属网格</p>
-        <p>{{residentInfo.orgName}}</p>
+        <p>{{ residentInfo.orgName }}</p>
       </div>
-      <div class="residentInfo propertyManagement" v-if="dialogType == 'residentType'">
+      <div
+        class="residentInfo propertyManagement"
+        v-if="dialogType == 'residentType'"
+      >
         <p>楼栋类型</p>
         <p @click="changeResidentInfo(3)">独栋别墅</p>
         <p @click="changeResidentInfo(4)">联排别墅</p>
         <p @click="changeResidentInfo(5)">叠加别墅</p>
       </div>
       <div class="housingEstateName" v-if="dialogType == 'housingEstateName'">
-        <van-search v-model="value" placeholder="请输入小区名称" @input="searchEstate" />
-        <p v-for="item in estateList" :key="item.id" @click="changEstate(item)">{{item.villageName}}</p>
+        <van-search
+          v-model="value"
+          placeholder="请输入小区名称"
+          @input="searchEstate"
+        />
+        <p v-for="item in estateList" :key="item.id" @click="changEstate(item)">
+          {{ item.villageName }}
+        </p>
       </div>
     </van-dialog>
     <!-- 省市区  -->
@@ -210,7 +233,7 @@ export default {
   name: "EditFloor",
   data() {
     return {
-      orgId: "370481115",
+      orgId: sessionStorage.getItem("orgId"),
       // 搜索中用户输入的小区名
       value: "",
       // 小区名称列表
@@ -227,8 +250,8 @@ export default {
       // 楼栋的信息
       residentInfo: {
         // 通过用户登录信息获得
-        orgId: "370481115",
-        orgName: "龙阳镇",
+        orgId: sessionStorage.getItem("orgId"),
+        orgName: sessionStorage.getItem("name"),
         province: "370000000000",
         provinceStr: "山东省",
         city: "370400000000",

@@ -7,7 +7,12 @@
       </div>
       <div class="head_text">小区基本信息</div>
       <div class="head_add">
-        <img @click="editEstate" src="@/assets/image/edit.png" alt />
+        <img
+          @click="editEstate"
+          src="@/assets/image/edit.png"
+          v-if="!onlySee"
+          alt
+        />
       </div>
     </div>
     <!-- 小区信息展示 -->
@@ -19,7 +24,11 @@
           <span></span>
         </div>
         <div class="info_item">
-          <van-field v-model="estateInfo.villageName" label="小区名称" readonly />
+          <van-field
+            v-model="estateInfo.villageName"
+            label="小区名称"
+            readonly
+          />
           <!-- 占位 -->
           <span></span>
         </div>
@@ -34,7 +43,11 @@
           <span></span>
         </div>
         <div class="info_item">
-          <van-field v-model="estateInfo.propertyManagementStr" label="物业管理" readonly />
+          <van-field
+            v-model="estateInfo.propertyManagementStr"
+            label="物业管理"
+            readonly
+          />
           <!-- 占位 -->
           <span></span>
         </div>
@@ -48,6 +61,8 @@ export default {
   name: "EstateInfo",
   data() {
     return {
+      // 当前的权限是不是只是只查看
+      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // 小区id
       id: sessionStorage.getItem("estateId"),
       // 小区信息

@@ -27,7 +27,7 @@
             placeholder="所属网格位置"
             required
             readonly
-            :rules="[{ required: true,trigger:'o' }]"
+            :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
         </div>
@@ -51,7 +51,7 @@
             placeholder="请选择"
             required
             readonly
-            :rules="[{ required: true,trigger:'o' }]"
+            :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
         </div>
@@ -81,10 +81,15 @@
     </div>
 
     <!-- 弹框 -->
-    <van-dialog v-model="show" title :showConfirmButton="false" closeOnClickOverlay>
+    <van-dialog
+      v-model="show"
+      title
+      :showConfirmButton="false"
+      closeOnClickOverlay
+    >
       <div class="orgname" v-if="dialogType == 'orgName'">
         <p>请选择所属网格</p>
-        <p>{{estateInfo.orgName}}</p>
+        <p>{{ estateInfo.orgName }}</p>
       </div>
       <div class="propertyManagement" v-if="dialogType == 'propertyManagement'">
         <p>请选择是否物业管理</p>
@@ -127,8 +132,8 @@ export default {
       // 小区信息
       estateInfo: {
         // 通过用户登录信息获得
-        orgId: "370481115",
-        orgName: "龙阳镇",
+        orgId: sessionStorage.getItem("orgId"),
+        orgName: sessionStorage.getItem("name"),
         province: "370000000000",
         provinceStr: "山东省",
         city: "370400000000",

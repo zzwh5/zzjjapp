@@ -3,10 +3,17 @@ import qs from 'qs'
 import basic from '../until/basic'
 
 const api = {
+  // 登录
+  login: '/smartCity/gridOrganizationStructure/findOrgIdByName/',
+  // 获取组织结构
+  tree: '/smartCity/gridOrganizationStructure/findGridOrganizationStructureAll',
+  childTree: 'smartCity/gridOrganizationStructure/findGridOrganizationStructureSubordinate',
   // 获取省市区
   address: 'smartCity/addressLibrary/findSubordinateAddressLibrary',
   // 获取下拉框的数据
   select: '/smartCity/dictionaryGroup/findDictionaryGroupByCode',
+  // 获取档案管理 基本信息
+  getGoverByBasicid: '/smartCity/governRealPopulation/echoGovernRealPopulation',
   // 根据basicId查找
   getBasicByBasicid: '/smartCity/governRegisteredPopulation/getOneByBasicsId',
   // 编辑基本信息(户籍人口)
@@ -340,6 +347,34 @@ const selectArr = [
   }
 ]
 
+// 登录
+export function login(data) {
+  return request({
+    url: api.login + data.name,
+    method: 'get'
+  })
+}
+
+export function getTree(parameter) {
+  return request({
+    url: api.tree,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 获取下级的组织架构图
+export function getChildTree(parameter) {
+  var data = {
+    id: parameter
+  }
+  return request({
+    url: api.childTree,
+    method: 'get',
+    params: data
+  })
+}
+
 // 获取所有省份的地址
 export function getAddress(parameter) {
   var data = {}
@@ -380,6 +415,15 @@ export function getSelect(parameter) {
 export function getBasicByBasicid(parameter) {
   return request({
     url: api.getBasicByBasicid,
+    method: 'post',
+    data: qs.stringify(parameter)
+  })
+}
+
+// 根据basicId查找档案信息
+export function getGoverByBasicid(parameter) {
+  return request({
+    url: api.getGoverByBasicid,
     method: 'post',
     data: qs.stringify(parameter)
   })

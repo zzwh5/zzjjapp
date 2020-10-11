@@ -8,17 +8,27 @@
       <div class="head_text" v-if="residentType == 0">查看小区楼栋</div>
       <div class="head_text" v-if="residentType == 1">查看单栋楼房</div>
       <div class="head_text" v-if="residentType == 2">查看单栋民房</div>
-      <div class="head_text" v-if="residentType == 3 || residentType ==4 || residentType ==5">查看别墅</div>
+      <div
+        class="head_text"
+        v-if="residentType == 3 || residentType == 4 || residentType == 5"
+      >
+        查看别墅
+      </div>
       <div class="head_add" @click="editFloor">
-        <img src="@/assets/image/edit.png" alt />
+        <img src="@/assets/image/edit.png" v-if="!onlySee" alt />
       </div>
     </div>
     <div class="btn">
       <div>单栋民房</div>
-      <van-button plain type="info" size="small" @click.native="goHouseInfo">查看房屋信息</van-button>
+      <van-button plain type="info" size="small" @click.native="goHouseInfo"
+        >查看房屋信息</van-button
+      >
     </div>
     <div class="info">
-      <div class="info_item" v-if="residentType == 0 || residentType ==4 || residentType ==5">
+      <div
+        class="info_item"
+        v-if="residentType == 0 || residentType == 4 || residentType == 5"
+      >
         <van-field
           v-model="residentInfo.housingEstateName"
           label-align="left"
@@ -33,7 +43,13 @@
         <van-field
           v-model="residentInfo.buildingName"
           label-align="left"
-          :label="residentType==0?'楼栋号':residentType==1|| residentType ==4 || residentType ==5?'楼栋名称':'门牌号'"
+          :label="
+            residentType == 0
+              ? '楼栋号'
+              : residentType == 1 || residentType == 4 || residentType == 5
+              ? '楼栋名称'
+              : '门牌号'
+          "
           readonly
           colon
         />
@@ -100,7 +116,9 @@ const columns = [
 export default {
   data() {
     return {
-      // 漏洞类型
+      // 当前的权限是不是只是只查看
+      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
+      // 楼栋类型
       residentType: null,
       // 当前的楼栋的id
       id: sessionStorage.getItem("residentId"),

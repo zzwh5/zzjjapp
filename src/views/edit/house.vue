@@ -5,8 +5,8 @@
       <div class="head_back" @click="goback">
         <img src="@/assets/back.png" alt />
       </div>
-      <div class="head_text" v-if="houseEditType==0">添加房户信息</div>
-      <div class="head_text" v-if="houseEditType==1">编辑房户信息</div>
+      <div class="head_text" v-if="houseEditType == 0">添加房户信息</div>
+      <div class="head_text" v-if="houseEditType == 1">编辑房户信息</div>
       <div class="head_add" @click="save">
         <img src="@/assets/image/save.png" alt />
       </div>
@@ -21,7 +21,7 @@
             placeholder="所属网格位置"
             required
             readonly
-            :rules="[{ required: true,trigger:'o' }]"
+            :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
         </div>
@@ -33,7 +33,7 @@
             :label="item.title"
             readonly
             placeholder="请选择"
-            @click="showName(item.title,item.dataIndex)"
+            @click="showName(item.title, item.dataIndex)"
             :required="item.isRequire"
             :rules="[{ required: item.isRequire }]"
           />
@@ -52,18 +52,25 @@
       </van-form>
     </div>
     <!-- 弹框 -->
-    <van-dialog v-model="show" title :showConfirmButton="false" closeOnClickOverlay>
+    <van-dialog
+      v-model="show"
+      title
+      :showConfirmButton="false"
+      closeOnClickOverlay
+    >
       <div class="orgname" v-if="dialogType == 'orgName'">
         <p>请选择所属网格</p>
-        <p>{{houseInfo.orgName}}</p>
+        <p>{{ houseInfo.orgName }}</p>
       </div>
       <div class="orgname" v-else>
-        <p>{{dialogText}}</p>
+        <p>{{ dialogText }}</p>
         <p
           v-for="item in dialogList"
           :key="item.id"
-          @click="changeHouseInfo(item.dictionaryValue,item.dictionaryName)"
-        >{{item.dictionaryName}}</p>
+          @click="changeHouseInfo(item.dictionaryValue, item.dictionaryName)"
+        >
+          {{ item.dictionaryName }}
+        </p>
       </div>
     </van-dialog>
     <!-- 省市区  -->
@@ -222,8 +229,8 @@ export default {
       // 房屋的信息
       houseInfo: {
         // 通过用户登录信息获得
-        orgId: "370481115",
-        orgName: "龙阳镇",
+        orgId: sessionStorage.getItem("orgId"),
+        orgName: sessionStorage.getItem("name"),
         buildingId: sessionStorage.getItem("residentId")
       },
       address: "",

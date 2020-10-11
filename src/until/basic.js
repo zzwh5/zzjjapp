@@ -5,7 +5,7 @@ const basic = [
     title: '姓名',
     dataIndex: 'fullName',
     isSelect: false,
-    isRequire: false
+    isRequire: true
   },
   {
     id: 2,
@@ -183,7 +183,7 @@ const basic = [
     title: '户主公民身份证号',
     dataIndex: 'householderIdCard',
     isSelect: false,
-    isRequire: false,
+    isRequire: true,
     isSpecial: true
   },
   {
@@ -191,7 +191,7 @@ const basic = [
     title: '户主姓名',
     dataIndex: 'householderName',
     isSelect: false,
-    isRequire: false,
+    isRequire: true,
     isSpecial: true
   },
   {
@@ -207,7 +207,7 @@ const basic = [
     title: '与户主关系',
     dataIndex: 'householderRelationshipStr',
     isSelect: true,
-    isRequire: false,
+    isRequire: true,
     isSpecial: true
   },
   {

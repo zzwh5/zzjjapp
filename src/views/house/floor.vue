@@ -7,41 +7,52 @@
       </div>
       <div class="head_text">小区楼栋</div>
       <div class="head_add" @click="addFloor">
-        <img src="@/assets/add.png" @click="addEstate" alt />
+        <img src="@/assets/add.png" @click="addEstate" v-if="!onlySee" alt />
       </div>
     </div>
     <!-- 小区信息 点击会查看小区的信息 -->
     <div class="estate_info" @click="goEstateInfo">
       <div class="estate_name">
-        <p>{{estateInfo.villageName}}</p>
-        <p>{{estateInfo.streetCommunity}}{{estateInfo.houseNumber}}号</p>
+        <p>{{ estateInfo.villageName }}</p>
+        <p>{{ estateInfo.streetCommunity }}{{ estateInfo.houseNumber }}号</p>
       </div>
       <img src="@/assets/image/more.png" alt />
     </div>
     <!-- 暂无楼栋的数据 -->
     <nodata
       :text="nodataText"
-      v-if="!estateInfo.governBuildings || estateInfo.governBuildings.length<=0"
+      v-if="
+        !estateInfo.governBuildings || estateInfo.governBuildings.length <= 0
+      "
     />
     <!-- 楼栋的列表 -->
     <div
       class="floor_list"
-      v-if="estateInfo.governBuildings && estateInfo.governBuildings.length>0"
+      v-if="estateInfo.governBuildings && estateInfo.governBuildings.length > 0"
     >
       <!-- @click="goFloor" -->
-      <div class="floor_item" v-for="(item,index) in estateInfo.governBuildings" :key="item.id">
+      <div
+        class="floor_item"
+        v-for="(item, index) in estateInfo.governBuildings"
+        :key="item.id"
+      >
         <div
           class="item_con"
           @click="changeFloor(index)"
-          :class="index == nowFloorType?'active':''"
+          :class="index == nowFloorType ? 'active' : ''"
         >
-          <p>{{item.buildingName}}幢</p>
-          <p>{{item.time}}建</p>
+          <p>{{ item.buildingName }}幢</p>
+          <p>{{ item.time }}建</p>
         </div>
       </div>
     </div>
     <!-- 底部弹框 -->
-    <van-popup v-model="dialog" position="bottom" round :style="{ height: '21%' }">
+    <van-popup
+      v-model="dialog"
+      position="bottom"
+      round
+      :style="{ height: '21%' }"
+    >
       <div @click="goResident">查看房户列表</div>
       <div @click="goResidentInfo">查看楼栋信息</div>
       <div @click="dialog = false">取消</div>
@@ -60,6 +71,8 @@ export default {
   name: "Floor",
   data() {
     return {
+      // 当前的权限是不是只是只查看
+      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // 小区的id
       estateId: sessionStorage.getItem("estateId"),
       // 小区的信息 包括楼栋
