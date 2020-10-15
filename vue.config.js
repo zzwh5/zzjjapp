@@ -11,15 +11,22 @@ module.exports = {
   runtimeCompiler: false,
   // 生产环境是否生成 sourceMap 文件
   productionSourceMap: false,
-  configureWebpack: (config) => {
-    if (process.env.NODE_ENV === 'production') {
-      // 生产环境
-      config.mode = 'production'
-    } else {
-      // 开发环境
-      config.mode = 'development'
-    }
+  configureWebpack:{
+    externals: {
+      // AMap: 'AMap', // 高德地图配置
+      T: 'T', // 天地图
+      // BMap: 'BMap', // 百度地图配置
+    },
   },
+  // configureWebpack: (config) => {
+  //   if (process.env.NODE_ENV === 'production') {
+  //     // 生产环境
+  //     config.mode = 'production'
+  //   } else {
+  //     // 开发环境
+  //     config.mode = 'development'
+  //   }
+  // },
   // webpack-dev-server 相关配置
   devServer: {
     open: true,

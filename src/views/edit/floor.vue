@@ -138,6 +138,20 @@
             colon
             label-align="left"
           />
+          <!-- 占位 -->
+          <span></span>
+        </div>
+        <div class="info_item" @click="goMap">
+          <van-field
+            v-model="isLocation"
+            name="位置"
+            label="位置"
+            placeholder="请选择"
+            readonly
+            :rules="[{ required: true, trigger: 'o' }]"
+          />
+          <!-- 占位 -->
+          <img class="map" src="@/assets/image/map.png" alt="" />
         </div>
       </van-form>
     </div>
@@ -233,6 +247,8 @@ export default {
   name: "EditFloor",
   data() {
     return {
+      // 定位信息
+      location: JSON.parse(sessionStorage.getItem("map")),
       orgId: sessionStorage.getItem("orgId"),
       // 搜索中用户输入的小区名
       value: "",
@@ -283,6 +299,18 @@ export default {
       ]
     };
   },
+  computed: {
+    isLocation() {
+      // if()
+      // console.log(this.location);
+      if (!this.location || this.location.lo == "") {
+        return "未定位";
+      }
+      this.residentInfo.longitude = this.location.lo;
+      this.residentInfo.latitude = this.location.la;
+      return "已定位";
+    }
+  },
   watch: {
     // 监听楼栋信息的变化 更改addressStr
     residentInfo: {
@@ -320,6 +348,16 @@ export default {
     }
   },
   methods: {
+    goMap() {
+      // 定位的同时将当前定位的类型保存到本地 对象存储  例如   map:{type:'estate',lo:'经度',la:'纬度'}
+      var obj = {
+        type: "floor",
+        lo: "",
+        la: ""
+      };
+      sessionStorage.setItem("map", JSON.stringify(obj));
+      this.$router.push({ name: "Map" });
+    },
     // 返回上一级路由
     goback() {
       this.$router.go(-1);
@@ -352,11 +390,16 @@ export default {
     },
     // 提交表单
     onSubmit(values) {
+      if (this.residentInfo.theUpperNumber == 0) {
+        Notify({ type: "warning", message: "最高楼层不能是0" });
+        return;
+      }
       var that = this;
       // console.log(this.residentType);
       var obj = {
         id: this.estateId
       };
+      // 先请求小区的详情 拿到小区的地址
       return detailEstate(obj).then(res => {
         // console.log(res);
         if (
@@ -386,20 +429,22 @@ export default {
                   Notify({ type: "warning", message: res.msg });
                   return;
                 }
+                sessionStorage.removeItem("map");
                 that.$router.go(-1);
               });
             })
             .catch(() => {});
-
           return;
         }
         // console.log(this.residentInfo);
+        // return false;
         return editFloor(this.residentInfo).then(res => {
           // console.log(res);
           if (res.code != 200) {
             Notify({ type: "warning", message: res.msg });
             return;
           }
+          sessionStorage.removeItem("map");
           that.$router.go(-1);
         });
       });
@@ -470,10 +515,14 @@ export default {
 
     //点击确定
     onAreaConfirm(value) {
+      if (value[0].name == "请选择") {
+        this.cityVisable = false;
+        return false;
+      }
       // console.log(value);
       // return false;
       // 都有内容
-      if (value[2] && value[1] && value[0]) {
+      if (value[2].code && value[1].code && value[0].code) {
         console.log("有内容");
         // 如果是直辖市的特殊情况
         if (
@@ -501,12 +550,14 @@ export default {
           }
         }
       } else {
-        this.$set(this.residentInfo, "communityStr", "");
-        this.$set(this.residentInfo, "streetStr", "");
-        this.$set(this.residentInfo, "provinceStr", "");
-        this.$set(this.residentInfo, "community", "");
-        this.$set(this.residentInfo, "street", "");
-        this.$set(this.residentInfo, "district", "");
+        if (this.floorEditType == 0) {
+          this.$set(this.residentInfo, "communityStr", "");
+          this.$set(this.residentInfo, "streetStr", "");
+          this.$set(this.residentInfo, "provinceStr", "");
+          this.$set(this.residentInfo, "community", "");
+          this.$set(this.residentInfo, "street", "");
+          this.$set(this.residentInfo, "district", "");
+        }
       }
       this.cityVisable = false;
       console.log(this.residentInfo);
@@ -579,6 +630,10 @@ export default {
         transform: translateY(-50%);
         width: 10px;
         height: 17px;
+        &.map {
+          width: 16px;
+          height: 20px;
+        }
       }
     }
   }

@@ -35,7 +35,7 @@
             placeholder="请选择"
             @click="showName(item.title, item.dataIndex)"
             :required="item.isRequire"
-            :rules="[{ required: item.isRequire }]"
+            :rules="[{ required: item.isRequire, trigger: 'o' }]"
           />
           <van-field
             v-else
@@ -48,6 +48,18 @@
           />
           <!-- 占位 -->
           <span></span>
+        </div>
+        <div class="info_item" @click="goMap">
+          <van-field
+            v-model="isLocation"
+            name="位置"
+            label="位置"
+            placeholder="请选择"
+            readonly
+            :rules="[{ required: true, trigger: 'o' }]"
+          />
+          <!-- 占位 -->
+          <img class="map" src="@/assets/image/map.png" alt="" />
         </div>
       </van-form>
     </div>
@@ -195,7 +207,8 @@ const columns = [
     title: "现住地",
     dataIndex: "currentResidence",
     id: 16,
-    isSelect: true
+    isSelect: true,
+    isRequire: true
   },
   {
     title: "房主现居详址",
@@ -220,6 +233,8 @@ const columns = [
 export default {
   data() {
     return {
+      // 定位信息
+      location: JSON.parse(sessionStorage.getItem("map")),
       // 当前的房屋的id
       id: sessionStorage.getItem("houseId"),
       // 楼栋id 新增的时候为了获取当前楼栋的最高 楼层
@@ -265,7 +280,20 @@ export default {
     if (this.houseEditType != 0) {
       this.getHouseInfo();
     }
+    // 获取楼栋小区详情
     this.getFloorDetail();
+  },
+  computed: {
+    isLocation() {
+      // if()
+      // console.log(this.location);
+      if (!this.location || this.location.lo == "") {
+        return "未定位";
+      }
+      this.houseInfo.longitude = this.location.lo;
+      this.houseInfo.latitude = this.location.la;
+      return "已定位";
+    }
   },
   watch: {
     // 监听楼栋信息的变化 更改addressStr
@@ -291,6 +319,16 @@ export default {
     }
   },
   methods: {
+    goMap() {
+      // 定位的同时将当前定位的类型保存到本地 对象存储  例如   map:{type:'estate',lo:'经度',la:'纬度'}
+      var obj = {
+        type: "house",
+        lo: "",
+        la: ""
+      };
+      sessionStorage.setItem("map", JSON.stringify(obj));
+      this.$router.push({ name: "Map" });
+    },
     // 返回上一级路由
     goback() {
       this.$router.go(-1);
@@ -334,8 +372,10 @@ export default {
       // console.log(this.houseInfo, this.houseEditType);
       // return false;
       var that = this;
+      // console.log(this.maxFloor);
+      // return false;
       // 如果填了楼层要判断最高楼层
-      if (this.houseInfo.floor) {
+      if (this.houseInfo.floor && this.maxFloor != 0) {
         if (this.houseInfo.floor > this.maxFloor && this.maxFloor != -1) {
           Notify({ type: "warning", message: "所填楼层大于当前楼栋最高楼层" });
           return false;
@@ -357,6 +397,7 @@ export default {
                 Notify({ type: "warning", message: res.msg });
                 return;
               }
+              sessionStorage.removeItem("map");
               that.$router.go(-1);
             });
           })
@@ -371,6 +412,7 @@ export default {
           Notify({ type: "warning", message: res.msg });
           return;
         }
+        sessionStorage.removeItem("map");
         that.$router.go(-1);
       });
     },
@@ -484,7 +526,17 @@ export default {
       // console.log(value);
       // console.log(value[4], value[3], value[2], value[1], value[0]);
       // 都有内容
-      if (value[4] && value[3] && value[2] && value[1] && value[0]) {
+      if (value[0].name == "请选择") {
+        this.cityVisable = false;
+        return false;
+      }
+      if (
+        value[4].code &&
+        value[3].code &&
+        value[2].code &&
+        value[1].code &&
+        value[0].code
+      ) {
         console.log("有内容");
         // 如果是直辖市的特殊情况
         if (
@@ -547,6 +599,7 @@ export default {
           this.$set(this.houseInfo, "currentResidenceCity", value[1].code);
           this.$set(this.houseInfo, "currentResidenceProvince", value[0].code);
         } else {
+          console.log("不正常");
           if (this.houseEditType == 0) {
             this.$set(this.houseInfo, "currentResidenceCommunityStr", "");
             this.$set(this.houseInfo, "currentResidenceStreetStr", "");
@@ -642,6 +695,10 @@ export default {
         transform: translateY(-50%);
         width: 10px;
         height: 17px;
+        &.map {
+          width: 16px;
+          height: 20px;
+        }
       }
     }
   }

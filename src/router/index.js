@@ -18,6 +18,11 @@ const routes = [
     component: require("../views/login/login.vue").default
   },
   {
+    path: "/map",
+    name: "Map",
+    component: require("../components/map.vue").default
+  },
+  {
     path: "/house",
     name: "House",
     component: House,

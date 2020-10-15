@@ -43,6 +43,16 @@
           <!-- 占位 -->
           <span></span>
         </div>
+        <div class="info_item">
+          <van-field
+            v-model="estateInfo.areaCode"
+            name="小区编码"
+            label="小区编码"
+            placeholder="请输入"
+          />
+          <!-- 占位 -->
+          <span></span>
+        </div>
         <div class="info_item" @click="changeAddress()">
           <van-field
             v-model="estateInfo.addressStr"
@@ -76,6 +86,18 @@
             :rules="[{ required: false }]"
           />
           <img src="@/assets/image/more.png" alt />
+        </div>
+        <div class="info_item" @click="goMap">
+          <van-field
+            v-model="isLocation"
+            name="位置"
+            label="位置"
+            placeholder="请选择"
+            readonly
+            :rules="[{ required: true, trigger: 'o' }]"
+          />
+          <!-- 占位 -->
+          <img class="map" src="@/assets/image/map.png" alt="" />
         </div>
       </van-form>
     </div>
@@ -125,6 +147,8 @@ export default {
   name: "EditEstate",
   data() {
     return {
+      // 定位信息
+      location: JSON.parse(sessionStorage.getItem("map")),
       // 修改的小区id
       estateId: sessionStorage.getItem("estateId"),
       // 当前是新增还是修改小区信息 0 新增 1 修改
@@ -163,12 +187,24 @@ export default {
       ]
     };
   },
+  computed: {
+    isLocation() {
+      // if()
+      // console.log(this.location);
+      if (!this.location || this.location.lo == "") {
+        return "未定位";
+      }
+      this.estateInfo.longitude = this.location.lo;
+      this.estateInfo.latitude = this.location.la;
+      return "已定位";
+    }
+  },
   watch: {
     // 监听小区信息的变化 更改addressStr
     estateInfo: {
       handler: function(value, old) {
         // console.log("changeAddress");
-        if (value.provinceStr == null || !value.provinceStr) {
+        if (value.streetStr == null || !value.streetStr) {
           console.log(1111);
           return false;
         }
@@ -191,6 +227,16 @@ export default {
     // this.getArea("", 0);
   },
   methods: {
+    goMap() {
+      // 定位的同时将当前定位的类型保存到本地 对象存储  例如   map:{type:'estate',lo:'经度',la:'纬度'}
+      var obj = {
+        type: "estate",
+        lo: "",
+        la: ""
+      };
+      sessionStorage.setItem("map", JSON.stringify(obj));
+      this.$router.push({ name: "Map" });
+    },
     // 返回上一级路由
     goback() {
       this.$router.go(-1);
@@ -238,19 +284,22 @@ export default {
                 return;
               }
               that.$router.go(-1);
+              sessionStorage.removeItem("map");
             });
           })
           .catch(() => {});
 
         return;
       }
-      console.log(this.estateInfo);
+      // console.log(this.estateInfo);
+      // return false;
       return editEstate(this.estateInfo).then(res => {
         // console.log(res);
         if (res.code != 200) {
           Notify({ type: "warning", message: res.msg });
           return;
         }
+        sessionStorage.removeItem("map");
         that.$router.go(-1);
       });
     },
@@ -309,10 +358,14 @@ export default {
 
     //点击确定
     onAreaConfirm(value) {
+      if (value[0].name == "请选择") {
+        this.cityVisable = false;
+        return false;
+      }
       console.log(value);
       // console.log(value[4], value[3], value[2], value[1], value[0]);
       // 都有内容
-      if (value[2] && value[1] && value[0]) {
+      if (value[2].code && value[1].code && value[0].code) {
         console.log("有内容");
         // 如果是直辖市的特殊情况
         if (
@@ -340,12 +393,14 @@ export default {
           }
         }
       } else {
-        this.$set(this.estateInfo, "communityStr", "");
-        this.$set(this.estateInfo, "streetStr", "");
-        this.$set(this.estateInfo, "districtStr", "");
-        this.$set(this.estateInfo, "community", "");
-        this.$set(this.estateInfo, "street", "");
-        this.$set(this.estateInfo, "district", "");
+        if (this.estateEditType == 0) {
+          this.$set(this.estateInfo, "communityStr", "");
+          this.$set(this.estateInfo, "streetStr", "");
+          this.$set(this.estateInfo, "districtStr", "");
+          this.$set(this.estateInfo, "community", "");
+          this.$set(this.estateInfo, "street", "");
+          this.$set(this.estateInfo, "district", "");
+        }
       }
       this.cityVisable = false;
     }
@@ -436,6 +491,10 @@ export default {
         transform: translateY(-50%);
         width: 10px;
         height: 17px;
+        &.map {
+          width: 16px;
+          height: 20px;
+        }
       }
     }
   }

@@ -207,7 +207,7 @@ export default {
     .cell {
       max-width: 100%;
       display: inline-block;
-      overflow-y: scroll;
+      overflow-x: scroll;
       position: relative;
       left: 50%;
       transform: translateX(-50%);

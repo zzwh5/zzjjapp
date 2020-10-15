@@ -15,7 +15,7 @@
       <input type="text" placeholder="请输入姓名" v-model="searchText" />
       <img @click="searchByName" src="@/assets/search.png" alt />
     </div>
-    <!--  -->
+    <!-- 列表 -->
     <div class="peopleList">
       <!-- <div class="people_item">
           <div class="peopleType">
@@ -44,11 +44,32 @@
         >
           <!-- <template v-for="item in peopleData" :key="item.basicsId" > -->
           <div v-for="item in peopleData" :key="item.basicsId">
-            <div class="people_item" @click="goPeopleDetail(item.id, item.basicsId, item.houseAddress)">
-              <div class="peopleType">{{ item.governRegisteredPopulation ? '户主' : '' }}</div>
+            <div
+              class="people_item"
+              @click="
+                goPeopleDetail(
+                  item.id,
+                  item.governRealPopulation.idCard,
+                  item.houseAddress
+                )
+              "
+            >
+              <div class="peopleType">
+                {{
+                  item.governRealPopulation.householderRelationship == 0
+                    ? "户主"
+                    : ""
+                }}
+              </div>
               <div class="peopleMsg">
                 <div class="msg_top">
-                  <div class="peopleName">{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName : '' }}</div>
+                  <div class="peopleName">
+                    {{
+                      item.governRealPopulation
+                        ? item.governRealPopulation.fullName
+                        : ""
+                    }}
+                  </div>
                   <div class="isResident">
                     常住人口
                     <span>{{ item.num ? item.num : 0 }}人</span>
@@ -57,7 +78,11 @@
                 <div class="msg_bottom">
                   <div class="numberOrAddress">
                     户主证件号：
-                    <span>{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderIdCard : '' }}</span>
+                    <span>{{
+                      item.governRealPopulation
+                        ? item.governRealPopulation.idCard
+                        : ""
+                    }}</span>
                   </div>
                   <div class="numberOrAddress">
                     房 屋 地 址：
@@ -71,10 +96,84 @@
         </van-list>
       </van-pull-refresh>
     </div>
+
+    <!-- 权限弹框 -->
+    <van-dialog
+      class="permission"
+      v-model="show"
+      title
+      :showConfirmButton="false"
+    >
+      <div class="dialog_con">
+        <p class="title">
+          <span>请选择所属网格</span>
+          <span @click="confirmPermisson">确认</span>
+        </p>
+        <!-- 一级 -->
+        <div class="list">
+          <div class="list_item" v-for="item in data" :key="item.id">
+            <div class="tit" @click="changeActiveName(item)">
+              <p :class="item.id == permission.id ? 'active' : ''">
+                {{ item.name }}
+              </p>
+              <p v-if="item.hasChildren">
+                <van-icon name="arrow-up" v-if="item.isdown" />
+                <van-icon name="arrow-down" v-else />
+              </p>
+            </div>
+            <!-- 二级 -->
+            <div class="list children" v-if="item.isdown && item.hasChildren">
+              <div
+                class="list_item"
+                v-for="(item1, index) in item.children"
+                :key="item1.id"
+              >
+                <div class="tit" @click="changeActiveName(item1, index)">
+                  <p :class="item1.id == permission.id ? 'active' : ''">
+                    {{ item1.name }}
+                  </p>
+                  <p v-if="item1.hasChildren">
+                    <van-icon name="arrow-up" v-if="item1.isdown" />
+                    <van-icon name="arrow-down" v-else />
+                  </p>
+                </div>
+                <!-- 三级 -->
+                <div
+                  class="list children"
+                  v-if="item1.isdown && item1.hasChildren"
+                >
+                  <!-- {{ item1.isdown }} -->
+                  <div
+                    class="list_item"
+                    v-for="item2 in item1.children"
+                    :key="item2.id"
+                  >
+                    <div class="tit" @click="changeActiveName(item2)">
+                      <p :class="item2.id == permission.id ? 'active' : ''">
+                        {{ item2.name }}
+                      </p>
+                      <p v-if="item2.hasChildren">
+                        <van-icon name="arrow-up" v-if="item2.isdown" />
+                        <van-icon name="arrow-down" v-else />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </van-dialog>
   </div>
 </template>
 <script>
 import { getGovernRentingHouse, searchPeopleByidCard } from "@/api/people";
+// 组织结构的接口
+import { getTree, getChildTree } from "@/api/common";
+// 引入弹框
+import { Dialog } from "vant";
+import { Toast } from "vant";
 export default {
   name: "People",
   data() {
@@ -83,27 +182,49 @@ export default {
       peopleData: [],
       error: false,
       loading: false,
-      finished: true,
+      finished: false,
       isLoading: false,
       // orgid 应该是用户登录之后拿到的
-      orgId: "370481115",
+      orgId: "",
       pageSize: 10,
       pageNo: 1,
       // 搜索信息
-      searchText: ""
+      searchText: "",
+
+      // 权限弹框的显示与否
+      show: true,
+      // 确认选择的权限弹框的提示
+      shows: false,
+      // 用户选择的权限
+      permission: {
+        name: "",
+        id: ""
+      },
+      // 组织结构数据
+      data: [
+        {
+          id: sessionStorage.getItem("orgId"),
+          name: sessionStorage.getItem("name"),
+          hasChildren: true,
+          isdown: false,
+          children: []
+        }
+      ],
+      // 是否可操作
+      onlySee: true
     };
   },
   methods: {
     //  下拉刷新
     onRefresh() {
-       this.pageSize = 10
-        this.pageNo = 1
-        this.searchText = ''
-        this.peopleData = []
-        this.isLoading = true;
-        this.getPeopleData()
+      this.pageSize = 10;
+      this.pageNo = 1;
+      this.searchText = "";
+      this.peopleData = [];
+      this.isLoading = true;
+      this.getPeopleData();
       setTimeout(() => {
-        Toast('刷新成功');
+        Toast("刷新成功");
         this.isLoading = false;
       }, 1000);
     },
@@ -112,19 +233,19 @@ export default {
     },
     //  跳转详情
     goPeopleDetail(id, basicsId, houseAddress) {
-      sessionStorage.setItem('id', id)
-      sessionStorage.setItem('zhuhuBasicsId', basicsId)
-      sessionStorage.setItem('zhuhuHouseAddress', houseAddress)
+      sessionStorage.setItem("id", id);
+      sessionStorage.setItem("zhuhuBasicsId", basicsId);
+      sessionStorage.setItem("zhuhuHouseAddress", houseAddress);
       this.$router.push({ name: "ResidentList" });
     },
     // 顶部导航栏新增事件
     headAdd() {
       console.log("点击新增按钮");
-       sessionStorage.setItem("userEditType", 0);
-      this.$router.push({ name: 'EditUser'})
+      sessionStorage.setItem("userEditType", 0);
+      this.$router.push({ name: "EditUser" });
     },
     onLoad() {
-      this.getPeopleData()
+      this.getPeopleData();
     },
     // 获取房屋人口数据
     getPeopleData() {
@@ -133,42 +254,163 @@ export default {
       data.pageSize = this.pageSize;
       data.pageNo = this.pageNo;
       data.orgId = this.orgId;
-      data.governRegisteredPopulation = {}
-      data.governRegisteredPopulation.householderName = this.searchText
+      data.governRealPopulation = {};
+      data.governRealPopulation.fullName = this.searchText;
+
       // data.householderName = this.searchText
       //  把搜索数据也加上
-      that.loading = true
+      that.loading = true;
       return getGovernRentingHouse(data)
         .then(res => {
           // console.log("打印请求的数据", res);
           this.isLoading = false;
-          this.loading =  false
+          this.loading = false;
           if (res.code === 200) {
-            that.peopleData.push(...res.result.data)
-            that.pageNo++
-            console.log(that.peopleData)
-            that.finished = false
-            if (!res.result.data) {
+            that.peopleData.push(...res.result.data);
+            that.pageNo++;
+            console.log(that.peopleData);
+            that.finished = false;
+            if (!res.result.data || res.result.data.length == 0) {
               that.finished = true;
             }
           }
         })
         .catch(res => {
           that.finished = true;
-          this.loading =  false;
+          this.loading = false;
         });
     },
     //  根据姓名查询搜索数据
     searchByName() {
-      this.pageNo = 1
-      this.pageSize = 10
-      this.peopleData = []
-      this.getPeopleData()
-    }
+      this.pageNo = 1;
+      this.pageSize = 10;
+      this.peopleData = [];
+      this.getPeopleData();
+    },
+    // 权限模块
+    // 选择网格
+    getTree() {
+      getChildTree(370481115).then(res => {
+        console.log(res);
+      });
+    },
+    // 点击网格的时候
+    changeActiveName(item, index) {
+      // console.log(item);
+      // 将点击的orgid和orgName保存到data的permission中  点击确定的时候更改sessionStorage
+      this.permission.id = item.id;
+      this.permission.name = item.name;
+      // console.log(item.hasChildren, item.isdown);
+      // 判断是不是拥有子级内容 没有直接返回
+      if (!item.hasChildren || item.isdown) {
+        // console.log(11111);
+        item.isdown = !item.isdown;
+        // console.log(item);
+        this.$forceUpdate();
+        return;
+      }
+      item.isdown = !item.isdown;
+      item.children = [];
+      var id = item.id;
+      Toast.loading({
+        message: "加载中...",
+        forbidClick: true,
+        duration: 10000
+      });
+      getChildTree(id).then(res => {
+        Toast.clear();
+        // console.log(res);
+        var turn = res.ret[0].name.indexOf("网格") == -1 ? false : true;
+        // console.log(turn);
+        if (turn) {
+          // console.log(index);
+          res.ret.forEach(el => {
+            // console.log(el);
+            el.hasChildren = false;
+            el.isdown = false;
+          });
 
+          item.children = res.ret;
+          // console.log(item.children);
+          this.$forceUpdate();
+          return;
+        }
+        item.children = res.ret;
+        item.children.forEach(el => {
+          el.hasChildren = true;
+          el.isdown = false;
+          el.children = [];
+        });
+        this.$forceUpdate();
+        // console.log(item);
+      });
+    },
+    // 确认选择的权限
+    confirmPermisson() {
+      console.log(this.permission);
+      console.log(this.buildingTypeList);
+      // this.show = false;
+      if (this.permission.name == "" || this.permission.id.length !== 15) {
+        this.shows = true;
+      } else if (
+        this.permission.name != "" ||
+        this.permission.id.length == 15
+      ) {
+        this.list = [];
+        this.show = false;
+        this.shows = false;
+        this.orgId = this.permission.id;
+        this.onlySee = false;
+        sessionStorage.setItem("name", this.permission.name);
+        sessionStorage.setItem("orgId", this.permission.id);
+        sessionStorage.setItem("onlySee", false);
+        if (this.type == 0) {
+          this.getEstat();
+        } else {
+          this.getFloor();
+        }
+      }
+    },
+    // 确认更改权限
+    confirmEdit() {
+      // 如果用户没有选择权限话 还事默认的
+      if (this.permission.name == "") {
+        this.show = false;
+        this.shows = false;
+        return;
+      }
+      this.list = [];
+      this.show = false;
+      this.shows = false;
+      this.orgId = this.permission.id;
+      sessionStorage.setItem("name", this.permission.name);
+      sessionStorage.setItem("orgId", this.permission.id);
+      if (this.type == 0) {
+        this.getEstat();
+      } else {
+        this.getFloor();
+      }
+    },
+    // 取消更改权限
+    cancelEdit() {}
   },
   created() {
-    this.getPeopleData()
+    this.orgId = sessionStorage.getItem("orgId");
+    this.getPeopleData();
+    // 判断是否选择权限
+    // console.log(this.orgId);
+    if (this.orgId.length == 6) {
+      // console.log("滕州市");
+      this.show = false;
+      sessionStorage.setItem("onlySee", true);
+    } else if (this.orgId.length == 15) {
+      this.show = false;
+      sessionStorage.setItem("onlySee", false);
+      this.onlySee = false;
+    } else {
+      this.show = true;
+      sessionStorage.setItem("onlySee", true);
+    }
   }
 };
 </script>
@@ -320,8 +562,45 @@ export default {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            &>span {
+            & > span {
               color: #29292a;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+/deep/.van-dialog.permission {
+  width: 90%;
+  border-radius: 9px;
+  height: 60vh;
+  overflow-y: scroll;
+  .dialog_con {
+    background-color: #fff;
+    .title {
+      width: 100%;
+      padding: 2% 4%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #000;
+    }
+    .list {
+      width: 100%;
+      padding: 2% 4%;
+      box-sizing: border-box;
+      color: #000;
+      .list_item {
+        .tit {
+          display: flex;
+          align-content: center;
+          justify-content: space-between;
+          p:nth-child(1) {
+            &.active {
+              color: #0f75e8;
+              font-weight: 600;
             }
           }
         }

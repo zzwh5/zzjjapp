@@ -9,6 +9,10 @@ import './assets/style/reset.css'
 // 无限下拉
 import vueiInfinite from 'vue-infinite-scroll'
 Vue.use(vueiInfinite)
+// 时间组件 
+import Calendar from 'vue-mobile-calendar'
+ 
+Vue.use(Calendar)
 
 // 路由跳转进度条的展示
 import NProgress from 'nprogress'

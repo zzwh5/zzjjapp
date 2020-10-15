@@ -118,6 +118,7 @@
               readonly
               colon
               :required="item.isRequire"
+              @click="showName(flowInfo, item.title, item.dataIndex)"
             />
             <van-field
               v-else
@@ -255,7 +256,7 @@
                 :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#fff' : '#000' }"
-                @click.native.prevent.stop="item.turn = true"
+                @click.native.prevent="item.turn = true"
                 >是</van-button
               >
               <van-button
@@ -335,12 +336,13 @@
       </div>
     </van-dialog>
     <!-- 时间选择弹框 -->
-    <van-calendar
+    <!-- <van-calendar
       :show-confirm="false"
       v-model="Timeshow"
       :minDate="minDate"
       @confirm="onConfirm"
-    />
+    /> -->
+    <calendar :show.sync="Timeshow" @change="onConfirm"> </calendar>
     <!-- 省市区选择弹框 -->
     <!-- 省市区  -->
     <van-popup v-model="cityVisable" position="bottom">
@@ -650,7 +652,7 @@ export default {
     }
   },
   watch: {
-    // 监听楼栋信息的变化 更改addressStr
+    // 监听地址的变化 更改addressStr
     basicInfo: {
       handler: function(value, old) {
         console.log("changeAddress");
@@ -711,10 +713,12 @@ export default {
     },
     // 弹框展示
     showName(item, text, type, turn) {
+      console.log(item, text, type);
+      // return;
       if (turn) {
         this.isGover = true;
       }
-      console.log(item, text, type);
+      // console.log(item, text, type);
       this.item = item;
       // return false;
       if (text == "现住地(省市区)") {
@@ -755,6 +759,7 @@ export default {
       // console.log(text.indexOf("日期") != -1);
       if (text.indexOf("日期") != -1) {
         // console.log("riqi");
+        // return false;
         this.Timeshow = true;
         this.dialogType = type;
         this.dialogText = text;
@@ -1024,15 +1029,18 @@ export default {
     },
     // 点击选中的时间
     onConfirm(date) {
+      console.log(date.$d);
       this.Timeshow = false;
       if (this.isGover) {
         // console.log(2222);
-        this.item.governRealPopulation[this.dialogType] = this.formatDate(date);
+        this.item.governRealPopulation[this.dialogType] = this.formatDate(
+          date.$d
+        );
         this.isGover = false;
         return false;
       }
       console.log(this.item);
-      this.item[this.dialogType] = this.formatDate(date);
+      this.item[this.dialogType] = this.formatDate(date.$d);
     },
     onSubmit() {
       var that = this;
@@ -1266,11 +1274,15 @@ export default {
 
     //点击确定
     onAreaConfirm(value) {
+      if (value[0].name == "请选择") {
+        this.cityVisable = false;
+        return false;
+      }
       // console.log(value);
       console.log(value[2], value[1], value[0], this.cityType);
       // 都有内容
       if (this.cityType == 3) {
-        if (value[2] && value[1] && value[0]) {
+        if (value[2].code && value[1].code && value[0].code) {
           // console.log("有内容");
           // 如果是直辖市的特殊情况
           if (
@@ -1415,7 +1427,7 @@ export default {
         }
         console.log(this.moreList[0].names);
       } else if (this.cityType == 2) {
-        if (value[2] && value[1] && value[0]) {
+        if (value[2].code && value[1].code && value[0].code) {
           // console.log("有内容");
           // 如果是直辖市的特殊情况
           if (
@@ -1559,7 +1571,7 @@ export default {
           }
         }
       } else if (this.cityType == 1) {
-        if (value[2] && value[1] && value[0]) {
+        if (value[2].code && value[1].code && value[0].code) {
           // console.log("有内容");
           // 如果是直辖市的特殊情况
           if (
@@ -1655,7 +1667,13 @@ export default {
           }
         }
       } else if (this.cityType == 0) {
-        if (value[4] && value[3] && value[2] && value[1] && value[0]) {
+        if (
+          value[4].code &&
+          value[3].code &&
+          value[2].code &&
+          value[1].code &&
+          value[0].code
+        ) {
           console.log("有内容");
           // 如果是直辖市的特殊情况
           if (

@@ -9,8 +9,6 @@
         <img src="@/assets/add.png" alt v-if="!onlySee" />
       </div>
     </div>
-    <!-- 测试定位 -->
-    <div id="mapDiv"></div>
     <div class="search">
       <input type="text" placeholder="请输入搜索关键字" @input="Input" />
       <img src="@/assets/search.png" alt />
@@ -212,6 +210,7 @@ export default {
   name: "House",
   data() {
     return {
+      // 是否可操作
       onlySee: true,
       // 顶部的搜索框内容
       values: "",
@@ -286,13 +285,6 @@ export default {
       this.show = true;
       sessionStorage.setItem("onlySee", true);
     }
-  },
-  mounted() {
-    let T = window.T;
-
-    console.log(T.Map);
-    this.map = new T.Map("mapDiv");
-    this.map.centerAndZoom(new T.LngLat(39.65053092, 118.1834506), 12); // 设置显示地图的中心点和级别
   },
   methods: {
     // 测试用
@@ -767,7 +759,7 @@ export default {
             justify-content: space-between;
             p:nth-child(1) {
               &.active {
-                color: #000;
+                color: #0f75e8;
                 font-weight: 600;
               }
             }

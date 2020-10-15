@@ -86,7 +86,6 @@
                 :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#fff' : '#000' }"
-                @click.native.prevent.stop="item.turn = true"
                 >是</van-button
               >
               <van-button
@@ -95,7 +94,6 @@
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#000' : '#fff' }"
-                @click.native.prevent.stop="delSpecial(item)"
                 >否</van-button
               >
             </template>
@@ -147,7 +145,6 @@
                 :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#fff' : '#000' }"
-                @click.native.prevent.stop="item.turn = true"
                 >是</van-button
               >
               <van-button
@@ -156,7 +153,6 @@
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#000' : '#fff' }"
-                @click.native.prevent.stop="delSpecial(item)"
                 >否</van-button
               >
             </template>

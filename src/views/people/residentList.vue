@@ -12,12 +12,14 @@
     </div>
     <!-- 房主信息 -->
     <div class="people_item">
-      <div class="peopleType">{{ huzhuData.governRealPopulation ? '户主' : '' }}</div>
+      <div class="peopleType">
+        {{ huzhuData.householderRelationship == 0 ? "户主" : "" }}
+      </div>
       <div class="peopleMsg">
         <div class="msg_top">
-          <div
-            class="peopleName"
-          >{{ huzhuData.governRealPopulation ? huzhuData.governRealPopulation.fullName : '' }}</div>
+          <div class="peopleName">
+            {{ huzhuData.fullName }}
+          </div>
           <!-- <div class="isResident">
             常住人口
             <span>1人</span>
@@ -26,7 +28,7 @@
         <div class="msg_bottom">
           <div class="numberOrAddress">
             户主证件号：
-            <span>{{ huzhuData.governRealPopulation ? huzhuData.governRealPopulation.idCard : '' }}</span>
+            <span>{{ huzhuData.idCard }}</span>
           </div>
           <div class="numberOrAddress">
             房 屋 地 址：
@@ -41,17 +43,30 @@
     <div class="zhuhuMsg">
       <div v-for="item in zhuhuData" :key="item.id" @click="goAddMsg(item)">
         <div class="zhuhu_item">
-          <div
-            class="avater"
-          >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName.trim().slice(0,1) : '' }}</div>
+          <div class="avater">
+            {{
+              item.governRealPopulation
+                ? item.governRealPopulation.fullName.trim().slice(0, 1)
+                : ""
+            }}
+          </div>
           <div class="message">
             <div class="msg_top">
-              <div
-                class="msg_name"
-              >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderName : '' }}</div>
-              <div
-                class="isHuzhu"
-              >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderRelationshipStr : '' }}</div>
+              <div class="msg_name">
+                {{
+                  item.governRealPopulation
+                    ? item.governRealPopulation.fullName
+                    : ""
+                }}
+              </div>
+              <div class="isHuzhu">
+                {{
+                  item.governRealPopulation.householderRelationship == 0 &&
+                  item.governRealPopulation.householderRelationship != null
+                    ? "户主"
+                    : item.governRealPopulation.householderRelationshipStr
+                }}
+              </div>
             </div>
             <div class="typeNumber">
               <!-- <div class="type">
@@ -60,9 +75,11 @@
               </div>-->
               <div class="type">
                 证件号码
-                <span
-                  style="margin-left:10px;color:#0072E7"
-                >{{ item.governRegisteredPopulation ? item.governRegisteredPopulation.householderIdCard : '' }}</span>
+                <span style="margin-left:10px;color:#0072E7">{{
+                  item.governRealPopulation
+                    ? item.governRealPopulation.idCard
+                    : ""
+                }}</span>
               </div>
             </div>
           </div>
@@ -73,10 +90,11 @@
 </template>
 <script>
 import { getHousePeople, getZhuhu } from "@/api/people";
+import { Notify } from "vant";
 export default {
   data() {
     return {
-      orgId: "370481115",
+      orgId: sessionStorage.getItem("orgId"),
       id: "",
       zhuhuBasicsId: "",
       houseAddress: "",
@@ -95,10 +113,7 @@ export default {
   methods: {
     //  跳转用户讯息
     goAddMsg(item) {
-      sessionStorage.setItem(
-        "basicId",
-        item.governRegisteredPopulation.basicsId
-      );
+      sessionStorage.setItem("basicId", item.basicsId);
       this.$router.push({ name: "UserInfo" });
     },
     // 返回上一级
@@ -128,7 +143,7 @@ export default {
     // 获取房主信息
     getZhuhuData() {
       var data = {
-        basicsId: this.zhuhuBasicsId
+        idCard: this.zhuhuBasicsId
       };
       getZhuhu(data).then(res => {
         if (res.code === 200) {

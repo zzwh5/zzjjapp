@@ -234,6 +234,8 @@ export default {
     box-sizing: border-box;
     background-color: #fff;
     border: 1px solid #eeeeee;
+    overflow-x: scroll;
+    transition: all 0.1s linear 0s;
     .floor_item {
       width: 67px;
       border-bottom: 1px solid #e1e0e0;
