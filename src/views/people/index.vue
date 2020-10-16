@@ -49,7 +49,7 @@
               @click="
                 goPeopleDetail(
                   item.id,
-                  item.governRealPopulation.idCard,
+                  item.governRealPopulation.id,
                   item.houseAddress
                 )
               "

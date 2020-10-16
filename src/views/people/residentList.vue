@@ -143,7 +143,7 @@ export default {
     // 获取房主信息
     getZhuhuData() {
       var data = {
-        idCard: this.zhuhuBasicsId
+        id: this.zhuhuBasicsId
       };
       getZhuhu(data).then(res => {
         if (res.code === 200) {

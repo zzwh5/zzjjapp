@@ -6,7 +6,7 @@ const api = {
   searchPeopleByidCard: '/smartCity/governRegisteredPopulation/findGovernRegisteredPopulationByIdCard',
   // 获取房屋里面的住户
   getHousePeople: '/smartCity/governRentingHouseDetails/findGovernRentingHouseDetailsPage',
-  getZhuhu: '/smartCity/governRealPopulation/echoGovernRealPopulationByIdCard'
+  getZhuhu: '/smartCity/governRealPopulation/echoGovernRealPopulation'
 }
 
 // 查询对应网格下所有房间和房间人员
