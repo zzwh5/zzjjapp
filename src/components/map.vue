@@ -57,7 +57,7 @@ export default {
 
       // 初始化地图对象
       var map = new T.Map("mapDiv");
-      console.log(map);
+      // console.log(map);
 
       // 设置显示地图的中心点和级别
       map.centerAndZoom(new T.LngLat(116.40969, 38.89945), this.zoom);
@@ -136,7 +136,7 @@ export default {
 
       // 定位结果回调函数
       function fn(e) {
-        // console.log(e);
+        console.log(e);
         // 当前为移动端时
         if (this.getStatus() === 0) {
           map.centerAndZoom(e.lnglat, 15);
@@ -214,7 +214,7 @@ export default {
       var cp = new T.CoordinatePickup(map, {
         callback: p => {
           var newMarker = map.getOverlays();
-          if (newMarker.length != 1) {
+          if (newMarker.length > 1) {
             // console.log(newMarker);
             map.removeOverLay(newMarker[newMarker.length - 1]);
           }

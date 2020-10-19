@@ -17,21 +17,6 @@
     </div>
     <!-- 列表 -->
     <div class="peopleList">
-      <!-- <div class="people_item">
-          <div class="peopleType">
-            住户
-          </div>
-          <div class="peopleMsg">
-            <div class="msg_top">
-              <div class="peopleName">苏伟</div>
-              <div class="isResident">常住人口<span>3人</span></div>
-            </div>
-            <div class="msg_bottom">
-              <div class="numberOrAddress">户主证件号：<span>370829199710131015</span></div>
-              <div class="numberOrAddress">住 户 地 址：<span>测试地址测试地址测试地址测测测测试地址测试地址测试地址测测测</span></div>
-            </div>
-          </div>
-      </div>-->
       <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
         <van-list
           v-model="loading"
@@ -42,33 +27,31 @@
           @load="onLoad"
           offset="30"
         >
-          <!-- <template v-for="item in peopleData" :key="item.basicsId" > -->
           <div v-for="item in peopleData" :key="item.basicsId">
             <div
               class="people_item"
-              @click="
-                goPeopleDetail(
-                  item.id,
-                  item.governRealPopulation.id,
-                  item.houseAddress
-                )
-              "
+              @click="goPeopleDetail(item.id, item, item.houseAddress)"
             >
               <div class="peopleType">
-                {{
-                  item.governRealPopulation.householderRelationship == 0
-                    ? "户主"
-                    : ""
-                }}
+                <span v-if="item.governRealPopulation">
+                  {{
+                    item.governRealPopulation.householderRelationship == 0
+                      ? "户主"
+                      : ""
+                  }}
+                </span>
               </div>
               <div class="peopleMsg">
                 <div class="msg_top">
                   <div class="peopleName">
-                    {{
-                      item.governRealPopulation
-                        ? item.governRealPopulation.fullName
-                        : ""
-                    }}
+                    <span
+                      v-if="item.governRealPopulation && item.houseType === 0"
+                    >
+                      {{ item.governRealPopulation.fullName }}
+                    </span>
+                    <span v-if="item.houseType !== 0">
+                      {{ item.ownerName }}
+                    </span>
                   </div>
                   <div class="isResident">
                     常住人口
@@ -78,11 +61,14 @@
                 <div class="msg_bottom">
                   <div class="numberOrAddress">
                     户主证件号：
-                    <span>{{
-                      item.governRealPopulation
-                        ? item.governRealPopulation.idCard
-                        : ""
-                    }}</span>
+                    <span
+                      v-if="item.governRealPopulation && item.houseType === 0"
+                    >
+                      {{ item.governRealPopulation.idCard }}
+                    </span>
+                    <span v-if="item.houseType !== 0">
+                      {{ item.idNumber }}
+                    </span>
                   </div>
                   <div class="numberOrAddress">
                     房 屋 地 址：
@@ -232,9 +218,14 @@ export default {
       this.$router.push({ name: "House" });
     },
     //  跳转详情
-    goPeopleDetail(id, basicsId, houseAddress) {
+    goPeopleDetail(id, item, houseAddress) {
+      sessionStorage.setItem("peopleHouseType", item.houseType);
+      if (item.houseType === 0 && item.governRealPopulation) {
+        sessionStorage.setItem("zhuhuBasicsId", item.governRealPopulation.id);
+      } else {
+        sessionStorage.setItem("zhuhuBasicsId", item.idNumber);
+      }
       sessionStorage.setItem("id", id);
-      sessionStorage.setItem("zhuhuBasicsId", basicsId);
       sessionStorage.setItem("zhuhuHouseAddress", houseAddress);
       this.$router.push({ name: "ResidentList" });
     },

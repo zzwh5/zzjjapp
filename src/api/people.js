@@ -6,7 +6,8 @@ const api = {
   searchPeopleByidCard: '/smartCity/governRegisteredPopulation/findGovernRegisteredPopulationByIdCard',
   // 获取房屋里面的住户
   getHousePeople: '/smartCity/governRentingHouseDetails/findGovernRentingHouseDetailsPage',
-  getZhuhu: '/smartCity/governRealPopulation/echoGovernRealPopulation'
+  getZhuhu: '/smartCity/governRealPopulation/echoGovernRealPopulation',
+  getZhuhubybasicid:'/smartCity/governRealPopulation/echoGovernRealPopulationByIdCard',
 }
 
 // 查询对应网格下所有房间和房间人员
@@ -39,6 +40,15 @@ export function getHousePeople(parameter) {
 export function getZhuhu (parameter) {
   return request({
     url: api.getZhuhu,
+    method: 'post',
+    data: qs.stringify(parameter)
+  })
+}
+
+// 根据身份证号获取户主信息
+export function getZhuhubybasicid (parameter) {
+  return request({
+    url: api.getZhuhubybasicid,
     method: 'post',
     data: qs.stringify(parameter)
   })

@@ -19,7 +19,13 @@
       </div>
     </div>
     <div class="btn">
-      <div>单栋民房</div>
+      <!-- <div>单栋民房</div> -->
+      <div v-if="residentType == 0">小区楼栋</div>
+      <div v-if="residentType == 1">单栋楼房</div>
+      <div v-if="residentType == 2">单栋民房</div>
+      <div v-if="residentType == 3 || residentType == 4 || residentType == 5">
+        别墅
+      </div>
       <van-button plain type="info" size="small" @click.native="goHouseInfo"
         >查看房屋信息</van-button
       >
@@ -34,6 +40,20 @@
           label-align="left"
           colon
           label="小区名称"
+          readonly
+        />
+        <!-- 占位 -->
+        <span></span>
+      </div>
+      <div
+        class="info_item"
+        v-if="residentType == 3 || residentType == 4 || residentType == 5"
+      >
+        <van-field
+          v-model="residentInfo.buildingTypeStr"
+          label-align="left"
+          colon
+          label="别墅类型"
           readonly
         />
         <!-- 占位 -->
@@ -149,6 +169,12 @@ export default {
     },
     // 前往查看房户列表页面
     goHouseInfo() {
+      // 如果是别墅的话 更改sessionstorage中的房屋类型 小区、单栋民房、单栋楼房、别墅(三种类型的别墅)
+      if (sessionStorage.getItem("houseType") == 3) {
+        // console.log(this.residentInfo.buildingType);
+        sessionStorage.setItem("houseType", this.residentInfo.buildingType);
+      }
+      // return false;
       // 更改当前的楼栋编辑类型
       // 再session中设置楼栋id
       sessionStorage.setItem("residentId", this.id);

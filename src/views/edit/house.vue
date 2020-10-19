@@ -37,15 +37,30 @@
             :required="item.isRequire"
             :rules="[{ required: item.isRequire, trigger: 'o' }]"
           />
-          <van-field
-            v-else
-            v-model="houseInfo[item.dataIndex]"
-            :name="item.dataIndex"
-            :label="item.title"
-            placeholder="请输入"
-            :rules="[{ required: item.isRequire }]"
-            :required="item.isRequire"
-          />
+          <div v-if="!item.isSelect">
+            <div v-if="item.title == '单元' || item.title == '楼层'">
+              <van-field
+                v-if="houseType != 2 && houseType != 3"
+                v-model="houseInfo[item.dataIndex]"
+                :name="item.dataIndex"
+                :label="item.title"
+                placeholder="请输入"
+                :rules="[{ required: item.isRequire }]"
+                :required="item.isRequire"
+              />
+            </div>
+
+            <!-- {{ item.title != "单元" }} -->
+            <van-field
+              v-if="item.title != '单元' && item.title != '楼层'"
+              v-model="houseInfo[item.dataIndex]"
+              :name="item.dataIndex"
+              :label="item.title"
+              placeholder="请输入"
+              :rules="[{ required: item.isRequire }]"
+              :required="item.isRequire"
+            />
+          </div>
           <!-- 占位 -->
           <span></span>
         </div>
@@ -233,6 +248,8 @@ const columns = [
 export default {
   data() {
     return {
+      // 当前房屋的类型
+      houseType: sessionStorage.getItem("houseType"),
       // 定位信息
       location: JSON.parse(sessionStorage.getItem("map")),
       // 当前的房屋的id
@@ -294,6 +311,22 @@ export default {
       this.houseInfo.latitude = this.location.la;
       return "已定位";
     }
+  },
+  //  当前页面离开的时候判断当前页面是不是要给缓存
+  beforeRouteLeave(to, from, next) {
+    // console.log(to);
+    if (to.name == "Map") {
+      from.meta.keepAlive = true;
+    } else {
+      from.meta.keepAlive = false;
+    }
+    next();
+  },
+  // 页面被缓存 再次展示的时候
+  activated() {
+    // console.log("我又回来了");
+    // console.log(sessionStorage.getItem("map"));
+    this.location = JSON.parse(sessionStorage.getItem("map"));
   },
   watch: {
     // 监听楼栋信息的变化 更改addressStr
@@ -381,7 +414,18 @@ export default {
           return false;
         }
       }
-      this.houseInfo.houseAddress = this.address + this.houseInfo.houseNumber;
+      // 如果是houseType是 2或者3说明没有单元和楼层 否则将楼层和单元拼接到地址上面
+      if (this.houseType == 2 || this.houseType == 3) {
+        this.houseInfo.houseAddress = this.address + this.houseInfo.houseNumber;
+      } else {
+        this.houseInfo.houseAddress =
+          this.address +
+          this.houseInfo.element +
+          "单元" +
+          this.houseInfo.floor +
+          "层" +
+          this.houseInfo.houseNumber;
+      }
       if (this.houseEditType == 1) {
         Dialog.alert({
           message: "您确定提交修改吗？",

@@ -62,7 +62,10 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "about" */ "../views/edit/estate.vue")
+          import(/* webpackChunkName: "about" */ "../views/edit/estate.vue"),
+          meta:{
+            keepAlive: true
+          }
       },
       // 楼栋
       {
@@ -92,7 +95,10 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "about" */ "../views/edit/floor.vue")
+          import(/* webpackChunkName: "about" */ "../views/edit/floor.vue"),
+        meta:{
+          keepAlive: true
+        }
       },
       // 小区 - 楼栋 - 房屋详情
       {
@@ -112,7 +118,10 @@ const routes = [
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         component: () =>
-          import(/* webpackChunkName: "about" */ "../views/edit/house.vue")
+          import(/* webpackChunkName: "about" */ "../views/edit/house.vue"),
+        meta:{
+          keepAlive: true
+        }
       },
       // 小区 - 楼栋 - 住户列表
       {

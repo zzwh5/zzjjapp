@@ -199,6 +199,16 @@ export default {
       return "已定位";
     }
   },
+  // 路由离开时
+  beforeRouteLeave(to, from, next) {
+    console.log(to);
+    if (to.name == "Map") {
+      from.meta.keepAlive = true;
+    } else {
+      from.meta.keepAlive = false;
+    }
+    next();
+  },
   watch: {
     // 监听小区信息的变化 更改addressStr
     estateInfo: {
@@ -218,7 +228,14 @@ export default {
       deep: true
     }
   },
+  // 页面被缓存 再次展示的时候
+  activated() {
+    // console.log("我又回来了");
+    // console.log(sessionStorage.getItem("map"));
+    this.location = JSON.parse(sessionStorage.getItem("map"));
+  },
   created() {
+    // console.log("ddddddd");
     // 小区详情
     if (this.estateEditType != 0) {
       this.getEstateInfo();
@@ -228,12 +245,20 @@ export default {
   },
   methods: {
     goMap() {
+      var obj = {};
       // 定位的同时将当前定位的类型保存到本地 对象存储  例如   map:{type:'estate',lo:'经度',la:'纬度'}
-      var obj = {
-        type: "estate",
-        lo: "",
-        la: ""
-      };
+      // console.log(this.location.lo == "");
+      if (!this.location || this.location.lo == "") {
+        // console.log("如果之前是没有定位的");
+        obj = {
+          type: "estate",
+          lo: "",
+          la: ""
+        };
+      } else {
+        obj = this.location;
+      }
+
       sessionStorage.setItem("map", JSON.stringify(obj));
       this.$router.push({ name: "Map" });
     },

@@ -89,7 +89,7 @@
   </div>
 </template>
 <script>
-import { getHousePeople, getZhuhu } from "@/api/people";
+import { getHousePeople, getZhuhu, getZhuhubybasicid } from "@/api/people";
 import { Notify } from "vant";
 export default {
   data() {
@@ -98,16 +98,22 @@ export default {
       id: "",
       zhuhuBasicsId: "",
       houseAddress: "",
+      houseType: "",
       zhuhuData: [],
       huzhuData: []
     };
   },
   created() {
     this.id = sessionStorage.getItem("id");
+    this.houseType = sessionStorage.getItem("peopleHouseType");
     this.zhuhuBasicsId = sessionStorage.getItem("zhuhuBasicsId");
     this.houseAddress = sessionStorage.getItem("zhuhuHouseAddress");
-    console.log(this.id);
-    this.getZhuhuData();
+    console.log(this.zhuhuBasicsId != "null");
+    if (this.houseType == 0 && this.zhuhuBasicsId != "null") {
+      this.getZhuhuData();
+    } else if (this.houseType != 0 && this.zhuhuBasicsId != "null") {
+      this.getZhuhuDataByBasicid();
+    }
     this.getData();
   },
   methods: {
@@ -146,6 +152,22 @@ export default {
         id: this.zhuhuBasicsId
       };
       getZhuhu(data).then(res => {
+        if (res.code === 200) {
+          console.log(res);
+          this.huzhuData = res.ret;
+          if (res.ret === null) {
+            Notify({ type: "warning", message: "暂无数据" });
+          }
+        } else {
+          console.log(res);
+        }
+      });
+    },
+    getZhuhuDataByBasicid() {
+      var data = {
+        idCard: this.zhuhuBasicsId
+      };
+      getZhuhubybasicid(data).then(res => {
         if (res.code === 200) {
           console.log(res);
           this.huzhuData = res.ret;

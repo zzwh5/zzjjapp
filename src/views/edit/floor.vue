@@ -233,7 +233,7 @@ const columns = [
     title: "年代",
     dataIndex: "time",
     id: 4,
-    isRequire: false
+    isRequire: true
   },
   {
     title: "不动产编码",
@@ -310,6 +310,22 @@ export default {
       this.residentInfo.latitude = this.location.la;
       return "已定位";
     }
+  },
+  //  当前页面离开的时候判断当前页面是不是要给缓存
+  beforeRouteLeave(to, from, next) {
+    // console.log(to);
+    if (to.name == "Map") {
+      from.meta.keepAlive = true;
+    } else {
+      from.meta.keepAlive = false;
+    }
+    next();
+  },
+  // 页面被缓存 再次展示的时候
+  activated() {
+    // console.log("我又回来了");
+    // console.log(sessionStorage.getItem("map"));
+    this.location = JSON.parse(sessionStorage.getItem("map"));
   },
   watch: {
     // 监听楼栋信息的变化 更改addressStr

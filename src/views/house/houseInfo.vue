@@ -12,7 +12,21 @@
     </div>
     <div class="info">
       <div class="info_item" v-for="item in columns" :key="item.id">
+        <div v-if="item.title == '单元' || item.title == '楼层'">
+          <!-- 单元和楼层他才渲染 -->
+          <van-field
+            v-if="houseType != 2 && houseType != 3"
+            v-model="basicInfo[item.dataIndex]"
+            colon
+            :label="item.title"
+            label-align="left"
+            readonly
+          />
+          <!-- 占位 -->
+          <span></span>
+        </div>
         <van-field
+          v-if="item.title != '单元' && item.title != '楼层'"
           v-model="basicInfo[item.dataIndex]"
           colon
           :label="item.title"
@@ -149,6 +163,8 @@ export default {
   name: "HouseInfo",
   data() {
     return {
+      // 当前房屋的类型
+      houseType: sessionStorage.getItem("houseType"),
       // 当前的权限是不是只是只查看
       onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // 当前的房屋id  修改的时候用

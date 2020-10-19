@@ -285,6 +285,8 @@ export default {
       this.show = true;
       sessionStorage.setItem("onlySee", true);
     }
+    // 设置默认的房屋类型
+    sessionStorage.setItem("houseType", this.type);
   },
   methods: {
     // 测试用
@@ -429,6 +431,8 @@ export default {
       // console.log(index);
       // 为了下次进来还在当前的tab下面所以 设置一个本地存储 hType
       sessionStorage.setItem("hType", index);
+      // 顺带设置一个 当前的房屋的类型 小区、单栋民房、单栋楼房、别墅(三种类型的别墅)
+      sessionStorage.setItem("houseType", index);
       // 改变当前的tab索引
       this.type = index;
       // 改变当前数据的页数

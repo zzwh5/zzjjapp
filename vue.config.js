@@ -30,9 +30,9 @@ module.exports = {
   // webpack-dev-server 相关配置
   devServer: {
     open: true,
-    host: 'localhost',
-    port: 8080,
-    https: false,
+    // host: 'localhost',
+    // port: 8080,
+    // https: false,
     hotOnly: true,
     // http 代理配置
     proxy: {

@@ -5,52 +5,80 @@
       <div class="head_back" @click="goback">
         <img src="@/assets/back.png" alt />
       </div>
-      <div class="head_text">房户列表</div>
+      <div class="head_text">
+        <span v-if="houseType == 0">小区房户</span>
+        <span v-if="houseType == 1">单栋楼房房户</span>
+        <span v-if="houseType == 2">单栋民房房户列表</span>
+        <span v-if="houseType == 3 || houseType == 4 || houseType == 5"
+          >别墅房户列表</span
+        >
+      </div>
       <div class="head_add" @click="addHouse">
         <img src="@/assets/add.png" v-if="!onlySee" alt />
       </div>
     </div>
-    <div class="info">
-      <div class="info_name">小区名称:{{ residentObj.housingEstateName }}</div>
-      <div class="info_floor">{{ residentObj.buildingName }}号楼</div>
-      <div class="info_time">建于{{ residentObj.time }}年</div>
-    </div>
-    <nodata :text="nodataText" v-if="!residentObj.governRentingHouseMap" />
-    <div class="resident_list" v-if="residentObj.governRentingHouseMap">
-      <div class="cell">
-        <div class="cells">
-          <div
-            class="cell_item"
-            v-for="(item, index) in residentObj.governRentingHouseMap"
-            :class="cellType == index ? 'active' : ''"
-            :key="item.id"
-            @click="changeCellType(index)"
-          >
-            {{ index }}单元
+    <div v-if="houseType == 0 || houseType == 1">
+      <div class="info">
+        <div class="info_name">
+          小区名称:{{ residentObj.housingEstateName }}
+        </div>
+        <div class="info_floor">{{ residentObj.buildingName }}号楼</div>
+        <div class="info_time">建于{{ residentObj.time }}年</div>
+      </div>
+      <nodata :text="nodataText" v-if="!residentObj.governRentingHouseMap" />
+      <div class="resident_list" v-if="residentObj.governRentingHouseMap">
+        <div class="cell">
+          <div class="cells">
+            <div
+              class="cell_item"
+              v-for="(item, index) in residentObj.governRentingHouseMap"
+              :class="cellType == index ? 'active' : ''"
+              :key="item.id"
+              @click="changeCellType(index)"
+            >
+              {{ index }}单元
+            </div>
           </div>
         </div>
-      </div>
-      <div class="house">
-        <div
-          class="tier"
-          v-for="(value, key) in residentObj.governRentingHouseMap[cellType]"
-          :key="key"
-        >
-          <div class="tier_title">{{ key }}楼</div>
-          <div class="tier_floor">
-            <div
-              class="floor_item"
-              :class="item.houseNumber == houseNumber ? 'active' : ''"
-              v-for="item in value"
-              :key="item.id"
-              @click="changFloor(item)"
-            >
-              {{ item.houseNumber }}
+        <div class="house">
+          <div
+            class="tier"
+            v-for="(value, key) in residentObj.governRentingHouseMap[cellType]"
+            :key="key"
+          >
+            <div class="tier_title">{{ key }}楼</div>
+            <div class="tier_floor">
+              <div
+                class="floor_item"
+                :class="item.houseNumber == houseNumber ? 'active' : ''"
+                v-for="item in value"
+                :key="item.id"
+                @click="changFloor(item)"
+              >
+                {{ item.houseNumber }}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div v-else>
+      <!-- 比较特殊的列表 -->
+      <div class="special_info">房户列表({{ residentList.length }})户</div>
+      <div class="special_list">
+        <nodata :text="nodataText" v-if="residentList.length <= 0" />
+        <div
+          class="special_item"
+          v-for="item in residentList"
+          :key="item.id"
+          @click="changFloor(item)"
+        >
+          <span> {{ item.houseAddress || item.houseNumber }}</span>
+          <img src="@/assets/image/more.png" alt="" />
+        </div>
+      </div>
+    </div>
+
     <!-- 底部弹框 -->
     <van-popup
       v-model="dialog"
@@ -76,14 +104,17 @@ export default {
   name: "Resident",
   data() {
     return {
+      houseType: sessionStorage.getItem("houseType"),
       // 当前的权限是不是只是只查看
       onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
       // 没有数据的提示
       nodataText: "没有更多数据",
       // 当前楼栋的id
       residentId: sessionStorage.getItem("residentId"),
-      // 楼栋的信息
+      // 楼栋的信息(小区的楼栋和单栋楼房的信息)
       residentObj: {},
+      // 特殊的楼栋信息  别墅和单栋民房
+      residentList: [],
       // 当前的单元类型
       cellType: 0,
       // 当前的楼栋
@@ -108,18 +139,26 @@ export default {
     // 根据sessionstorage中的楼栋id查询楼栋信息
     // 根据小区id获取楼栋
     getResident() {
+      var type = sessionStorage.getItem("houseType");
       var that = this;
       var obj = {
         id: this.residentId
       };
       return getResident(obj).then(res => {
-        // console.log(res);
-        that.residentObj = res.ret;
-        var arr = [];
-        for (let i in res.ret.governRentingHouseMap) {
-          arr.push(i);
+        if (type == 0 || type == 1) {
+          // console.log(res);
+          that.residentObj = res.ret;
+          var arr = [];
+          for (let i in res.ret.governRentingHouseMap) {
+            arr.push(i);
+          }
+          that.cellType = arr[0];
+          return false;
         }
-        that.cellType = arr[0];
+        that.residentList = res.ret.governRentingHouseList
+          ? res.ret.governRentingHouseList
+          : [];
+        console.log(that.residentList);
       });
     },
     // 更改单元
@@ -128,16 +167,18 @@ export default {
     },
     // 更改房屋
     changFloor(item) {
-      this.houseNumber = item.houseNumber;
+      if (this.houseType == 0 || this.houseType == 1) {
+        this.houseNumber = item.houseNumber;
+      }
       // 更改sessionstorage中的当前houseId
       sessionStorage.setItem("houseId", item.id);
       this.dialog = true;
     },
-    // 查看房屋信息
+    // 查看住户列表
     goUserList() {
       this.$router.push({ name: "UserList" });
     },
-    // 查看住户列表
+    // 查看房屋信息
     goResidentInfo() {
       this.$router.push({ name: "HouseInfo" });
     }
@@ -181,6 +222,34 @@ export default {
       img {
         width: 18px;
         height: 18px;
+      }
+    }
+  }
+  // 特殊楼栋信息
+  .special_info {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2%;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  // 特殊列表
+  .special_list {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff;
+    padding: 0 2%;
+    border-top: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    .special_item {
+      width: 100%;
+      padding: 1% 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      img {
+        width: 10px;
+        height: 17px;
       }
     }
   }
