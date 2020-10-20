@@ -57,7 +57,7 @@
                 :key="item.id"
               >
                 <div class="list_item_l">
-                  <p>{{ item.buildingName }}号楼</p>
+                  <p>{{ item.buildingName }}</p>
                 </div>
                 <div class="list_item_r">
                   <img src="@/assets/image/more.png" alt />
@@ -82,7 +82,7 @@
                 :key="item.id"
               >
                 <div class="list_item_l">
-                  <p>{{ item.buildingName }}号楼</p>
+                  <p>{{ item.buildingName }}</p>
                 </div>
                 <div class="list_item_r">
                   <img src="@/assets/image/more.png" alt />
@@ -107,7 +107,7 @@
                 @click="goFloorDetail(item)"
               >
                 <div class="list_item_l">
-                  <p>{{ item.buildingName }}号楼</p>
+                  <p>{{ item.buildingName }}</p>
                 </div>
                 <div class="list_item_r">
                   <img src="@/assets/image/more.png" alt />

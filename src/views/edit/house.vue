@@ -112,6 +112,9 @@
         @confirm="onAreaConfirm"
       />
     </van-popup>
+
+    <!-- 正在加载中的组件 -->
+    <loading :show="loadingTurn" :text="loadingText" />
   </div>
 </template>
 <script>
@@ -122,6 +125,8 @@ import { getAddress, getSelect } from "@/api/common";
 import { Notify } from "vant";
 // 引入弹框
 import { Dialog } from "vant";
+// 引入正在加载中的组件
+import loading from "@/components/loading";
 const columns = [
   {
     title: "单元",
@@ -246,8 +251,14 @@ const columns = [
   }
 ];
 export default {
+  components: {
+    loading
+  },
   data() {
     return {
+      // 正在加载中的组件的显示与否
+      loadingTurn: false,
+      loadingText: "提交中",
       // 当前房屋的类型
       houseType: sessionStorage.getItem("houseType"),
       // 定位信息
@@ -402,6 +413,7 @@ export default {
     },
     // 提交表单
     onSubmit(values) {
+      this.loadingTurn = true;
       // console.log(this.houseInfo, this.houseEditType);
       // return false;
       var that = this;
@@ -411,6 +423,7 @@ export default {
       if (this.houseInfo.floor && this.maxFloor != 0) {
         if (this.houseInfo.floor > this.maxFloor && this.maxFloor != -1) {
           Notify({ type: "warning", message: "所填楼层大于当前楼栋最高楼层" });
+          that.loadingTurn = false;
           return false;
         }
       }
@@ -435,6 +448,7 @@ export default {
           }
         })
           .then(() => {
+            that.loadingTurn = false;
             return editHouse(that.houseInfo).then(res => {
               // console.log(res);
               if (res.code != 200) {
@@ -451,6 +465,7 @@ export default {
       }
       // console.log(this.houseInfo);
       return editHouse(this.houseInfo).then(res => {
+        that.loadingTurn = false;
         // console.log(res);
         if (res.code != 200) {
           Notify({ type: "warning", message: res.msg });

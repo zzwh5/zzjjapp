@@ -19,10 +19,13 @@
     </div>
     <div v-if="houseType == 0 || houseType == 1">
       <div class="info">
-        <div class="info_name">
+        <div
+          class="info_name"
+          v-if="houseType == 0 || houseType == 4 || houseType == 5"
+        >
           小区名称:{{ residentObj.housingEstateName }}
         </div>
-        <div class="info_floor">{{ residentObj.buildingName }}号楼</div>
+        <div class="info_floor">{{ residentObj.buildingName }}</div>
         <div class="info_time">建于{{ residentObj.time }}年</div>
       </div>
       <nodata :text="nodataText" v-if="!residentObj.governRentingHouseMap" />

@@ -54,8 +54,8 @@
           <van-field
             v-model="residentInfo.buildingTypeStr"
             name="buildingTypeStr"
-            label="楼栋类型"
-            placeholder="楼栋类型"
+            label="别墅类型"
+            placeholder="别墅类型"
             required
             readonly
             :rules="[{ required: true, trigger: 'o' }]"
@@ -171,7 +171,7 @@
         class="residentInfo propertyManagement"
         v-if="dialogType == 'residentType'"
       >
-        <p>楼栋类型</p>
+        <p>别墅类型</p>
         <p @click="changeResidentInfo(3)">独栋别墅</p>
         <p @click="changeResidentInfo(4)">联排别墅</p>
         <p @click="changeResidentInfo(5)">叠加别墅</p>
@@ -396,6 +396,7 @@ export default {
     },
     // 点击弹框中的楼栋类型 更改楼栋类型
     changeResidentInfo(type) {
+      // buildingName 代表的不只是 门牌号 可能还是小区名称  所以每次选择别墅类型的时候都要把这个字段清空
       this.residentInfo.buildingName = "";
       this.residentType = type;
       this.residentInfo.buildingType = type;
