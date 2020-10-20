@@ -151,6 +151,18 @@
         </div>
       </div>
     </van-dialog>
+
+    <!-- 提示弹框 -->
+    <van-dialog
+      v-model="shows"
+      title=""
+      show-cancel-button
+      @cancel="cancelEdit"
+      @confirm="confirmEdit"
+      style="padding:5% 10%;box-sizing:border-box;padding-bottom:2%"
+    >
+      是否不选择对应的网格只是查看信息
+    </van-dialog>
   </div>
 </template>
 <script>
@@ -339,15 +351,16 @@ export default {
     // 确认选择的权限
     confirmPermisson() {
       console.log(this.permission);
-      console.log(this.buildingTypeList);
       // this.show = false;
       if (this.permission.name == "" || this.permission.id.length !== 15) {
         this.shows = true;
+        console.log(3333);
       } else if (
         this.permission.name != "" ||
         this.permission.id.length == 15
       ) {
-        this.list = [];
+        console.log(3333);
+        this.peopleData = [];
         this.show = false;
         this.shows = false;
         this.orgId = this.permission.id;
@@ -355,11 +368,8 @@ export default {
         sessionStorage.setItem("name", this.permission.name);
         sessionStorage.setItem("orgId", this.permission.id);
         sessionStorage.setItem("onlySee", false);
-        if (this.type == 0) {
-          this.getEstat();
-        } else {
-          this.getFloor();
-        }
+
+        this.getPeopleData();
       }
     },
     // 确认更改权限
@@ -376,11 +386,7 @@ export default {
       this.orgId = this.permission.id;
       sessionStorage.setItem("name", this.permission.name);
       sessionStorage.setItem("orgId", this.permission.id);
-      if (this.type == 0) {
-        this.getEstat();
-      } else {
-        this.getFloor();
-      }
+      this.getPeopleData();
     },
     // 取消更改权限
     cancelEdit() {}
