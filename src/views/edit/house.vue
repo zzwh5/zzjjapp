@@ -36,7 +36,9 @@
             @click="showName(item.title, item.dataIndex)"
             :required="item.isRequire"
             :rules="[{ required: item.isRequire, trigger: 'o' }]"
-          />
+          >
+          </van-field>
+          <span v-if="item.isSelect"></span>
           <div v-if="!item.isSelect">
             <div v-if="item.title == '单元' || item.title == '楼层'">
               <van-field
@@ -48,6 +50,8 @@
                 :rules="[{ required: item.isRequire }]"
                 :required="item.isRequire"
               />
+              <!-- 占位 -->
+              <span></span>
             </div>
 
             <!-- {{ item.title != "单元" }} -->
@@ -59,10 +63,11 @@
               placeholder="请输入"
               :rules="[{ required: item.isRequire }]"
               :required="item.isRequire"
-            />
+            >
+            </van-field>
+            <!-- 占位 -->
+            <span></span>
           </div>
-          <!-- 占位 -->
-          <span></span>
         </div>
         <div class="info_item" @click="goMap">
           <van-field
@@ -197,6 +202,25 @@ const columns = [
     isRequire: false
   },
   {
+    title: "隐患类型",
+    dataIndex: "hiddenDangerTypeStr",
+    id: 18,
+    isSelect: true
+  },
+  {
+    title: "房屋类型",
+    dataIndex: "houseTypeStr",
+    id: 19,
+    isSelect: true
+  },
+  {
+    title: "现住地",
+    dataIndex: "currentResidence",
+    id: 16,
+    isSelect: true,
+    isRequire: true
+  },
+  {
     title: "房主身份证号",
     dataIndex: "idNumber",
     id: 12,
@@ -224,30 +248,11 @@ const columns = [
     isRequire: false
   },
   {
-    title: "现住地",
-    dataIndex: "currentResidence",
-    id: 16,
-    isSelect: true,
-    isRequire: true
-  },
-  {
     title: "房主现居详址",
     dataIndex: "ownerDetailedAddress",
     id: 17,
     isSelect: false,
     isRequire: false
-  },
-  {
-    title: "隐患类型",
-    dataIndex: "hiddenDangerTypeStr",
-    id: 18,
-    isSelect: true
-  },
-  {
-    title: "房屋类型",
-    dataIndex: "houseTypeStr",
-    id: 19,
-    isSelect: true
   }
 ];
 export default {

@@ -56,7 +56,16 @@
                 placeholder="请输入"
                 :rules="item.isRequire ? [{ required: true }] : []"
                 :required="item.isRequire"
-              />
+              >
+                <template #button v-if="item.title == '户主公民身份证号'">
+                  <van-button
+                    size="small"
+                    type="primary"
+                    @click.native.stop.prevent="searchHuzhu"
+                    >搜索</van-button
+                  >
+                </template>
+              </van-field>
               <!-- 占位 -->
               <span></span>
             </div>
@@ -363,6 +372,8 @@
 import moment from "moment";
 import { getAddress, getSelect } from "@/api/common";
 import { editUserInfo } from "@/api/house";
+// 查询户主的信息
+import { getZhuhubybasicid } from "@/api/people";
 // 提示框
 import { Notify } from "vant";
 // 引入弹框
@@ -655,7 +666,7 @@ export default {
     // 监听地址的变化 更改addressStr
     basicInfo: {
       handler: function(value, old) {
-        console.log("changeAddress");
+        // console.log("changeAddress");
         if (
           value.governRealPopulation.currentResidenceProvinceStr != null ||
           value.governRealPopulation.currentResidenceProvinceStr
@@ -710,6 +721,36 @@ export default {
     // 返回上一级
     goback() {
       this.$router.go(-1);
+    },
+    // 搜索户主信息并且回显
+    searchHuzhu() {
+      console.log(this.basicInfo.householderIdCard);
+      if (!this.basicInfo.householderIdCard) {
+        Notify({ type: "warning", message: "请先输入户主公民身份证号" });
+        return false;
+      }
+      var obj = {
+        idCard: this.basicInfo.householderIdCard
+      };
+      return getZhuhubybasicid(obj).then(res => {
+        // console.log(res);
+        if (res.code != 200) {
+          Notify({ type: "warning", message: "请先输入户主公民身份证号" });
+          return false;
+        }
+        if (!res.ret) {
+          Notify({ type: "warning", message: "未查询到户主信息,请手动输入" });
+          return false;
+        }
+        // this.basicInfo.householderIdCard =
+        this.basicInfo.householderName = res.ret.fullName;
+        this.basicInfo.householderGenderStr = res.ret.genderStr;
+        this.basicInfo.householderContactTypeStr = res.ret.contactTypeStr;
+        this.basicInfo.householderContactInformation =
+          res.ret.contactInformation;
+        this.$forceUpdate();
+        console.log(this.basicInfo);
+      });
     },
     // 弹框展示
     showName(item, text, type, turn) {

@@ -179,6 +179,14 @@ const basic = [
     isSpecial: true
   },
   {
+    id: 29,
+    title: '与户主关系',
+    dataIndex: 'householderRelationshipStr',
+    isSelect: true,
+    isRequire: true,
+    isSpecial: true
+  },
+  {
     id: 26,
     title: '户主公民身份证号',
     dataIndex: 'householderIdCard',
@@ -200,14 +208,6 @@ const basic = [
     dataIndex: 'householderGenderStr',
     isSelect: true,
     isRequire: false,
-    isSpecial: true
-  },
-  {
-    id: 29,
-    title: '与户主关系',
-    dataIndex: 'householderRelationshipStr',
-    isSelect: true,
-    isRequire: true,
     isSpecial: true
   },
   {
