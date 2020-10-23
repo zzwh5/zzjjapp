@@ -112,7 +112,7 @@
           <!-- 占位 -->
           <span></span>
         </div>
-        <div
+        <!-- <div
           class="info_item"
           v-if="residentType == 1 || residentType == 2 || residentType == 3"
           @click="changeAddress()"
@@ -127,7 +127,7 @@
             :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
-        </div>
+        </div> -->
         <div class="info_item">
           <van-field
             v-model="residentInfo.remark"
@@ -210,12 +210,12 @@ import { Notify } from "vant";
 // 引入弹框
 import { Dialog } from "vant";
 const columns = [
-  {
-    title: "楼栋编号",
-    dataIndex: "buildingCode",
-    id: 1,
-    isRequire: true
-  },
+  // {
+  //   title: "楼栋编号",
+  //   dataIndex: "buildingCode",
+  //   id: 1,
+  //   isRequire: true
+  // },
   {
     title: "地上层数",
     dataIndex: "theUpperNumber",
@@ -419,17 +419,17 @@ export default {
       // 先请求小区的详情 拿到小区的地址
       return detailEstate(obj).then(res => {
         // console.log(res);
-        if (
-          this.residentType == 0 ||
-          this.residentType == 4 ||
-          this.residentType == 5
-        ) {
-          that.residentInfo.district = res.ret.district;
-          that.residentInfo.street = res.ret.street;
-          that.residentInfo.community = res.ret.community;
-        }
+        // if (
+        //   this.residentType == 0 ||
+        //   this.residentType == 4 ||
+        //   this.residentType == 5
+        // ) {
+        //   that.residentInfo.district = res.ret.district;
+        //   that.residentInfo.street = res.ret.street;
+        //   that.residentInfo.community = res.ret.community;
+        // }
 
-        console.log(this.residentInfo, this.floorEditType);
+        // console.log(this.residentInfo, this.floorEditType);
         // return false;
         if (this.floorEditType == 1) {
           Dialog.alert({

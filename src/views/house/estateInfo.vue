@@ -33,7 +33,11 @@
           <span></span>
         </div>
         <div class="info_item">
-          <van-field v-model="estateInfo.addressStr" label="镇街" readonly />
+          <van-field
+            v-model="estateInfo.streetCommunity"
+            label="镇街"
+            readonly
+          />
           <!-- 占位 -->
           <span></span>
         </div>

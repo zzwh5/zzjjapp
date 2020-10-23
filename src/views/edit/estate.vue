@@ -53,7 +53,7 @@
           <!-- 占位 -->
           <span></span>
         </div>
-        <div class="info_item" @click="changeAddress()">
+        <!-- <div class="info_item" @click="changeAddress()">
           <van-field
             v-model="estateInfo.addressStr"
             name="镇街"
@@ -64,7 +64,7 @@
             :rules="[{ required: true, trigger: 'o' }]"
           />
           <img src="@/assets/image/more.png" alt />
-        </div>
+        </div> -->
         <div class="info_item">
           <van-field
             v-model="estateInfo.houseNumber"

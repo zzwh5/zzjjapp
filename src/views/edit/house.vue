@@ -211,7 +211,8 @@ const columns = [
     title: "房屋类型",
     dataIndex: "houseTypeStr",
     id: 19,
-    isSelect: true
+    isSelect: true,
+    isRequire: true
   },
   {
     title: "现住地",

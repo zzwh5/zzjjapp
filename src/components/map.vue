@@ -59,6 +59,16 @@ export default {
       var map = new T.Map("mapDiv");
       // console.log(map);
 
+      map.centerAndZoom(new T.LngLat(116.40969, 39.89945), this.zoom);
+      var lc = new T.LocalCity();
+      lc.location(function(e) {
+        // alert(e.cityName);
+        console.log(e);
+        // var marker = new T.Marker(e.lnglat);
+        // map.addOverLay(marker);
+        getDetailLocation(e.lnglat, e.lnglat);
+      });
+
       // 设置显示地图的中心点和级别
       map.centerAndZoom(new T.LngLat(116.40969, 38.89945), this.zoom);
 
@@ -183,6 +193,7 @@ export default {
             }
           })
           .then(data => {
+            map.panTo(new T.LngLat(lnglat_lng.lng, lnglat_lat.lat));
             var addressdata = data.data;
             var detaillocation = addressdata.result.formatted_address;
             console.log(detaillocation);
@@ -208,7 +219,7 @@ export default {
       }
 
       // 开始定位
-      lo.getCurrentPosition(fn);
+      // lo.getCurrentPosition(fn);
 
       // 添加定位点
       var cp = new T.CoordinatePickup(map, {
