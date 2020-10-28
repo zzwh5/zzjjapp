@@ -14,13 +14,13 @@ const communityCorrection = [
   {
     id: 3,
     title: '矫正类别',
-    dataIndex: 'correctionCategory',
+    dataIndex: 'correctionCategoryStr',
     isSelect: true
   },
   {
     id: 4,
     title: '案件类别',
-    dataIndex: 'casesType',
+    dataIndex: 'casesTypeStr',
     isSelect: true
   },
   {
@@ -38,77 +38,77 @@ const communityCorrection = [
   {
     id: 7,
     title: '原判刑开始日期',
-    dataIndex: 'originalSentenceStartingDate',
+    dataIndex: 'originalSentenceStartingDateStr',
     isSelect: true,
     isRequire: true
   },
   {
     id: 8,
     title: '原判刑结束日期',
-    dataIndex: 'originalSentenceEndDate',
+    dataIndex: 'originalSentenceEndDateStr',
     isSelect: true,
     isRequire: true
   },
   {
     id: 9,
     title: '矫正开始日期',
-    dataIndex: 'correctionStartDate',
+    dataIndex: 'correctionStartDateStr',
     isSelect: true,
     isRequire: true
   },
   {
     id: 10,
     title: '矫正结束日期',
-    dataIndex: 'correctionEndDate',
+    dataIndex: 'correctionEndDateStr',
     isSelect: true,
     isRequire: true
   },
   {
     id: 11,
     title: '接收方式',
-    dataIndex: 'receivingMode',
+    dataIndex: 'receivingModeStr',
     isSelect: true
   },
   {
     id: 12,
-    title: '"四史"情况',
-    dataIndex: 'fourHistories',
-    isSelect: false
+    title: '四史情况',
+    dataIndex: 'fourHistoriesStr',
+    isSelect: true
   },
   {
     id: 13,
     title: '是否累惯犯',
-    dataIndex: 'recidivist',
+    dataIndex: 'recidivistStr',
     isSelect: true
   },
   {
     id: 14,
-    title: '"三步"情况',
-    dataIndex: 'threeSteps',
-    isSelect: false
+    title: '三涉情况',
+    dataIndex: 'threeStepsStr',
+    isSelect: true
   },
   {
     id: 15,
     title: '是否建立矫正小组',
-    dataIndex: 'correctiveTeamEstablished',
+    dataIndex: 'correctiveTeamEstablishedStr',
     isSelect: true
   },
   {
     id: 16,
-    title: '矫正小组人员组成情况',
-    dataIndex: 'correctionTeamComposition',
-    isSelect: false
+    title: '矫正小组人员组成类型',
+    dataIndex: 'correctionTeamCompositionStr',
+    isSelect: true
   },
   {
     id: 17,
     title: '矫正解除(终止)类型',
-    dataIndex: 'correctionReleaseType',
+    dataIndex: 'correctionReleaseTypeStr',
     isSelect: true
   },
   {
     id: 18,
     title: '是否有托管',
-    dataIndex: 'custody',
+    dataIndex: 'custodyStr',
     isSelect: true
   },
   {
@@ -132,7 +132,7 @@ const communityCorrection = [
   {
     id: 22,
     title: '是否有漏管',
-    dataIndex: 'leakage',
+    dataIndex: 'leakageStr',
     isSelect: true
   },
   {
@@ -168,7 +168,7 @@ const communityCorrection = [
   {
     id: 28,
     title: '是否重新犯罪',
-    dataIndex: 'recidivism',
+    dataIndex: 'recidivismStr',
     isSelect: true
   },
   {

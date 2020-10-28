@@ -9,7 +9,7 @@ const psychosis = [
   {
     id: 2,
     title: '是否纳入低保',
-    dataIndex: 'subsistenceAllowances',
+    dataIndex: 'subsistenceAllowancesStr',
     isSelect: true,
     isRequire: false
   },
@@ -30,7 +30,7 @@ const psychosis = [
   {
     id: 5,
     title: '监护人联系类型',
-    dataIndex: 'guardianContactType',
+    dataIndex: 'guardianContactTypeStr',
     isSelect: true,
     isRequire: false
   },
@@ -46,19 +46,19 @@ const psychosis = [
     title: '初次发病日期',
     dataIndex: 'firstOnsetDate',
     isSelect: true,
-    isRequire: true,
+    isRequire: true
   },
   {
     id: 8,
     title: '目前诊断类型',
-    dataIndex: 'currentDiagnosisType',
+    dataIndex: 'currentDiagnosisTypeStr',
     isSelect: true,
     isRequire: false
   },
   {
     id: 9,
     title: '有无肇事肇祸史',
-    dataIndex: 'causingTroubleHistory',
+    dataIndex: 'causingTroubleHistoryStr',
     isSelect: true,
     isRequire: false
   },
@@ -79,7 +79,7 @@ const psychosis = [
   {
     id: 12,
     title: '目前危险性评估等级',
-    dataIndex: 'currentRiskAssessmentLevel',
+    dataIndex: 'currentRiskAssessmentLevelStr',
     isSelect: true,
     isRequire: false
   },

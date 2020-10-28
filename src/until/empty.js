@@ -14,13 +14,13 @@ const empty = [
   {
     id: 3,
     title: '是否享有医保',
-    dataIndex: 'medicalInsuranceAvailable',
+    dataIndex: 'medicalInsuranceAvailableStr',
     isSelect: true
   },
   {
     id: 4,
     title: '医保状况',
-    dataIndex: 'medicalInsuranceStatus',
+    dataIndex: 'medicalInsuranceStatusStr',
     isSelect: true
   },
   {

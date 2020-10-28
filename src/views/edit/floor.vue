@@ -5,24 +5,24 @@
       <div class="head_back" @click="goback">
         <img src="@/assets/back.png" alt />
       </div>
-      <div class="head_text" v-if="residentType == 0">
+      <div v-if="residentType == 0" class="head_text">
         小区楼栋
         <span v-if="floorEditType == 1">修改</span>
         <span v-if="floorEditType == 0">增加</span>
       </div>
-      <div class="head_text" v-if="residentType == 1">
+      <div v-if="residentType == 1" class="head_text">
         单栋楼房
         <span v-if="floorEditType == 1">修改</span>
         <span v-if="floorEditType == 0">增加</span>
       </div>
-      <div class="head_text" v-if="residentType == 2">
+      <div v-if="residentType == 2" class="head_text">
         单栋民房
         <span v-if="floorEditType == 1">修改</span>
         <span v-if="floorEditType == 0">增加</span>
       </div>
       <div
-        class="head_text"
         v-if="residentType == 3 || residentType == 4 || residentType == 5"
+        class="head_text"
       >
         别墅
         <span v-if="floorEditType == 1">修改</span>
@@ -47,9 +47,9 @@
           <img src="@/assets/image/more.png" alt />
         </div>
         <div
+          v-if="residentType == 3 || residentType == 4 || residentType == 5"
           class="info_item"
           @click="showName('residentType')"
-          v-if="residentType == 3 || residentType == 4 || residentType == 5"
         >
           <van-field
             v-model="residentInfo.buildingTypeStr"
@@ -63,9 +63,9 @@
           <img src="@/assets/image/more.png" alt />
         </div>
         <div
+          v-if="residentType == 0 || residentType == 4 || residentType == 5"
           class="info_item"
           @click="showName('housingEstateName')"
-          v-if="residentType == 0 || residentType == 4 || residentType == 5"
         >
           <van-field
             v-model="residentInfo.housingEstateName"
@@ -99,7 +99,7 @@
           <!-- 占位 -->
           <span></span>
         </div>
-        <div class="info_item" v-for="item in columns" :key="item.id">
+        <div v-for="item in columns" :key="item.id" class="info_item">
           <van-field
             v-model="residentInfo[item.dataIndex]"
             colon
@@ -163,20 +163,20 @@
       :showConfirmButton="false"
       closeOnClickOverlay
     >
-      <div class="orgname" v-if="dialogType == 'orgName'">
+      <div v-if="dialogType == 'orgName'" class="orgname">
         <p>请选择所属网格</p>
         <p>{{ residentInfo.orgName }}</p>
       </div>
       <div
-        class="residentInfo propertyManagement"
         v-if="dialogType == 'residentType'"
+        class="residentInfo propertyManagement"
       >
         <p>别墅类型</p>
         <p @click="changeResidentInfo(3)">独栋别墅</p>
         <p @click="changeResidentInfo(4)">联排别墅</p>
         <p @click="changeResidentInfo(5)">叠加别墅</p>
       </div>
-      <div class="housingEstateName" v-if="dialogType == 'housingEstateName'">
+      <div v-if="dialogType == 'housingEstateName'" class="housingEstateName">
         <van-search
           v-model="value"
           placeholder="请输入小区名称"
@@ -203,12 +203,12 @@
 </template>
 <script>
 // 引入接口
-import { detailFloor, editFloor, getEstat, detailEstate } from "@/api/house";
-import { getAddress } from "@/api/common";
+import { detailFloor, editFloor, getEstat, detailEstate } from '@/api/house'
+import { getAddress } from '@/api/common'
 // 提示框
-import { Notify } from "vant";
+import { Notify } from 'vant'
 // 引入弹框
-import { Dialog } from "vant";
+import { Dialog } from 'vant'
 const columns = [
   // {
   //   title: "楼栋编号",
@@ -217,41 +217,41 @@ const columns = [
   //   isRequire: true
   // },
   {
-    title: "地上层数",
-    dataIndex: "theUpperNumber",
+    title: '地上层数',
+    dataIndex: 'theUpperNumber',
     id: 2,
     isRequire: true
   },
 
   {
-    title: "地下层数",
-    dataIndex: "numberOfUnderground",
+    title: '地下层数',
+    dataIndex: 'numberOfUnderground',
     id: 3,
     isRequire: false
   },
   {
-    title: "年代",
-    dataIndex: "time",
+    title: '年代',
+    dataIndex: 'time',
     id: 4,
     isRequire: true
   },
   {
-    title: "不动产编码",
-    dataIndex: "buildingRealEstate",
+    title: '不动产编码',
+    dataIndex: 'buildingRealEstate',
     id: 5,
     isRequire: false
   }
-];
+]
 
 export default {
-  name: "EditFloor",
+  name: 'EditFloor',
   data() {
     return {
       // 定位信息
-      location: JSON.parse(sessionStorage.getItem("map")),
-      orgId: sessionStorage.getItem("orgId"),
+      location: JSON.parse(sessionStorage.getItem('map')),
+      orgId: sessionStorage.getItem('orgId'),
       // 搜索中用户输入的小区名
-      value: "",
+      value: '',
       // 小区名称列表
       estateList: [],
       // 是否为别墅
@@ -259,73 +259,67 @@ export default {
       // 楼栋类型 0 小区楼栋   1 单栋楼房 2 单栋民房 3 独栋别墅 4 联排别墅 5 叠加别墅
       residentType: null,
       // 楼栋编辑类型 0 新增 1修改
-      floorEditType: sessionStorage.getItem("floorEditType"),
+      floorEditType: sessionStorage.getItem('floorEditType'),
       // 当前的楼栋的id
-      id: sessionStorage.getItem("residentId"),
-      estateId: sessionStorage.getItem("estateId"),
+      id: sessionStorage.getItem('residentId'),
+      estateId: sessionStorage.getItem('estateId'),
       // 楼栋的信息
       residentInfo: {
         // 通过用户登录信息获得
-        orgId: sessionStorage.getItem("orgId"),
-        orgName: sessionStorage.getItem("name"),
-        province: "370000000000",
-        provinceStr: "山东省",
-        city: "370400000000",
-        cityStr: "枣庄市"
+        orgId: sessionStorage.getItem('orgId'),
+        orgName: sessionStorage.getItem('name'),
+        province: '370000000000',
+        provinceStr: '山东省',
+        city: '370400000000',
+        cityStr: '枣庄市'
       },
       // 不同的楼栋的公共字段
       columns: columns,
       // 是否展示下拉框的弹框
       show: false,
       // 弹框的类型
-      dialogType: "orgName",
-      //遮罩层显示或隐藏
+      dialogType: 'orgName',
+      // 遮罩层显示或隐藏
       cityVisable: false,
-      //自定义数据五级结构
+      // 自定义数据五级结构
       areaList: [
         {
           values: [
             {
-              name: "请选择"
+              name: '请选择'
             },
             {
-              code: "370481000000",
-              name: "滕州市"
+              code: '370481000000',
+              name: '滕州市'
             }
           ]
         },
         { values: [] },
         { values: [] }
       ]
-    };
+    }
   },
   computed: {
     isLocation() {
       // if()
       // console.log(this.location);
-      if (!this.location || this.location.lo == "") {
-        return "未定位";
+      if (!this.location || this.location.lo == '') {
+        return '未定位'
       }
-      this.residentInfo.longitude = this.location.lo;
-      this.residentInfo.latitude = this.location.la;
-      return "已定位";
+      this.residentInfo.longitude = this.location.lo
+      this.residentInfo.latitude = this.location.la
+      return '已定位'
     }
   },
   //  当前页面离开的时候判断当前页面是不是要给缓存
   beforeRouteLeave(to, from, next) {
     // console.log(to);
-    if (to.name == "Map") {
-      from.meta.keepAlive = true;
+    if (to.name == 'Map') {
+      from.meta.keepAlive = true
     } else {
-      from.meta.keepAlive = false;
+      from.meta.keepAlive = false
     }
-    next();
-  },
-  // 页面被缓存 再次展示的时候
-  activated() {
-    // console.log("我又回来了");
-    // console.log(sessionStorage.getItem("map"));
-    this.location = JSON.parse(sessionStorage.getItem("map"));
+    next()
   },
   watch: {
     // 监听楼栋信息的变化 更改addressStr
@@ -334,88 +328,94 @@ export default {
         // console.log("changeAddress");
         if (value.communityStr == null || !value.communityStr) {
           // console.log(1111);
-          return false;
+          return false
         }
         this.residentInfo.addressStr =
           this.residentInfo.provinceStr +
           this.residentInfo.cityStr +
           this.residentInfo.districtStr +
           this.residentInfo.streetStr +
-          this.residentInfo.communityStr;
+          this.residentInfo.communityStr
       },
       deep: true
     }
+  },
+  // 页面被缓存 再次展示的时候
+  activated() {
+    // console.log("我又回来了");
+    // console.log(sessionStorage.getItem("map"));
+    this.location = JSON.parse(sessionStorage.getItem('map'))
   },
   created() {
     // 省市区
     // this.getArea(this.code, 0);
     if (this.floorEditType != 0) {
-      this.getResidentInfo();
-      return false;
+      this.getResidentInfo()
+      return false
     }
-    this.residentType = sessionStorage.getItem("residentType");
+    this.residentType = sessionStorage.getItem('residentType')
     // 如果是 0 1 2的话将楼栋类型写死
     if (
       this.residentType == 0 ||
       this.residentType == 1 ||
       this.residentType == 2
     ) {
-      this.residentInfo.buildingType = this.residentType;
+      this.residentInfo.buildingType = this.residentType
     }
   },
   methods: {
     goMap() {
       // 定位的同时将当前定位的类型保存到本地 对象存储  例如   map:{type:'estate',lo:'经度',la:'纬度'}
       var obj = {
-        type: "floor",
-        lo: "",
-        la: ""
-      };
-      sessionStorage.setItem("map", JSON.stringify(obj));
-      this.$router.push({ name: "Map" });
+        type: 'floor',
+        lo: '',
+        la: ''
+      }
+      sessionStorage.setItem('map', JSON.stringify(obj))
+      this.$router.push({ name: 'Map' })
     },
     // 返回上一级路由
     goback() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     },
     // 保存楼栋信息
     save() {
       // console.log("save");
-      this.$refs.Form.submit();
+      this.$refs.Form.submit()
     },
     // 获取楼栋详情
     getResidentInfo() {
       var obj = {
         id: this.id
-      };
+      }
       return detailFloor(obj).then(res => {
         // console.log(res);
-        this.residentInfo = res.ret;
-        this.residentType = res.ret.buildingType;
-      });
+        this.residentInfo = res.ret
+        this.residentType = res.ret.buildingType
+      })
     },
     // 点击弹框中的楼栋类型 更改楼栋类型
     changeResidentInfo(type) {
       // buildingName 代表的不只是 门牌号 可能还是小区名称  所以每次选择别墅类型的时候都要把这个字段清空
-      this.residentInfo.buildingName = "";
-      this.residentType = type;
-      this.residentInfo.buildingType = type;
+      this.residentInfo.buildingName = ''
+      this.residentType = type
+      this.residentInfo.buildingType = type
       // console.log(this.residentType, this.residentInfo.buildingType);
       this.residentInfo.buildingTypeStr =
-        type == 3 ? "独栋别墅" : type == 4 ? "联排别墅" : "叠加别墅";
-      this.show = false;
+        type == 3 ? '独栋别墅' : type == 4 ? '联排别墅' : '叠加别墅'
+      this.show = false
     },
     // 提交表单
     onSubmit(values) {
       if (this.residentInfo.theUpperNumber == 0) {
-        Notify({ type: "warning", message: "最高楼层不能是0" });
-        return;
+        Notify({ type: 'warning', message: '最高楼层不能是0' })
+        return
       }
-      var that = this;
+      var that = this
       // console.log(this.residentType);
       var obj = {
         id: this.estateId
-      };
+      }
       // 先请求小区的详情 拿到小区的地址
       return detailEstate(obj).then(res => {
         // console.log(res);
@@ -433,114 +433,114 @@ export default {
         // return false;
         if (this.floorEditType == 1) {
           Dialog.alert({
-            message: "您确定提交修改吗？",
+            message: '您确定提交修改吗？',
             showCancelButton: true,
             cancel: () => {
-              console.log("cancel");
+              console.log('cancel')
             }
           })
             .then(() => {
               return editFloor(that.residentInfo).then(res => {
                 // console.log(res);
                 if (res.code != 200) {
-                  Notify({ type: "warning", message: res.msg });
-                  return;
+                  Notify({ type: 'warning', message: res.msg })
+                  return
                 }
-                sessionStorage.removeItem("map");
-                that.$router.go(-1);
-              });
+                sessionStorage.removeItem('map')
+                that.$router.go(-1)
+              })
             })
-            .catch(() => {});
-          return;
+            .catch(() => {})
+          return
         }
         // console.log(this.residentInfo);
         // return false;
         return editFloor(this.residentInfo).then(res => {
           // console.log(res);
           if (res.code != 200) {
-            Notify({ type: "warning", message: res.msg });
-            return;
+            Notify({ type: 'warning', message: res.msg })
+            return
           }
-          sessionStorage.removeItem("map");
-          that.$router.go(-1);
-        });
-      });
+          sessionStorage.removeItem('map')
+          that.$router.go(-1)
+        })
+      })
     },
     // 弹框展示
     showName(text) {
-      this.dialogType = text;
-      this.show = true;
+      this.dialogType = text
+      this.show = true
     },
     // 更改小区名称
     changEstate(obj) {
-      this.residentInfo.housingEstateName = obj.villageName;
-      this.residentInfo.housingEstateId = obj.id;
-      this.show = false;
-      this.estateList = [];
-      this.value = "";
+      this.residentInfo.housingEstateName = obj.villageName
+      this.residentInfo.housingEstateId = obj.id
+      this.show = false
+      this.estateList = []
+      this.value = ''
     },
     // 获取小区列表
     searchEstate() {
       var obj = {
         orgId: this.orgId,
         villageName: this.value
-      };
+      }
       return getEstat(obj).then(res => {
         // console.log(res);
-        this.estateList = res.result.data;
-      });
+        this.estateList = res.result.data
+      })
     },
     // 打开省市区的弹框
     changeAddress() {
-      this.cityVisable = true;
+      this.cityVisable = true
     },
-    //网络请求地区数据(难点在如何拼装三级结构)
+    // 网络请求地区数据(难点在如何拼装三级结构)
     getArea(parentId, index) {
       return getAddress(parentId).then(res => {
         // console.log(res);
         // //当请求成功时
-        const regionList = res.ret;
+        const regionList = res.ret
         this.areaList[index].values = [
-          { name: "请选择" },
-          ...regionList //ES6新语法
-        ];
+          { name: '请选择' },
+          ...regionList // ES6新语法
+        ]
         if (index == 0) {
-          //当请求的是三级内的内容时
-          this.areaList[index + 1].values = [];
-          this.areaList[index + 2].values = [];
+          // 当请求的是三级内的内容时
+          this.areaList[index + 1].values = []
+          this.areaList[index + 2].values = []
         } else if (index == 1) {
-          this.areaList[index + 1].values = [];
+          this.areaList[index + 1].values = []
         }
-        this.areaList = [...this.areaList]; //更新areaList
-      });
+        this.areaList = [...this.areaList] // 更新areaList
+      })
     },
-    //当地区选择变化时
+    // 当地区选择变化时
     onAreaChange(picker, values, index) {
       // values 选择的内容 index当前选择的列数的索引
       // console.log(values, index);
       if (index < 2) {
-        this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
+        this.getArea(values[index].code, index + 1) // 传参 参数为上层选择的地区的code
       }
       // else {
       //   this.cityVisable = false;
       // }
     },
-    //点击取消
+    // 点击取消
     onCancel() {
-      this.cityVisable = false;
+      this.cityVisable = false
     },
 
-    //点击确定
+    // 点击确定
     onAreaConfirm(value) {
-      if (value[0].name == "请选择") {
-        this.cityVisable = false;
-        return false;
+      if (value[0].name == '请选择') {
+        this.cityVisable = false
+        return false
       }
       // console.log(value);
       // return false;
       // 都有内容
       if (value[2].code && value[1].code && value[0].code) {
-        console.log("有内容");
+        console.log('有内容')
         // 如果是直辖市的特殊情况
         if (
           // 都选择了内容的情况下
@@ -548,39 +548,39 @@ export default {
           value[1].code &&
           value[0].code
         ) {
-          this.$set(this.residentInfo, "communityStr", value[2].name);
-          this.$set(this.residentInfo, "streetStr", value[1].name);
-          this.$set(this.residentInfo, "districtStr", value[0].name);
-          this.$set(this.residentInfo, "community", value[2].code);
-          this.$set(this.residentInfo, "street", value[1].code);
-          this.$set(this.residentInfo, "district", value[0].code);
-          console.log(this.residentInfo);
+          this.$set(this.residentInfo, 'communityStr', value[2].name)
+          this.$set(this.residentInfo, 'streetStr', value[1].name)
+          this.$set(this.residentInfo, 'districtStr', value[0].name)
+          this.$set(this.residentInfo, 'community', value[2].code)
+          this.$set(this.residentInfo, 'street', value[1].code)
+          this.$set(this.residentInfo, 'district', value[0].code)
+          console.log(this.residentInfo)
         } else {
           if (this.floorEditType == 0) {
             // console.log("有 清空");
-            this.$set(this.residentInfo, "communityStr", "");
-            this.$set(this.residentInfo, "streetStr", "");
-            this.$set(this.residentInfo, "districtStr", "");
-            this.$set(this.residentInfo, "community", "");
-            this.$set(this.residentInfo, "street", "");
-            this.$set(this.residentInfo, "district", "");
+            this.$set(this.residentInfo, 'communityStr', '')
+            this.$set(this.residentInfo, 'streetStr', '')
+            this.$set(this.residentInfo, 'districtStr', '')
+            this.$set(this.residentInfo, 'community', '')
+            this.$set(this.residentInfo, 'street', '')
+            this.$set(this.residentInfo, 'district', '')
           }
         }
       } else {
         if (this.floorEditType == 0) {
-          this.$set(this.residentInfo, "communityStr", "");
-          this.$set(this.residentInfo, "streetStr", "");
-          this.$set(this.residentInfo, "provinceStr", "");
-          this.$set(this.residentInfo, "community", "");
-          this.$set(this.residentInfo, "street", "");
-          this.$set(this.residentInfo, "district", "");
+          this.$set(this.residentInfo, 'communityStr', '')
+          this.$set(this.residentInfo, 'streetStr', '')
+          this.$set(this.residentInfo, 'provinceStr', '')
+          this.$set(this.residentInfo, 'community', '')
+          this.$set(this.residentInfo, 'street', '')
+          this.$set(this.residentInfo, 'district', '')
         }
       }
-      this.cityVisable = false;
-      console.log(this.residentInfo);
+      this.cityVisable = false
+      console.log(this.residentInfo)
     }
   }
-};
+}
 </script>
 <style scoped lang="scss">
 .editFloor {

@@ -7,70 +7,116 @@ module.exports = {
   env: {
     browser: true, // 设置为所需检查的代码是在浏览器环境运行的
     node: true,
-    es6: true, // 设置所需检查代码为 es6 语法书写
+    es6: true // 设置所需检查代码为 es6 语法书写
   },
-  extends: ['plugin:vue/recommended', 'eslint:recommended'], // 扩展使用 vue 检查规则和eslint推荐规则 
+  extends: ['plugin:vue/recommended', 'eslint:recommended'], // 扩展使用 vue 检查规则和eslint推荐规则
 
   // add your custom rules here
   //it is base on https://github.com/vuejs/eslint-config-vue
   rules: {
     'vue/attribute-hyphenation': 0, // 忽略属性连字
-    "vue/max-attributes-per-line": [1, {
-      "singleline": 10,
-      "multiline": {
-        "max": 1,
-        "allowFirstLine": false
+    'vue/max-attributes-per-line': [
+      1,
+      {
+        singleline: 10,
+        multiline: {
+          max: 1,
+          allowFirstLine: false
+        }
       }
-    }],// 每行最大属性
-    "vue/singleline-html-element-content-newline": "off", // 单行html元素内容在新的一行
-    "vue/multiline-html-element-content-newline": "off", // 多行html元素内容在新的一行
-    'vue/html-closing-bracket-newline': 2, // html右括号在新的一行
-    "vue/name-property-casing": ["error", "PascalCase"],
-    "vue/no-v-html": "off",
+    ], // 每行最大属性
+    'vue/singleline-html-element-content-newline': 'off', // 单行html元素内容在新的一行
+    'vue/multiline-html-element-content-newline': 'off', // 多行html元素内容在新的一行
+    'vue/html-closing-bracket-newline': 0, // 关闭  html右括号在新的一行
+    // 不允许对HTML void元素进行自动关闭
+    'vue/html-self-closing': [
+      'error',
+      {
+        html: {
+          void: 'always',
+          normal: 'never',
+          component: 'always'
+        },
+        svg: 'always',
+        math: 'always'
+      }
+    ],
+    'vue/name-property-casing': ['error', 'PascalCase'],
+    'vue/no-v-html': 'off',
     'accessor-pairs': 2,
-    'arrow-spacing': [2, {
-      'before': true,
-      'after': true
-    }],
+    'arrow-spacing': [
+      2,
+      {
+        before: true,
+        after: true
+      }
+    ],
     'block-spacing': [2, 'always'], // 块间距
-    'brace-style': [2, '1tbs', {
-      'allowSingleLine': true
-    }], // 大括号样式允许单行
-    'camelcase': [0, {
-      'properties': 'always'
-    }], //为属性强制执行驼峰命名
+    'brace-style': [
+      2,
+      '1tbs',
+      {
+        allowSingleLine: true
+      }
+    ], // 大括号样式允许单行
+    camelcase: [
+      0,
+      {
+        properties: 'always'
+      }
+    ], //为属性强制执行驼峰命名
     'comma-dangle': [2, 'never'],
-    'comma-spacing': [2, {
-      'before': false,
-      'after': true
-    }],
+    'comma-spacing': [
+      2,
+      {
+        before: false,
+        after: true
+      }
+    ],
     'comma-style': [2, 'last'],
     'constructor-super': 2,
-    'curly': [2, 'multi-line'],
+    curly: [2, 'multi-line'],
     'dot-location': [2, 'property'],
-    'eol-last': 2,
-    'eqeqeq': ["error", "always", { "null": "ignore" }],
-    'generator-star-spacing': [2, {
-      'before': true,
-      'after': true
-    }],
+    'eol-last': 0, // 末尾 enter
+    // eqeqeq: ['error', 'always', { null: 'ignore' }],
+    eqeqeq: ['off'], //关闭 === 和 !== 允许 == 和!=
+    'generator-star-spacing': [
+      2,
+      {
+        before: true,
+        after: true
+      }
+    ],
     'handle-callback-err': [2, '^(err|error)$'],
-    'indent': [2, 2, {
-      'SwitchCase': 1
-    }],
+    indent: [
+      2,
+      2,
+      {
+        SwitchCase: 1
+      }
+    ],
     'jsx-quotes': [2, 'prefer-single'],
-    'key-spacing': [2, {
-      'beforeColon': false,
-      'afterColon': true
-    }],
-    'keyword-spacing': [2, {
-      'before': true,
-      'after': true
-    }],
-    'new-cap': [2, {
-      'newIsCap': true,
-      'capIsNew': false
-    }],
+    'key-spacing': [
+      2,
+      {
+        beforeColon: false,
+        afterColon: true
+      }
+    ],
+    'keyword-spacing': [
+      2,
+      {
+        before: true,
+        after: true
+      }
+    ],
+    'new-cap': [
+      2,
+      {
+        newIsCap: true,
+        capIsNew: false
+      }
+    ],
     'new-parens': 2,
     'no-array-constructor': 2,
     'no-caller': 2,
@@ -101,17 +147,23 @@ module.exports = {
     'no-irregular-whitespace': 2,
     'no-iterator': 2,
     'no-label-var': 2,
-    'no-labels': [2, {
-      'allowLoop': false,
-      'allowSwitch': false
-    }],
+    'no-labels': [
+      2,
+      {
+        allowLoop: false,
+        allowSwitch: false
+      }
+    ],
     'no-lone-blocks': 2,
     'no-mixed-spaces-and-tabs': 2,
     'no-multi-spaces': 2,
     'no-multi-str': 2,
-    'no-multiple-empty-lines': [2, {
-      'max': 1
-    }],
+    'no-multiple-empty-lines': [
+      0,
+      {
+        max: 1
+      }
+    ], // 关闭检测多余的回车
     'no-native-reassign': 2,
     'no-negated-in-lhs': 2,
     'no-new-object': 2,
@@ -134,67 +186,107 @@ module.exports = {
     'no-sparse-arrays': 2,
     'no-this-before-super': 2,
     'no-throw-literal': 2,
-    'no-trailing-spaces': 2,
+    'no-trailing-spaces': 0, //  关闭检测 多余的空格
     'no-undef': 2,
     'no-undef-init': 2,
     'no-unexpected-multiline': 2,
     'no-unmodified-loop-condition': 2,
-    'no-unneeded-ternary': [2, {
-      'defaultAssignment': false
-    }],
+    'no-unneeded-ternary': [
+      2,
+      {
+        defaultAssignment: false
+      }
+    ],
     'no-unreachable': 2,
     'no-unsafe-finally': 2,
-    'no-unused-vars': [2, {
-      'vars': 'all',
-      'args': 'none'
-    }],
+    'no-unused-vars': [
+      2,
+      {
+        vars: 'all',
+        args: 'none'
+      }
+    ],
     'no-useless-call': 2,
     'no-useless-computed-key': 2,
     'no-useless-constructor': 2,
     'no-useless-escape': 0,
     'no-whitespace-before-property': 2,
     'no-with': 2,
-    'one-var': [2, {
-      'initialized': 'never'
-    }],
-    'operator-linebreak': [2, 'after', {
-      'overrides': {
-        '?': 'before',
-        ':': 'before'
+    'one-var': [
+      2,
+      {
+        initialized: 'never'
       }
-    }],
+    ],
+    'operator-linebreak': [
+      2,
+      'after',
+      {
+        overrides: {
+          '?': 'before',
+          ':': 'before'
+        }
+      }
+    ],
     'padded-blocks': [2, 'never'],
-    'quotes': [2, 'single', {
-      'avoidEscape': true,
-      'allowTemplateLiterals': true
-    }],
-    'semi': [2, 'never'],
-    'semi-spacing': [2, {
-      'before': false,
-      'after': true
-    }],
+    // 字符串单引号 而不是双引号
+    quotes: [
+      0,
+      'single',
+      {
+        avoidEscape: true,
+        allowTemplateLiterals: true
+      }
+    ],
+    semi: [0, 'never'], //末尾分号
+    'semi-spacing': [
+      2,
+      {
+        before: false,
+        after: true
+      }
+    ],
     'space-before-blocks': [2, 'always'],
     'space-before-function-paren': [2, 'never'],
     'space-in-parens': [2, 'never'],
     'space-infix-ops': 2,
-    'space-unary-ops': [2, {
-      'words': true,
-      'nonwords': false
-    }],
-    'spaced-comment': [2, 'always', {
-      'markers': ['global', 'globals', 'eslint', 'eslint-disable', '*package', '!', ',']
-    }],
+    'space-unary-ops': [
+      2,
+      {
+        words: true,
+        nonwords: false
+      }
+    ],
+    'spaced-comment': [
+      2,
+      'always',
+      {
+        markers: [
+          'global',
+          'globals',
+          'eslint',
+          'eslint-disable',
+          '*package',
+          '!',
+          ','
+        ]
+      }
+    ],
     'template-curly-spacing': [2, 'never'],
     'use-isnan': 2,
     'valid-typeof': 2,
     'wrap-iife': [2, 'any'],
     'yield-star-spacing': [2, 'both'],
-    'yoda': [2, 'never'],
+    yoda: [2, 'never'],
     'prefer-const': 2,
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'object-curly-spacing': [2, 'always', {
-      objectsInObjects: false
-    }],
+    'object-curly-spacing': [
+      2,
+      'always',
+      {
+        objectsInObjects: false
+      }
+    ],
     'array-bracket-spacing': [2, 'never']
   }
 }

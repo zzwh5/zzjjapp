@@ -34,6 +34,6 @@ const sanwu = [
     title: '补助合计',
     dataIndex: 'totalSubsidy',
     isSelect: false
-  },
+  }
 ]
 export default sanwu

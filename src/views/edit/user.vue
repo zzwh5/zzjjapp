@@ -5,8 +5,8 @@
       <div class="head_back" @click="goback">
         <img src="@/assets/back.png" alt />
       </div>
-      <div class="head_text" v-if="userEditType == 1">编辑住户信息</div>
-      <div class="head_text" v-if="userEditType == 0">增加住户信息</div>
+      <div v-if="userEditType == 1" class="head_text">编辑住户信息</div>
+      <div v-if="userEditType == 0" class="head_text">增加住户信息</div>
       <div class="head_add">
         <!-- <img src="@/assets/add.png" alt /> -->
       </div>
@@ -14,10 +14,10 @@
     <!-- 导航列表 -->
     <div class="nav">
       <div
-        class="nav_item"
         v-for="(item, i) in navList"
-        :class="navType == i ? 'active' : ''"
         :key="item.id"
+        class="nav_item"
+        :class="navType == i ? 'active' : ''"
         @click="changeNavType(i)"
       >
         <p class="text">{{ item.title }}</p>
@@ -26,15 +26,14 @@
     </div>
     <div class="info">
       <!-- 基本信息 -->
-      <div class="content_basic" v-if="navType == 0">
+      <div v-if="navType == 0" class="content_basic">
         <van-form ref="Form" @submit="onSubmit" @failed="failed">
-          <div class="info_item" v-for="item in basic" :key="item.id">
-            <!-- {{item.dataIndex in basicInfo.governRealPopulation}} -->
+          <div v-for="item in basic" :key="item.id" class="info_item">
             <div v-if="item.isSpecial">
               <van-field
-                autofocus
                 v-if="item.isSelect"
                 v-model="basicInfo[item.dataIndex]"
+                autofocus
                 :name="item.dataIndex"
                 :label="item.title"
                 :readonly="item.isSelect"
@@ -57,7 +56,7 @@
                 :rules="item.isRequire ? [{ required: true }] : []"
                 :required="item.isRequire"
               >
-                <template #button v-if="item.title == '户主公民身份证号'">
+                <template v-if="item.title == '户主公民身份证号'" #button>
                   <van-button
                     size="small"
                     type="primary"
@@ -72,7 +71,7 @@
             <div v-else>
               <van-field
                 v-if="item.isSelect"
-                v-model="basicInfo.governRealPopulation[item.dataIndex]"
+                v-model="basicInfo[item.dataIndex]"
                 :name="item.dataIndex"
                 :label="item.title"
                 :readonly="item.isSelect"
@@ -86,7 +85,7 @@
               />
               <van-field
                 v-else
-                v-model="basicInfo.governRealPopulation[item.dataIndex]"
+                v-model="basicInfo[item.dataIndex]"
                 :name="item.dataIndex"
                 :label="item.title"
                 :readonly="item.isSelect"
@@ -115,13 +114,13 @@
         </div>
       </div>
       <!-- 暂住信息 -->
-      <div class="content_flow" v-if="navType == 1">
+      <div v-if="navType == 1" class="content_flow">
         <van-form ref="Form1" @submit="onSubmit" @failed="failed">
-          <div class="info_item" v-for="item in flow" :key="item.id">
+          <div v-for="item in flow" :key="item.id" class="info_item">
             <van-field
-              autofocus
               v-if="item.isSelect"
               v-model="flowInfo[item.dataIndex]"
+              autofocus
               :name="item.dataIndex"
               :label="item.title"
               readonly
@@ -138,13 +137,6 @@
               colon
               :required="item.isRequire"
               :rules="item.isRequire ? [{ required: true, trigger: 'o' }] : []"
-              @click="
-                showName(
-                  flowInfo,
-                  item.governRealPopulation.title,
-                  item.governRealPopulation.dataIndex
-                )
-              "
             />
             <!-- 占位 -->
             <span></span>
@@ -165,7 +157,7 @@
         </div>
       </div>
       <!-- 特殊人群 -->
-      <div class="content_special" v-if="navType == 2">
+      <div v-if="navType == 2" class="content_special">
         <van-collapse v-model="activeName" accordion>
           <van-collapse-item
             v-for="item in specialList"
@@ -195,12 +187,12 @@
               >
             </template>
             <van-form :ref="item.name" @submit="onSubmit" @failed="failed">
-              <div class="info_item" v-for="items in item.type" :key="items.id">
+              <div v-for="items in item.type" :key="items.id" class="info_item">
                 <div>
                   <van-field
-                    autofocus
                     v-if="items.isSelect"
                     v-model="item.names[items.dataIndex]"
+                    autofocus
                     :name="items.dataIndex"
                     :label="items.title"
                     :readonly="items.isSelect"
@@ -214,8 +206,8 @@
                   />
                   <van-field
                     v-else
-                    autofocus
                     v-model="item.names[items.dataIndex]"
+                    autofocus
                     :name="items.dataIndex"
                     :label="items.title"
                     :readonly="items.isSelect"
@@ -248,7 +240,7 @@
         </van-collapse>
       </div>
       <!-- 实有人口 -->
-      <div class="content_more" v-if="navType == 3">
+      <div v-if="navType == 3" class="content_more">
         <van-collapse v-model="activeNames" accordion>
           <van-collapse-item
             v-for="item in moreList"
@@ -279,25 +271,25 @@
               >
             </template>
             <van-form :ref="item.name" @submit="onSubmit" @failed="failed">
-              <div class="info_item" v-for="items in item.type" :key="items.id">
+              <div v-for="items in item.type" :key="items.id" class="info_item">
                 <van-field
-                  autofocus
                   v-if="items.isSelect"
                   v-model="item.names[items.dataIndex]"
+                  autofocus
                   :name="items.dataIndex"
                   :label="items.title"
                   :readonly="items.isSelect"
                   colon
                   :required="items.isRequire"
-                  @click="showName(item.names, items.title, items.dataIndex)"
                   :rules="
                     items.isRequire ? [{ required: true, trigger: 'o' }] : []
                   "
+                  @click="showName(item.names, items.title, items.dataIndex)"
                 />
                 <van-field
-                  autofocus
                   v-else
                   v-model="item.names[items.dataIndex]"
+                  autofocus
                   :name="items.dataIndex"
                   :label="items.title"
                   :readonly="items.isSelect"
@@ -351,7 +343,7 @@
       :minDate="minDate"
       @confirm="onConfirm"
     /> -->
-    <calendar :show.sync="Timeshow" @change="onConfirm"> </calendar>
+    <calendar :show.sync="Timeshow" @change="onConfirm" />
     <!-- 省市区选择弹框 -->
     <!-- 省市区  -->
     <van-popup v-model="cityVisable" position="bottom">
@@ -369,15 +361,15 @@
 </template>
 <script>
 // 解析时间
-import moment from "moment";
-import { getAddress, getSelect } from "@/api/common";
-import { editUserInfo } from "@/api/house";
+import moment from 'moment'
+import { getAddress, getSelect, getCountries } from '@/api/common'
+import { editUserInfo } from '@/api/house'
 // 查询户主的信息
-import { getZhuhubybasicid } from "@/api/people";
+import { getZhuhubybasicid } from '@/api/people'
 // 提示框
-import { Notify } from "vant";
+import { Notify } from 'vant'
 // 引入弹框
-import { Dialog } from "vant";
+import { Dialog } from 'vant'
 // 引入接口
 import {
   getGoverByBasicid,
@@ -385,91 +377,91 @@ import {
   getSpecialByBasicid,
   editSpecialByBasicid,
   delSpecialByBasicid,
-  editBasicByBasicid,
+  // editBasicByBasicid,
   editGover,
   editFlowByBasicid
-} from "@/api/common";
+} from '@/api/common'
 // 引入基本信息
-import basic from "@/until/basic";
+import basic from '@/until/basic'
 // 流动人口
-import flow from "@/until/flow";
+import flow from '@/until/flow'
 // 刑满释放人员
-import releasedFromPrison from "@/until/releasedFromPrison";
+import releasedFromPrison from '@/until/releasedFromPrison'
 // 社区矫正人员
-import communityCorrection from "@/until/communityCorrection";
+import communityCorrection from '@/until/communityCorrection'
 // 肇事人员
-import psychosis from "@/until/psychosis";
+import psychosis from '@/until/psychosis'
 // 吸毒人员
-import drugs from "@/until/drugs";
+import drugs from '@/until/drugs'
 // 艾滋病人员
-import aids from "@/until/aids";
+import aids from '@/until/aids'
 // 信访重点人员
-import letter from "@/until/letter";
+import letter from '@/until/letter'
 // 重点青少年
-import teenager from "@/until/teenager";
+import teenager from '@/until/teenager'
 // 留守人员
-import rear from "@/until/rear";
+import rear from '@/until/rear'
 // 境外人员
-import overseasReople from "@/until/overseasReople";
+import overseasReople from '@/until/overseasReople'
 // 三无老人
-import sanwu from "@/until/sanwu";
+import sanwu from '@/until/sanwu'
 // 空巢老人
-import empty from "@/until/empty";
+import empty from '@/until/empty'
 // 死亡人口
-import death from "@/until/death";
+import death from '@/until/death'
 // 残疾人员
-import disability from "@/until/disability";
+import disability from '@/until/disability'
 // 低保人员
-import basicLivingAllowance from "@/until/basicLivingAllowance";
+import basicLivingAllowance from '@/until/basicLivingAllowance'
 // 特困人员
-import exceptionalPoverty from "@/until/exceptionalPoverty";
+import exceptionalPoverty from '@/until/exceptionalPoverty'
 // 就业/失业
-import service from "@/until/service";
+import service from '@/until/service'
 export default {
-  name: "EditUser",
+  name: 'EditUser',
   data() {
     return {
-      orgId: sessionStorage.getItem("orgId"),
+      orgId: sessionStorage.getItem('orgId'),
       // 是不是基本信息的档案管理的下拉框
       isGover: false,
       // 住户信息的编辑类型
-      userEditType: sessionStorage.getItem("userEditType"),
+      userEditType: sessionStorage.getItem('userEditType'),
       // basicId
-      basicId: sessionStorage.getItem("basicId"),
+      basicId: sessionStorage.getItem('basicId'),
       // 当前模块的id 只有在保存后才有这个id 不然不能删除
-      ids: "",
+      ids: '',
       // 当前的房屋id  修改的时候用
-      id: sessionStorage.getItem("houseId"),
+      id: sessionStorage.getItem('houseId'),
       // navList 列表
       navList: [
         {
           id: 1,
-          title: "基本信息"
+          title: '基本信息'
         },
         {
           id: 2,
-          title: "暂住信息"
+          title: '暂住信息'
         },
         {
           id: 3,
-          title: "特殊信息"
+          title: '特殊信息'
         },
         {
           id: 4,
-          title: "拓展信息"
+          title: '拓展信息'
         }
       ],
       // 当前的导航类型
       navType: 0,
       // 基本信息
-      basicInfo: { governRealPopulation: {} },
+      basicInfo: {},
       // 暂住信息
       flowInfo: {},
       // 弹框的开关
       show: false,
       // 弹框内容类型
-      dialogType: "orgName",
-      dialogText: "",
+      dialogType: 'orgName',
+      dialogText: '',
       // 弹框的下拉数组
       dialogList: [],
       // 时间选择开关
@@ -484,63 +476,63 @@ export default {
       specialList: [
         {
           id: 1,
-          title: "刑满释放人口",
+          title: '刑满释放人口',
           type: releasedFromPrison,
-          name: "releasedFromPrisonInfo",
+          name: 'releasedFromPrisonInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 2,
-          title: "社区矫正人口",
+          title: '社区矫正人口',
           type: communityCorrection,
-          name: "communityCorrectionInfo",
+          name: 'communityCorrectionInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 3,
-          title: "肇事肇祸等严重精神障碍患者人口",
+          title: '肇事肇祸等严重精神障碍患者人口',
           type: psychosis,
-          name: "psychosisInfo",
+          name: 'psychosisInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 4,
-          title: "吸毒人口",
+          title: '吸毒人口',
           type: drugs,
-          name: "drugsInfo",
+          name: 'drugsInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 5,
-          title: "艾滋病人口",
+          title: '艾滋病人口',
           type: aids,
-          name: "aids",
+          name: 'aids',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 6,
-          title: "信访重点人口",
+          title: '信访重点人口',
           type: letter,
-          name: "letterInfo",
+          name: 'letterInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 7,
-          title: "重点青少年",
+          title: '重点青少年',
           type: teenager,
-          name: "teenagerInfo",
+          name: 'teenagerInfo',
           names: {},
           turn: true,
           loading: false
@@ -549,81 +541,81 @@ export default {
       moreList: [
         {
           id: 1,
-          title: "留守人员",
+          title: '留守人员',
           type: rear,
-          name: "rearInfo",
+          name: 'rearInfo',
           turn: true,
           loading: false,
           names: {}
         },
         {
           id: 2,
-          title: "境外人员",
+          title: '境外人员',
           type: overseasReople,
-          name: "overseasReopleInfo",
+          name: 'overseasReopleInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 3,
-          title: "三无老人",
+          title: '三无老人',
           type: sanwu,
-          name: "sanwuInfo",
+          name: 'sanwuInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 4,
-          title: "空巢老人",
+          title: '空巢老人',
           type: empty,
-          name: "emptyInfo",
+          name: 'emptyInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 5,
-          title: "死亡人口",
+          title: '死亡人口',
           type: death,
-          name: "deathInfo",
+          name: 'deathInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 6,
-          title: "残疾人员",
+          title: '残疾人员',
           type: disability,
-          name: "disabilityInfo",
+          name: 'disabilityInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 7,
-          title: "低保人员",
+          title: '低保人员',
           type: basicLivingAllowance,
-          name: "basicLivingAllowanceInfo",
+          name: 'basicLivingAllowanceInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 8,
-          title: "特困人员",
+          title: '特困人员',
           type: exceptionalPoverty,
-          name: "exceptionalPovertyInfo",
+          name: 'exceptionalPovertyInfo',
           names: {},
           turn: true,
           loading: false
         },
         {
           id: 9,
-          title: "就业/失业",
+          title: '就业/失业',
           type: service,
-          name: "serviceInfo",
+          name: 'serviceInfo',
           names: {},
           turn: true,
           loading: false
@@ -634,14 +626,14 @@ export default {
       // 流动人口
       flow: flow,
       // form表单提交的item
-      item: "",
+      item: '',
       // 当前提交的类型 主要是为了区分有无折叠版的模块
       submitType: null,
       subLoading: false,
-      //遮罩层显示或隐藏
+      // 遮罩层显示或隐藏
       cityVisable: false,
       // 联动类别 5级true 3级 false
-      //自定义数据五级结构
+      // 自定义数据五级结构
       areaList: [
         { values: [] },
         { values: [] },
@@ -649,61 +641,75 @@ export default {
         { values: [] },
         { values: [] }
       ]
-    };
-  },
-  created() {
-    // 省市区
-    this.getArea("", 0);
-    if (this.userEditType != 0) {
-      // 省市区
-      this.getArea("", 0);
-      this.getGoverByBasicid();
-      this.getSpecialIsSelect();
-      this.getMoreIsSelect();
     }
   },
   watch: {
     // 监听地址的变化 更改addressStr
     basicInfo: {
       handler: function(value, old) {
+        if (value.householderRelationshipStr === '户主') {
+          // console.log('自身就是户主')
+          // 如果是户主的将上面的信息填充下面的户主信息
+          // console.log(value)
+          value.householderIdCard = value.idCard
+          value.householderName = value.fullName
+          value.householderGenderStr = value.genderStr
+          value.householderGender = value.gender
+          value.householderContactTypeStr = value.contactTypeStr
+          value.householderContactType = value.contactType
+          value.householderContactInformation = value.contactInformation
+        } else if (
+          // 如果之前是户主 将之前填充的信息清空
+          value.householderRelationshipStr !== '户主' &&
+          old.householderRelationshipStr === '户主'
+        ) {
+          value.householderIdCard = ''
+          value.householderName = ''
+          value.householderGenderStr = ''
+          value.householderGender = ''
+          value.householderContactTypeStr = ''
+          value.householderContactType = ''
+          value.householderContactInformation = ''
+        }
         // console.log("changeAddress");
         if (
-          value.governRealPopulation.currentResidenceProvinceStr != null ||
-          value.governRealPopulation.currentResidenceProvinceStr
+          value.currentResidenceProvinceStr != null ||
+          value.currentResidenceProvinceStr
         ) {
-          this.basicInfo.governRealPopulation.currentResidences =
-            this.basicInfo.governRealPopulation.currentResidenceProvinceStr +
-            this.basicInfo.governRealPopulation.currentResidenceCityStr +
-            this.basicInfo.governRealPopulation.currentResidenceRegionStr +
-            this.basicInfo.governRealPopulation.currentResidenceStreetStr +
-            this.basicInfo.governRealPopulation.currentResidenceCommunityStr;
+          this.basicInfo.currentResidences =
+            this.basicInfo.currentResidenceProvinceStr +
+            this.basicInfo.currentResidenceCityStr +
+            this.basicInfo.currentResidenceRegionStr +
+            this.basicInfo.currentResidenceStreetStr +
+            this.basicInfo.currentResidenceCommunityStr
         }
         if (
-          value.governRealPopulation.nativePlaceProvinceStr != null ||
-          value.governRealPopulation.nativePlaceProvinceStr
+          value.nativePlaceProvinceStr != null ||
+          value.nativePlaceProvinceStr
         ) {
-          console.log(12132132);
-          this.basicInfo.governRealPopulation.nativePlaces =
-            this.basicInfo.governRealPopulation.nativePlaceProvinceStr +
-            this.basicInfo.governRealPopulation.nativePlaceCityStr +
-            this.basicInfo.governRealPopulation.nativePlaceRegionStr;
+          console.log(12132132)
+          this.basicInfo.nativePlaces =
+            this.basicInfo.nativePlaceProvinceStr +
+            this.basicInfo.nativePlaceCityStr +
+            this.basicInfo.nativePlaceRegionStr
         }
         if (
-          value.governRealPopulation.placeDomicileProvinceStr != null ||
-          value.governRealPopulation.placeDomicileProvinceStr
+          value.placeDomicileProvinceStr != null ||
+          value.placeDomicileProvinceStr
         ) {
-          this.basicInfo.governRealPopulation.placeDomiciles =
-            this.basicInfo.governRealPopulation.placeDomicileProvinceStr +
-            this.basicInfo.governRealPopulation.placeDomicileCityStr +
-            this.basicInfo.governRealPopulation.placeDomicileRegionStr;
+          this.basicInfo.placeDomiciles =
+            this.basicInfo.placeDomicileProvinceStr +
+            this.basicInfo.placeDomicileCityStr +
+            this.basicInfo.placeDomicileRegionStr
         }
       },
       deep: true
     },
+
     moreList: {
       handler: function(value, old) {
         // console.log(value);
-        var obj = value[0].names;
+        var obj = value[0].names
         if (
           obj.mainFamilyMembersWorkProvince != null ||
           obj.mainFamilyMembersWorkProvince != null
@@ -711,616 +717,635 @@ export default {
           this.moreList[0].names.mainFamilyMembersWork =
             obj.mainFamilyMembersWorkProvinceStr +
             obj.mainFamilyMembersWorkCityStr +
-            obj.mainFamilyMembersWorkRegionStr;
+            obj.mainFamilyMembersWorkRegionStr
         }
       },
       deep: true
     }
   },
+  created() {
+    // 省市区
+    this.getArea('', 0)
+    if (this.userEditType != 0) {
+      // 省市区
+      this.getArea('', 0)
+      this.getGoverByBasicid()
+      this.getSpecialIsSelect()
+      this.getMoreIsSelect()
+    }
+  },
   methods: {
     // 返回上一级
     goback() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     },
     // 搜索户主信息并且回显
     searchHuzhu() {
-      console.log(this.basicInfo.householderIdCard);
+      console.log(this.basicInfo.householderIdCard)
       if (!this.basicInfo.householderIdCard) {
-        Notify({ type: "warning", message: "请先输入户主公民身份证号" });
-        return false;
+        Notify({ type: 'warning', message: '请先输入户主公民身份证号' })
+        return false
       }
       var obj = {
         idCard: this.basicInfo.householderIdCard
-      };
+      }
       return getZhuhubybasicid(obj).then(res => {
         // console.log(res);
         if (res.code != 200) {
-          Notify({ type: "warning", message: "请先输入户主公民身份证号" });
-          return false;
+          Notify({ type: 'warning', message: '请先输入户主公民身份证号' })
+          return false
         }
         if (!res.ret) {
-          Notify({ type: "warning", message: "未查询到户主信息,请手动输入" });
-          return false;
+          Notify({ type: 'warning', message: '未查询到户主信息,请手动输入' })
+          return false
         }
         // this.basicInfo.householderIdCard =
-        this.basicInfo.householderName = res.ret.fullName;
-        this.basicInfo.householderGenderStr = res.ret.genderStr;
-        this.basicInfo.householderContactTypeStr = res.ret.contactTypeStr;
+        this.basicInfo.householderName = res.ret.fullName
+        this.basicInfo.householderGenderStr = res.ret.genderStr
+        this.basicInfo.householderContactTypeStr = res.ret.contactTypeStr
         this.basicInfo.householderContactInformation =
-          res.ret.contactInformation;
-        this.$forceUpdate();
-        console.log(this.basicInfo);
-      });
+          res.ret.contactInformation
+        this.$forceUpdate()
+        // console.log(this.basicInfo)
+      })
     },
     // 弹框展示
     showName(item, text, type, turn) {
-      console.log(item, text, type);
+      // console.log(item, text, type)
       // return;
       if (turn) {
-        this.isGover = true;
+        this.isGover = true
       }
       // console.log(item, text, type);
-      this.item = item;
+      this.item = item
       // return false;
-      if (text == "现住地(省市区)") {
-        this.cityVisable = true;
-        this.cityType = 0;
-        var obj = this.areaList[0];
+      if (text == '现住地(省市区)') {
+        this.cityVisable = true
+        this.cityType = 0
+        var obj = this.areaList[0]
         this.areaList = [
           obj,
           { values: [] },
           { values: [] },
           { values: [] },
           { values: [] }
-        ];
-        return false;
+        ]
+        return false
       }
-      if (text == "籍贯(省市区)") {
-        this.cityVisable = true;
-        this.cityType = 1;
-        var obj = this.areaList[0];
-        this.areaList = [obj, { values: [] }, { values: [] }];
-        return false;
+      if (text == '籍贯(省市区)') {
+        this.cityVisable = true
+        this.cityType = 1
+        var obj = this.areaList[0]
+        this.areaList = [obj, { values: [] }, { values: [] }]
+        return false
       }
-      if (text == "户籍地(省市区)") {
-        this.cityVisable = true;
-        this.cityType = 2;
-        var obj = this.areaList[0];
-        this.areaList = [obj, { values: [] }, { values: [] }];
-        return false;
+      if (text == '户籍地(省市区)') {
+        this.cityVisable = true
+        this.cityType = 2
+        var obj = this.areaList[0]
+        this.areaList = [obj, { values: [] }, { values: [] }]
+        return false
       }
-      if (text == "家庭主要成员工作地(省市区)") {
-        this.cityVisable = true;
-        this.cityType = 3;
-        var obj = this.areaList[0];
-        this.areaList = [obj, { values: [] }, { values: [] }];
-        return false;
+      if (text == '家庭主要成员工作地(省市区)') {
+        this.cityVisable = true
+        this.cityType = 3
+        var obj = this.areaList[0]
+        this.areaList = [obj, { values: [] }, { values: [] }]
+        return false
       }
 
       // console.log(text.indexOf("日期") != -1);
-      if (text.indexOf("日期") != -1) {
+      if (text.indexOf('日期') != -1 || text == '批准时间') {
         // console.log("riqi");
         // return false;
-        this.Timeshow = true;
-        this.dialogType = type;
-        this.dialogText = text;
-        return false;
+        this.Timeshow = true
+        this.dialogType = type
+        this.dialogText = text
+        return false
       }
       if (
-        text.indexOf("是否") != -1 ||
-        text.indexOf("人户一致标识") != -1 ||
-        text.indexOf("有无") != -1
+        text.indexOf('是否') != -1 ||
+        text.indexOf('人户一致标识') != -1 ||
+        text.indexOf('有无') != -1 ||
+        text === '就业状况'
       ) {
-        text = "标识";
+        text = '标识'
       }
-      if (text == "房屋类型") {
+      if (text === '房屋类型') {
         this.dialogList = [
           {
             id: 1,
             dictionaryValue: 0,
-            dictionaryName: "自住房"
+            dictionaryName: '自住房'
           },
           {
             id: 2,
             dictionaryValue: 1,
-            dictionaryName: "出租房"
+            dictionaryName: '出租房'
           },
           {
             id: 3,
             dictionaryValue: 2,
-            dictionaryName: "自住+出租房"
+            dictionaryName: '自住+出租房'
           },
           {
             id: 4,
             dictionaryValue: 3,
-            dictionaryName: "空置房"
+            dictionaryName: '空置房'
           },
           {
             id: 5,
             dictionaryValue: 4,
-            dictionaryName: "其他"
+            dictionaryName: '其他'
           }
-        ];
-        this.dialogType = type;
-        this.dialogText = text;
-        this.show = true;
-        return false;
+        ]
+        this.dialogType = type
+        this.dialogText = text
+        this.show = true
+        return false
       }
-      if (text == "房主联系类型") {
-        text = "联系类型";
+      if (text === '国籍(地区)') {
+        console.log('国籍的弹框')
+        getCountries().then(res => {
+          res.ret.forEach(item => {
+            item.dictionaryName = item.nationName
+            item.dictionaryValue = item.id
+          })
+          // console.log(res)
+          this.dialogList = res.ret
+          // return false;
+          this.dialogType = type
+          this.dialogText = text
+          this.show = true
+        })
+        return false
       }
-      if (text == "隐患类型") {
-        text = "安全隐患类型";
+      if (text == '房主联系类型') {
+        text = '联系类型'
       }
-      if (text.indexOf("联系类型") != -1) {
-        text = "联系类型";
+      if (text == '隐患类型') {
+        text = '安全隐患类型'
       }
-      if (text.indexOf("性别") != -1) {
-        text = "性别";
+      if (text.indexOf('联系类型') != -1) {
+        text = '联系类型'
       }
-      console.log(text);
+      if (text.indexOf('性别') != -1) {
+        text = '性别'
+      }
+      if (text == '目前诊断类型') {
+        text = '诊断类型'
+      }
+      // console.log(text)
       // return false;
       return getSelect(text).then(res => {
-        console.log(res);
-        this.dialogList = res.ret.dictionaryList;
+        // console.log(res)
+        this.dialogList = res.ret.dictionaryList
         // return false;
-        this.dialogType = type;
-        this.dialogText = text;
-        this.show = true;
-      });
+        this.dialogType = type
+        this.dialogText = text
+        this.show = true
+      })
     },
     // 点击弹框的下拉框 更改 houseInfo的内容
     changeInfo(value, text, turn) {
       if (this.isGover) {
-        console.log(this.item);
-        var type = this.dialogType.split("Str");
+        console.log(this.item)
+        var type = this.dialogType.split('Str')[0]
+        console.log(type)
         this.basic.forEach(itme => {
           if (itme.dataIndex == this.dialogType) {
             if (itme.isSpecial) {
-              this.basicInfo[this.dialogType] = text;
-              this.basicInfo[type] = value;
+              this.basicInfo[this.dialogType] = text
+              this.basicInfo[type] = value
             } else {
-              this.basicInfo.governRealPopulation[this.dialogType] = text;
-              this.basicInfo.governRealPopulation[type] = value;
+              this.basicInfo[this.dialogType] = text
+              this.basicInfo[type] = value
             }
           }
-        });
-        this.item.governRealPopulation[this.dialogType] = text;
-        this.item.governRealPopulation[type] = value;
-        this.show = false;
+        })
+        this.item[this.dialogType] = text
+        this.item[type] = value
+        this.show = false
         // console.log(this.item[type]);
-        this.isGover = false;
-        this.item = {};
-        return false;
+        this.isGover = false
+        this.item = {}
+        return false
       }
-      this.item[this.dialogType] = text;
+      this.item[this.dialogType] = text
       // console.log(this.houseInfo[text]);
       // console.log(this.dialogType);
       // return;
-      var type = this.dialogType.split("Str");
-      this.item[type] = value;
-      this.show = false;
+      var type = this.dialogType.split('Str')[0]
+      this.item[type] = value
+      this.show = false
       // console.log(this.item[type]);
     },
     // 解析地址
     parseAddress(obj) {
       // 籍贯
       obj.nativePlaceProvince =
-        obj.nativePlaceProvince === null ? "" : obj.nativePlaceProvince;
+        obj.nativePlaceProvince === null ? '' : obj.nativePlaceProvince
       obj.nativePlaceCity =
-        obj.nativePlaceCity === null ? "" : obj.nativePlaceCity;
+        obj.nativePlaceCity === null ? '' : obj.nativePlaceCity
       obj.nativePlaceRegion =
-        obj.nativePlaceRegion === null ? "" : obj.nativePlaceRegion;
+        obj.nativePlaceRegion === null ? '' : obj.nativePlaceRegion
       // 户籍地
       obj.placeDomicileProvince =
-        obj.placeDomicileProvince === null ? "" : obj.placeDomicileProvince;
+        obj.placeDomicileProvince === null ? '' : obj.placeDomicileProvince
       obj.placeDomicileCity =
-        obj.placeDomicileCity === null ? "" : obj.placeDomicileCity;
+        obj.placeDomicileCity === null ? '' : obj.placeDomicileCity
       obj.placeDomicileRegion =
-        obj.placeDomicileRegion === null ? "" : obj.placeDomicileRegion;
+        obj.placeDomicileRegion === null ? '' : obj.placeDomicileRegion
       // 现住地
       obj.currentResidenceProvince =
         obj.currentResidenceProvince === null
-          ? ""
-          : obj.currentResidenceProvince;
+          ? ''
+          : obj.currentResidenceProvince
       obj.currentResidenceCity =
-        obj.currentResidenceCity === null ? "" : obj.currentResidenceCity;
+        obj.currentResidenceCity === null ? '' : obj.currentResidenceCity
       obj.currentResidenceRegion =
-        obj.currentResidenceRegion === null ? "" : obj.currentResidenceRegion;
+        obj.currentResidenceRegion === null ? '' : obj.currentResidenceRegion
       obj.currentResidenceStreet =
-        obj.currentResidenceStreet === null ? "" : obj.currentResidenceStreet;
+        obj.currentResidenceStreet === null ? '' : obj.currentResidenceStreet
       obj.currentResidenceCommunity =
         obj.currentResidenceCommunity === null
-          ? ""
-          : obj.currentResidenceCommunity;
+          ? ''
+          : obj.currentResidenceCommunity
 
       // console.log(obj)
-      if (obj.nativePlaceProvince !== "") {
+      if (obj.nativePlaceProvince !== '') {
         obj.jiguans =
           obj.nativePlaceProvince +
-          "/" +
+          '/' +
           obj.nativePlaceCity +
-          "/" +
-          obj.nativePlaceRegion;
+          '/' +
+          obj.nativePlaceRegion
       } else {
-        obj.jiguans = "";
+        obj.jiguans = ''
       }
-      if (obj.placeDomicileProvince !== "") {
+      if (obj.placeDomicileProvince !== '') {
         obj.hujidis =
           obj.placeDomicileProvince +
-          "/" +
+          '/' +
           obj.placeDomicileCity +
-          "/" +
-          obj.placeDomicileRegion;
+          '/' +
+          obj.placeDomicileRegion
       } else {
-        obj.hujidis = "";
+        obj.hujidis = ''
       }
-      if (obj.currentResidenceProvince !== "") {
+      if (obj.currentResidenceProvince !== '') {
         obj.xianzhudis =
           obj.currentResidenceProvince +
-          "/" +
+          '/' +
           obj.currentResidenceCity +
-          "/" +
+          '/' +
           obj.currentResidenceRegion +
-          "/" +
+          '/' +
           obj.currentResidenceStreet +
-          "/" +
-          obj.currentResidenceCommunity;
+          '/' +
+          obj.currentResidenceCommunity
       } else {
-        obj.xianzhudis = "";
+        obj.xianzhudis = ''
       }
-      return obj;
+      return obj
     },
     // 获取基本信息
     getGoverByBasicid() {
-      var that = this;
+      var that = this
       var obj = {
         id: this.basicId
-      };
+      }
       return getGoverByBasicid(obj).then(res => {
         // console.log(res);
-        res.ret = that.parseAddress(res.ret);
+        res.ret = that.parseAddress(res.ret)
         if (!res.ret) {
-          that.basicInfo = { governRealPopulation: {} };
-          return;
+          that.basicInfo = {}
+          return
         }
         that.basicInfo = {
-          ...res.ret,
-          governRealPopulation: {
-            ...res.ret
-          }
-        };
-      });
+          ...res.ret
+        }
+      })
     },
     //  如果不是对应的特殊人群或者实有人口 取消选中状态 并且调用删除接口
     delSpecial(item) {
       // 收起所有的折叠面板
-      this.activeName = null;
-      this.activeNames = null;
+      this.activeName = null
+      this.activeNames = null
       // console.log(item.names);
       // item.names 是对应的保存字段的对象
-      this.ids = item.names.id;
-      if (this.ids == "") {
-        Notify({ type: "warning", message: "当前模块未提交" });
-        return false;
+      this.ids = item.names.id
+      if (this.ids == '') {
+        Notify({ type: 'warning', message: '当前模块未提交' })
+        return false
       }
-      item.turn = false;
-      var name = item.name.split("Info")[0];
+      item.turn = false
+      var name = item.name.split('Info')[0]
       var obj = {
         ids: this.ids,
-        name: "del" + name
-      };
+        name: 'del' + name
+      }
       return delSpecialByBasicid(obj).then(res => {
         // console.log(res);
         if (res.code != 200) {
-          Notify({ type: "warning", message: "取消失败请稍后重试！" });
-          return false;
+          Notify({ type: 'warning', message: '取消失败请稍后重试！' })
+          return false
         }
         // 清空 字段对象
-        item.names = {};
-        Notify({ type: "success", message: "取消成功" });
-      });
+        item.names = {}
+        Notify({ type: 'success', message: '取消成功' })
+      })
     },
     // 提交对应的模块
     submit(name, item) {
       // console.log("dianji");
-      if (name == "basicInfo") {
-        this.submitType = 0;
-      } else if (name == "flowInfo") {
-        this.submitType = 1;
+      if (name == 'basicInfo') {
+        this.submitType = 0
+      } else if (name == 'flowInfo') {
+        this.submitType = 1
       }
-      item.loading = true;
-      this.item = item;
+      item.loading = true
+      this.item = item
       // console.log(this.$refs.releasedFromPrisonInfo);
       if (this.submitType == 0) {
         // console.log(this.$refs.Form);
-        this.$refs.Form.submit();
+        this.$refs.Form.submit()
         // console.log("提交基本信息");
-        return false;
+        return false
       }
       if (this.submitType == 1) {
-        this.$refs.Form1.submit();
+        this.$refs.Form1.submit()
         // console.log("提交信息");
-        return false;
+        return false
       }
-      this.$refs[name][0].submit();
+      this.$refs[name][0].submit()
     },
     // 提交表单的时候如果有必填字段没有填的话
     failed() {
-      var that = this;
+      var that = this
       // console.log("验证不通过");
-      Notify({ type: "warning", message: "请输入必填字段" });
+      Notify({ type: 'warning', message: '请输入必填字段' })
       this.specialList.forEach(item => {
-        item.loading = false;
-      });
+        item.loading = false
+      })
       this.moreList.forEach(item => {
-        item.loading = false;
-      });
-      that.subLoading = false;
-      that.submitType = null;
+        item.loading = false
+      })
+      that.subLoading = false
+      that.submitType = null
     },
     // 时间格式化
     formatDate(time) {
       var date = moment
         .parseZone(time)
         .local()
-        .format("YYYY-MM-DD HH:mm:ss");
+        .format('YYYY-MM-DD HH:mm:ss')
       // console.log(date)
-      return date;
+      return date
     },
     // 点击选中的时间
     onConfirm(date) {
-      console.log(date.$d);
-      this.Timeshow = false;
+      console.log(date.$d)
+      this.Timeshow = false
       if (this.isGover) {
         // console.log(2222);
-        this.item.governRealPopulation[this.dialogType] = this.formatDate(
-          date.$d
-        );
-        this.isGover = false;
-        return false;
+        this.item[this.dialogType] = this.formatDate(date.$d)
+        this.isGover = false
+        return false
       }
-      console.log(this.item);
-      this.item[this.dialogType] = this.formatDate(date.$d);
+      console.log(this.item)
+      this.item[this.dialogType] = this.formatDate(date.$d)
     },
     onSubmit() {
-      var that = this;
-      // console.log("dayin");
-      // return false;
-      var item = this.item;
-      // return false;
-      // console.log(editGover, editBasicByBasicid);
-      // return false;
+      var that = this
+      var item = this.item
       if (this.submitType == 0) {
         var obj = {
-          ...item.governRealPopulation,
           ...item
-        };
-        obj.orgId = this.orgId;
+        }
+        obj.orgId = this.orgId
         // console.log(obj);
-        return editGover(obj).then(res => {
-          console.log(res);
+        editGover(obj).then(res => {
+          console.log(res)
           if (res.code != 200) {
-            Notify({ type: "warning", message: "编辑失败请稍后重试" });
-            return;
+            Notify({ type: 'warning', message: '编辑失败请稍后重试' })
+            return
           }
-          this.basicId = res.ret.id;
-          that.subLoading = false;
+          this.basicId = res.ret.id
+          that.subLoading = false
           var data = {
             basicsId: that.basicId,
             ...item
-          };
-          that.submitType = null;
+          }
+          that.submitType = null
           var info = {
             houseId: this.id,
             basicsId: this.basicId
-          };
+          }
           return editUserInfo(info).then(res => {
-            console.log("新增成功");
-          });
-        });
-        return false;
+            console.log('新增成功')
+          })
+        })
+        return
       }
       if (this.submitType == 1) {
         var obj = {
           basicsId: this.basicId,
           ...item
-        };
-        return editFlowByBasicid(obj).then(res => {
+        }
+        editFlowByBasicid(obj).then(res => {
           //  console.log(res)
-          that.subLoading = false;
-          that.submitType = null;
-        });
-        return false;
+          that.subLoading = false
+          that.submitType = null
+        })
+        return false
       }
-      var name = item.name.split("Info")[0];
+      var name = item.name.split('Info')[0]
       var obj = {
         basicsId: this.basicId,
-        name: "edit" + name,
+        name: 'edit' + name,
         ...item.names
-      };
+      }
       if (this.userEditType == 1) {
         Dialog.alert({
-          message: "您确定提交修改吗？",
+          message: '您确定提交修改吗？',
           showCancelButton: true,
           cancel: () => {
-            console.log("cancel");
+            console.log('cancel')
           }
         })
           .then(() => {
             return editSpecialByBasicid(obj).then(res => {
               // console.log(res);
-              item.loading = false;
+              item.loading = false
               if (res.code !== 200) {
-                Notify({ type: "warning", message: "编辑失败请稍后重试" });
-                return false;
+                Notify({ type: 'warning', message: '编辑失败请稍后重试' })
+                return false
               }
-            });
+            })
           })
-          .catch(() => {});
-        return;
+          .catch(() => {})
+        return
       }
       // console.log(obj);
       // return false;
       return editSpecialByBasicid(obj).then(res => {
         // console.log(res);
-        item.loading = false;
+        item.loading = false
         if (res.code !== 200) {
-          Notify({ type: "warning", message: "添加失败请稍后重试" });
-          return false;
+          Notify({ type: 'warning', message: '添加失败请稍后重试' })
+          return false
         }
-        that.ids = res.ret.id;
-      });
+        that.ids = res.ret.id
+      })
     },
     // 获取流动人口信息
     getFlowByid() {
-      var that = this;
+      var that = this
       var obj = {
         basicsId: this.basicId
-      };
+      }
       return getFlowByBasicid(obj).then(res => {
         // console.log(res);
-        that.flowInfo = res.ret ? res.ret : {};
-      });
+        that.flowInfo = res.ret ? res.ret : {}
+      })
     },
     // 更改导航类型
     changeNavType(index) {
-      console.log(this.userEditType);
+      console.log(this.userEditType)
       if (this.userEditType == 0) {
         if (index != 0) {
           if (!this.basicId) {
-            Notify({ type: "warning", message: "请先选择基本信息" });
-            return false;
+            Notify({ type: 'warning', message: '请先选择基本信息' })
+            return false
           }
-          this.navType = index;
-          return false;
+          this.navType = index
+          return false
         }
-        this.navType = index;
-        return false;
+        this.navType = index
+        return false
       }
-      this.navType = index;
+      this.navType = index
       // console.log(index);
       if (index == 0) {
         // if (this.userEditType == 0) {
         //   return false;
         // }
         // console.log(22222);
-        this.getGoverByBasicid();
+        this.getGoverByBasicid()
       } else if (index == 1) {
-        this.getFlowByid();
+        this.getFlowByid()
         if (this.userEditType == 0) {
-          return false;
+          return false
         }
-      } else if (index == 2) {
-      } else if (index == 3) {
       }
     },
     // 切换特殊人群
     getSpecialIsSelect() {
-      var that = this;
+      // var that = this
       this.specialList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name.split("Info")[0]
-        };
+          name: item.name.split('Info')[0]
+        }
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? true : false;
-          item.names = res.ret ? res.ret : [];
+          item.turn = !!res.ret
+          item.names = res.ret ? res.ret : []
           // console.log(item.turn);
-        });
-      });
+        })
+      })
     },
     // 切换实有人口
     getMoreIsSelect() {
-      var that = this;
+      // var that = this
       this.moreList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name.split("Info")[0]
-        };
+          name: item.name.split('Info')[0]
+        }
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? true : false;
-          item.names = res.ret ? res.ret : [];
+          item.turn = !!res.ret
+          item.names = res.ret ? res.ret : []
           // console.log(item.type);
-        });
-      });
+        })
+      })
     },
-    //网络请求地区数据(难点在如何拼装三级结构)
+    // 网络请求地区数据(难点在如何拼装三级结构)
     getArea(parentId, index) {
       return getAddress(parentId).then(res => {
         // console.log(res);
         // //当请求成功时
-        const regionList = res.ret;
+        const regionList = res.ret
         // console.log(this.areaList);
         this.areaList[index].values = [
-          { name: "请选择" },
-          ...regionList //ES6新语法
-        ];
+          { name: '请选择' },
+          ...regionList // ES6新语法
+        ]
         if (index == 0) {
           if (this.cityType == 0) {
-            //当请求的是wu级内的内容时
-            this.areaList[index + 1].values = [];
-            this.areaList[index + 2].values = [];
-            this.areaList[index + 3].values = [];
-            this.areaList[index + 4].values = [];
+            // 当请求的是wu级内的内容时
+            this.areaList[index + 1].values = []
+            this.areaList[index + 2].values = []
+            this.areaList[index + 3].values = []
+            this.areaList[index + 4].values = []
           } else {
-            //当请求的是三级内的内容时
-            this.areaList[index + 1].values = [];
-            this.areaList[index + 2].values = [];
+            // 当请求的是三级内的内容时
+            this.areaList[index + 1].values = []
+            this.areaList[index + 2].values = []
           }
         } else if (index == 1) {
           if (this.cityType == 0) {
-            this.areaList[index + 1].values = [];
-            this.areaList[index + 2].values = [];
-            this.areaList[index + 3].values = [];
+            this.areaList[index + 1].values = []
+            this.areaList[index + 2].values = []
+            this.areaList[index + 3].values = []
           } else {
-            this.areaList[index + 1].values = [];
+            this.areaList[index + 1].values = []
           }
         } else if (index == 2) {
           if (this.cityType == 0) {
-            this.areaList[index + 1].values = [];
-            this.areaList[index + 2].values = [];
+            this.areaList[index + 1].values = []
+            this.areaList[index + 2].values = []
           }
         } else if (index == 3) {
           if (this.cityType) {
-            this.areaList[index + 1].values = [];
+            this.areaList[index + 1].values = []
           }
         }
-        this.areaList = [...this.areaList]; //更新areaList
-      });
+        this.areaList = [...this.areaList] // 更新areaList
+      })
     },
-    //当地区选择变化时
+    // 当地区选择变化时
     onAreaChange(picker, values, index) {
       // values 选择的内容 index当前选择的列数的索引
       // console.log(values, index);
       if (this.cityType == 0) {
         if (index < 4) {
-          this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
+          this.getArea(values[index].code, index + 1) // 传参 参数为上层选择的地区的code
         }
       } else {
         if (index < 2) {
-          this.getArea(values[index].code, index + 1); //传参 参数为上层选择的地区的code
+          this.getArea(values[index].code, index + 1) // 传参 参数为上层选择的地区的code
         }
       }
       // else {
       //   this.cityVisable = false;
       // }
     },
-    //点击取消
+    // 点击取消
     onCancel() {
-      this.cityVisable = false;
+      this.cityVisable = false
     },
 
-    //点击确定
+    // 点击确定
     onAreaConfirm(value) {
-      if (value[0].name == "请选择") {
-        this.cityVisable = false;
-        return false;
+      if (value[0].name == '请选择') {
+        this.cityVisable = false
+        return false
       }
       // console.log(value);
-      console.log(value[2], value[1], value[0], this.cityType);
+      console.log(value[2], value[1], value[0], this.cityType)
       // 都有内容
       if (this.cityType == 3) {
         if (value[2].code && value[1].code && value[0].code) {
@@ -1334,139 +1359,131 @@ export default {
           ) {
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkRegionStr",
+              'mainFamilyMembersWorkRegionStr',
               value[2].name
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkCityStr",
+              'mainFamilyMembersWorkCityStr',
               value[1].name
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkProvinceStr",
+              'mainFamilyMembersWorkProvinceStr',
               value[0].name
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkRegion",
+              'mainFamilyMembersWorkRegion',
               value[2].code
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkCity",
+              'mainFamilyMembersWorkCity',
               value[1].code
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkProvince",
+              'mainFamilyMembersWorkProvince',
               value[0].code
-            );
+            )
             // console.log(this.houseInfo);
           } else {
             if (this.houseEditType == 0) {
               // console.log("有 清空");
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkRegionStr",
-                ""
-              );
+                'mainFamilyMembersWorkRegionStr',
+                ''
+              )
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkCityStr",
-                ""
-              );
+                'mainFamilyMembersWorkCityStr',
+                ''
+              )
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkProvinceStr",
-                ""
-              );
+                'mainFamilyMembersWorkProvinceStr',
+                ''
+              )
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkRegion",
-                ""
-              );
+                'mainFamilyMembersWorkRegion',
+                ''
+              )
+              this.$set(this.moreList[0].names, 'mainFamilyMembersWorkCity', '')
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkCity",
-                ""
-              );
-              this.$set(
-                this.moreList[0].names,
-                "mainFamilyMembersWorkProvince",
-                ""
-              );
+                'mainFamilyMembersWorkProvince',
+                ''
+              )
             }
           }
         } else {
-          if (value[2].name == "市辖区") {
+          if (value[2].name == '市辖区') {
             // console.log("市辖区");
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkRegionStr",
+              'mainFamilyMembersWorkRegionStr',
               value[2].name
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkCityStr",
+              'mainFamilyMembersWorkCityStr',
               value[1].name
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkProvinceStr",
+              'mainFamilyMembersWorkProvinceStr',
               value[0].name
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkRegion",
+              'mainFamilyMembersWorkRegion',
               value[2].code
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkCity",
+              'mainFamilyMembersWorkCity',
               value[1].code
-            );
+            )
             this.$set(
               this.moreList[0].names,
-              "mainFamilyMembersWorkProvince",
+              'mainFamilyMembersWorkProvince',
               value[0].code
-            );
+            )
           } else {
             if (this.houseEditType == 0) {
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkRegionStr",
-                ""
-              );
+                'mainFamilyMembersWorkRegionStr',
+                ''
+              )
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkCityStr",
-                ""
-              );
+                'mainFamilyMembersWorkCityStr',
+                ''
+              )
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkProvinceStr",
-                ""
-              );
+                'mainFamilyMembersWorkProvinceStr',
+                ''
+              )
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkRegion",
-                ""
-              );
+                'mainFamilyMembersWorkRegion',
+                ''
+              )
+              this.$set(this.moreList[0].names, 'mainFamilyMembersWorkCity', '')
               this.$set(
                 this.moreList[0].names,
-                "mainFamilyMembersWorkCity",
-                ""
-              );
-              this.$set(
-                this.moreList[0].names,
-                "mainFamilyMembersWorkProvince",
-                ""
-              );
+                'mainFamilyMembersWorkProvince',
+                ''
+              )
             }
           }
         }
-        console.log(this.moreList[0].names);
+        console.log(this.moreList[0].names)
       } else if (this.cityType == 2) {
         if (value[2].code && value[1].code && value[0].code) {
           // console.log("有内容");
@@ -1477,137 +1494,41 @@ export default {
             value[1].code &&
             value[0].code
           ) {
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "placeDomicileRegionStr",
-              value[2].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "placeDomicileCityStr",
-              value[1].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "placeDomicileProvinceStr",
-              value[0].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "placeDomicileRegion",
-              value[2].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "placeDomicileCity",
-              value[1].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "placeDomicileProvince",
-              value[0].code
-            );
+            this.$set(this.basicInfo, 'placeDomicileRegionStr', value[2].name)
+            this.$set(this.basicInfo, 'placeDomicileCityStr', value[1].name)
+            this.$set(this.basicInfo, 'placeDomicileProvinceStr', value[0].name)
+            this.$set(this.basicInfo, 'placeDomicileRegion', value[2].code)
+            this.$set(this.basicInfo, 'placeDomicileCity', value[1].code)
+            this.$set(this.basicInfo, 'placeDomicileProvince', value[0].code)
             // console.log(this.houseInfo);
           } else {
             if (this.houseEditType == 0) {
               // console.log("有 清空");
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileRegionStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileCityStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileProvinceStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileRegion",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileCity",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileProvince",
-                ""
-              );
+              this.$set(this.basicInfo, 'placeDomicileRegionStr', '')
+              this.$set(this.basicInfo, 'placeDomicileCityStr', '')
+              this.$set(this.basicInfo, 'placeDomicileProvinceStr', '')
+              this.$set(this.basicInfo, 'placeDomicileRegion', '')
+              this.$set(this.basicInfo, 'placeDomicileCity', '')
+              this.$set(this.basicInfo, 'placeDomicileProvince', '')
             }
           }
         } else {
-          if (value[2].name == "市辖区") {
+          if (value[2].name == '市辖区') {
             // console.log("市辖区");
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceRegionStr",
-              value[2].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceCityStr",
-              value[1].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceProvinceStr",
-              value[0].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceRegion",
-              value[2].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceCity",
-              value[1].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceProvince",
-              value[0].code
-            );
+            this.$set(this.basicInfo, 'nativePlaceRegionStr', value[2].name)
+            this.$set(this.basicInfo, 'nativePlaceCityStr', value[1].name)
+            this.$set(this.basicInfo, 'nativePlaceProvinceStr', value[0].name)
+            this.$set(this.basicInfo, 'nativePlaceRegion', value[2].code)
+            this.$set(this.basicInfo, 'nativePlaceCity', value[1].code)
+            this.$set(this.basicInfo, 'nativePlaceProvince', value[0].code)
           } else {
             if (this.houseEditType == 0) {
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileRegionStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileCityStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileProvinceStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileRegion",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileCity",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "placeDomicileProvince",
-                ""
-              );
+              this.$set(this.basicInfo, 'placeDomicileRegionStr', '')
+              this.$set(this.basicInfo, 'placeDomicileCityStr', '')
+              this.$set(this.basicInfo, 'placeDomicileProvinceStr', '')
+              this.$set(this.basicInfo, 'placeDomicileRegion', '')
+              this.$set(this.basicInfo, 'placeDomicileCity', '')
+              this.$set(this.basicInfo, 'placeDomicileProvince', '')
             }
           }
         }
@@ -1621,89 +1542,41 @@ export default {
             value[1].code &&
             value[0].code
           ) {
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceRegionStr",
-              value[2].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceCityStr",
-              value[1].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceProvinceStr",
-              value[0].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceRegion",
-              value[2].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceCity",
-              value[1].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "nativePlaceProvince",
-              value[0].code
-            );
+            this.$set(this.basicInfo, 'nativePlaceRegionStr', value[2].name)
+            this.$set(this.basicInfo, 'nativePlaceCityStr', value[1].name)
+            this.$set(this.basicInfo, 'nativePlaceProvinceStr', value[0].name)
+            this.$set(this.basicInfo, 'nativePlaceRegion', value[2].code)
+            this.$set(this.basicInfo, 'nativePlaceCity', value[1].code)
+            this.$set(this.basicInfo, 'nativePlaceProvince', value[0].code)
             // console.log(this.houseInfo);
           } else {
             if (this.houseEditType == 0) {
               // console.log("有 清空");
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "nativePlaceRegionStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "nativePlaceCityStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "nativePlaceProvinceStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "nativePlaceRegion",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "nativePlaceCity",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "nativePlaceProvince",
-                ""
-              );
+              this.$set(this.basicInfo, 'nativePlaceRegionStr', '')
+              this.$set(this.basicInfo, 'nativePlaceCityStr', '')
+              this.$set(this.basicInfo, 'nativePlaceProvinceStr', '')
+              this.$set(this.basicInfo, 'nativePlaceRegion', '')
+              this.$set(this.basicInfo, 'nativePlaceCity', '')
+              this.$set(this.basicInfo, 'nativePlaceProvince', '')
             }
           }
         } else {
-          if (value[2].name == "市辖区") {
+          if (value[2].name == '市辖区') {
             // console.log("市辖区");
-            this.$set(this.basicInfo, "nativePlaceRegionStr", value[2].name);
-            this.$set(this.basicInfo, "nativePlaceCityStr", value[1].name);
-            this.$set(this.basicInfo, "nativePlaceProvinceStr", value[0].name);
-            this.$set(this.basicInfo, "nativePlaceRegion", value[2].code);
-            this.$set(this.basicInfo, "nativePlaceCity", value[1].code);
-            this.$set(this.basicInfo, "nativePlaceProvince", value[0].code);
+            this.$set(this.basicInfo, 'nativePlaceRegionStr', value[2].name)
+            this.$set(this.basicInfo, 'nativePlaceCityStr', value[1].name)
+            this.$set(this.basicInfo, 'nativePlaceProvinceStr', value[0].name)
+            this.$set(this.basicInfo, 'nativePlaceRegion', value[2].code)
+            this.$set(this.basicInfo, 'nativePlaceCity', value[1].code)
+            this.$set(this.basicInfo, 'nativePlaceProvince', value[0].code)
           } else {
             if (this.houseEditType == 0) {
-              this.$set(this.basicInfo, "nativePlaceRegionStr", "");
-              this.$set(this.basicInfo, "nativePlaceCityStr", "");
-              this.$set(this.basicInfo, "nativePlaceProvinceStr", "");
-              this.$set(this.basicInfo, "nativePlaceRegion", "");
-              this.$set(this.basicInfo, "nativePlaceCity", "");
-              this.$set(this.basicInfo, "nativePlaceProvince", "");
+              this.$set(this.basicInfo, 'nativePlaceRegionStr', '')
+              this.$set(this.basicInfo, 'nativePlaceCityStr', '')
+              this.$set(this.basicInfo, 'nativePlaceProvinceStr', '')
+              this.$set(this.basicInfo, 'nativePlaceRegion', '')
+              this.$set(this.basicInfo, 'nativePlaceCity', '')
+              this.$set(this.basicInfo, 'nativePlaceProvince', '')
             }
           }
         }
@@ -1715,7 +1588,7 @@ export default {
           value[1].code &&
           value[0].code
         ) {
-          console.log("有内容");
+          console.log('有内容')
           // 如果是直辖市的特殊情况
           if (
             // 都选择了内容的情况下
@@ -1726,226 +1599,94 @@ export default {
             value[0].code
           ) {
             this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCommunityStr",
+              this.basicInfo,
+              'currentResidenceCommunityStr',
               value[4].name
-            );
+            )
             this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceStreetStr",
+              this.basicInfo,
+              'currentResidenceStreetStr',
               value[3].name
-            );
+            )
             this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceRegionStr",
+              this.basicInfo,
+              'currentResidenceRegionStr',
               value[2].name
-            );
+            )
+            this.$set(this.basicInfo, 'currentResidenceCityStr', value[1].name)
             this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCityStr",
-              value[1].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceProvinceStr",
+              this.basicInfo,
+              'currentResidenceProvinceStr',
               value[0].name
-            );
+            )
             this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCommunity",
+              this.basicInfo,
+              'currentResidenceCommunity',
               value[4].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceStreet",
-              value[3].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceRegion",
-              value[2].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCity",
-              value[1].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceProvince",
-              value[0].code
-            );
+            )
+            this.$set(this.basicInfo, 'currentResidenceStreet', value[3].code)
+            this.$set(this.basicInfo, 'currentResidenceRegion', value[2].code)
+            this.$set(this.basicInfo, 'currentResidenceCity', value[1].code)
+            this.$set(this.basicInfo, 'currentResidenceProvince', value[0].code)
             // console.log(this.houseInfo);
           } else {
             if (this.houseEditType == 0) {
               // console.log("有 清空");
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCommunityStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceStreetStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceRegionStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCityStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceProvinceStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCommunity",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceStreet",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceRegion",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCity",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceProvince",
-                ""
-              );
+              this.$set(this.basicInfo, 'currentResidenceCommunityStr', '')
+              this.$set(this.basicInfo, 'currentResidenceStreetStr', '')
+              this.$set(this.basicInfo, 'currentResidenceRegionStr', '')
+              this.$set(this.basicInfo, 'currentResidenceCityStr', '')
+              this.$set(this.basicInfo, 'currentResidenceProvinceStr', '')
+              this.$set(this.basicInfo, 'currentResidenceCommunity', '')
+              this.$set(this.basicInfo, 'currentResidenceStreet', '')
+              this.$set(this.basicInfo, 'currentResidenceRegion', '')
+              this.$set(this.basicInfo, 'currentResidenceCity', '')
+              this.$set(this.basicInfo, 'currentResidenceProvince', '')
             }
           }
         } else {
-          if (value[2].name == "市辖区") {
+          if (value[2].name == '市辖区') {
             // console.log("市辖区");
+            this.$set(this.basicInfo, 'currentResidenceCommunityStr', '')
+            this.$set(this.basicInfo, 'currentResidenceStreetStr', '')
             this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCommunityStr",
-              ""
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceStreetStr",
-              ""
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceRegionStr",
+              this.basicInfo,
+              'currentResidenceRegionStr',
               value[2].name
-            );
+            )
+            this.$set(this.basicInfo, 'currentResidenceCityStr', value[1].name)
             this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCityStr",
-              value[1].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceProvinceStr",
+              this.basicInfo,
+              'currentResidenceProvinceStr',
               value[0].name
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCommunity",
-              ""
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceStreet",
-              ""
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceRegion",
-              value[2].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceCity",
-              value[1].code
-            );
-            this.$set(
-              this.basicInfo.governRealPopulation,
-              "currentResidenceProvince",
-              value[0].code
-            );
+            )
+            this.$set(this.basicInfo, 'currentResidenceCommunity', '')
+            this.$set(this.basicInfo, 'currentResidenceStreet', '')
+            this.$set(this.basicInfo, 'currentResidenceRegion', value[2].code)
+            this.$set(this.basicInfo, 'currentResidenceCity', value[1].code)
+            this.$set(this.basicInfo, 'currentResidenceProvince', value[0].code)
           } else {
             if (this.houseEditType == 0) {
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCommunityStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceStreetStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceRegionStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCityStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceProvinceStr",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCommunity",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceStreet",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceRegion",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceCity",
-                ""
-              );
-              this.$set(
-                this.basicInfo.governRealPopulation,
-                "currentResidenceProvince",
-                ""
-              );
+              this.$set(this.basicInfo, 'currentResidenceCommunityStr', '')
+              this.$set(this.basicInfo, 'currentResidenceStreetStr', '')
+              this.$set(this.basicInfo, 'currentResidenceRegionStr', '')
+              this.$set(this.basicInfo, 'currentResidenceCityStr', '')
+              this.$set(this.basicInfo, 'currentResidenceProvinceStr', '')
+              this.$set(this.basicInfo, 'currentResidenceCommunity', '')
+              this.$set(this.basicInfo, 'currentResidenceStreet', '')
+              this.$set(this.basicInfo, 'currentResidenceRegion', '')
+              this.$set(this.basicInfo, 'currentResidenceCity', '')
+              this.$set(this.basicInfo, 'currentResidenceProvince', '')
             }
           }
         }
       }
 
-      this.cityVisable = false;
-      console.log(this.basicInfo);
+      this.cityVisable = false
+      console.log(this.basicInfo)
     }
   }
-};
+}
 </script>
 <style scoped lang="scss">
 .editUser {

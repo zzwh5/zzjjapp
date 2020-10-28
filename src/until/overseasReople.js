@@ -14,13 +14,13 @@ const overseasReople = [
   {
     id: 3,
     title: '国籍(地区)',
-    dataIndex: 'nationality',
+    dataIndex: 'nationalityStr',
     isSelect: true
   },
   {
     id: 4,
     title: '来华目的',
-    dataIndex: 'toChinaPurpose',
+    dataIndex: 'toChinaPurposeStr',
     isSelect: true
   },
   {
@@ -36,6 +36,6 @@ const overseasReople = [
     dataIndex: 'expectedDepartureDate',
     isSelect: true,
     isRequire: true
-  },
+  }
 ]
 export default overseasReople

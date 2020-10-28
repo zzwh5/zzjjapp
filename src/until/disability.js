@@ -2,13 +2,13 @@ const disability = [
   {
     id: 1,
     title: '残疾程度',
-    dataIndex: 'disabilityDegree',
+    dataIndex: 'disabilityDegreeStr',
     isSelect: true
   },
   {
     id: 2,
     title: '残疾类型',
-    dataIndex: 'disabilityType',
+    dataIndex: 'disabilityTypeStr',
     isSelect: true
   },
   {
@@ -32,19 +32,19 @@ const disability = [
   {
     id: 6,
     title: '劳动能力',
-    dataIndex: 'laborCapacity',
+    dataIndex: 'laborCapacityStr',
     isSelect: true
   },
   {
     id: 7,
     title: '就业状况',
-    dataIndex: 'employmentStatus',
+    dataIndex: 'employmentStatusStr',
     isSelect: true
   },
   {
     id: 8,
     title: '是否有残疾证',
-    dataIndex: 'disabilityCertificate',
+    dataIndex: 'disabilityCertificateStr',
     isSelect: true
   },
   {

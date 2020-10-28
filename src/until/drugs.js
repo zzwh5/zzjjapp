@@ -21,7 +21,7 @@ const drugs = [
   {
     id: 4,
     title: '管控人联系类型',
-    dataIndex: 'controllerContactType',
+    dataIndex: 'controllerContactTypeStr',
     isSelect: true
   },
   {
@@ -45,7 +45,7 @@ const drugs = [
   {
     id: 8,
     title: '帮扶人联系类型',
-    dataIndex: 'helpersContactType',
+    dataIndex: 'helpersContactTypeStr',
     isSelect: true
   },
   {
@@ -57,7 +57,7 @@ const drugs = [
   {
     id: 10,
     title: '有无犯罪史',
-    dataIndex: 'criminalHistory',
+    dataIndex: 'criminalHistoryStr',
     isSelect: true
   },
   {

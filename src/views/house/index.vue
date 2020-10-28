@@ -6,7 +6,7 @@
       </div>
       <div class="head_text">房屋管理</div>
       <div class="head_add" @click="headAdd">
-        <img src="@/assets/add.png" alt v-if="!onlySee" />
+        <img v-if="!onlySee" src="@/assets/add.png" alt />
       </div>
     </div>
     <div class="search">
@@ -14,20 +14,20 @@
       <img src="@/assets/search.png" alt />
     </div>
     <div class="tabs">
-      <van-tabs @change="onClick" animated v-model="type">
+      <van-tabs v-model="type" animated @change="onClick">
         <van-tab title="整套小区">
           <van-list
             v-model="loading"
             :finished="finished"
             finished-text="没有更多数据"
-            @load="onLoad"
             offset="10"
+            @load="onLoad"
           >
             <div class="list">
               <div
-                class="list_item"
                 v-for="item in list"
                 :key="item.id"
+                class="list_item"
                 @click="goFloor(item)"
               >
                 <div class="list_item_l">
@@ -46,15 +46,15 @@
             v-model="loading"
             :finished="finished"
             finished-text="没有更多数据"
-            @load="onLoad"
             offset="30"
+            @load="onLoad"
           >
             <div class="list">
               <div
-                class="list_item"
-                @click="goSFloor(item)"
                 v-for="item in list"
                 :key="item.id"
+                class="list_item"
+                @click="goSFloor(item)"
               >
                 <div class="list_item_l">
                   <p>{{ item.buildingName }}</p>
@@ -71,15 +71,15 @@
             v-model="loading"
             :finished="finished"
             finished-text="没有更多数据"
-            @load="onLoad"
             offset="30"
+            @load="onLoad"
           >
             <div class="list">
               <div
-                class="list_item"
                 v-for="item in list"
-                @click="goFloorDetail(item)"
                 :key="item.id"
+                class="list_item"
+                @click="goFloorDetail(item)"
               >
                 <div class="list_item_l">
                   <p>{{ item.buildingName }}</p>
@@ -96,14 +96,14 @@
             v-model="loading"
             :finished="finished"
             finished-text="没有更多数据"
-            @load="onLoad"
             offset="30"
+            @load="onLoad"
           >
             <div class="list">
               <div
-                class="list_item"
                 v-for="item in list"
                 :key="item.id"
+                class="list_item"
                 @click="goFloorDetail(item)"
               >
                 <div class="list_item_l">
@@ -120,8 +120,8 @@
     </div>
     <!-- 权限弹框 -->
     <van-dialog
-      class="permission"
       v-model="show"
+      class="permission"
       title
       :showConfirmButton="false"
     >
@@ -132,50 +132,50 @@
         </p>
         <!-- 一级 -->
         <div class="list">
-          <div class="list_item" v-for="item in data" :key="item.id">
+          <div v-for="item in data" :key="item.id" class="list_item">
             <div class="tit" @click="changeActiveName(item)">
               <p :class="item.id == permission.id ? 'active' : ''">
                 {{ item.name }}
               </p>
               <p v-if="item.hasChildren">
-                <van-icon name="arrow-up" v-if="item.isdown" />
-                <van-icon name="arrow-down" v-else />
+                <van-icon v-if="item.isdown" name="arrow-up" />
+                <van-icon v-else name="arrow-down" />
               </p>
             </div>
             <!-- 二级 -->
-            <div class="list children" v-if="item.isdown && item.hasChildren">
+            <div v-if="item.isdown && item.hasChildren" class="list children">
               <div
-                class="list_item"
                 v-for="(item1, index) in item.children"
                 :key="item1.id"
+                class="list_item"
               >
                 <div class="tit" @click="changeActiveName(item1, index)">
                   <p :class="item1.id == permission.id ? 'active' : ''">
                     {{ item1.name }}
                   </p>
                   <p v-if="item1.hasChildren">
-                    <van-icon name="arrow-up" v-if="item1.isdown" />
-                    <van-icon name="arrow-down" v-else />
+                    <van-icon v-if="item1.isdown" name="arrow-up" />
+                    <van-icon v-else name="arrow-down" />
                   </p>
                 </div>
                 <!-- 三级 -->
                 <div
-                  class="list children"
                   v-if="item1.isdown && item1.hasChildren"
+                  class="list children"
                 >
                   <!-- {{ item1.isdown }} -->
                   <div
-                    class="list_item"
                     v-for="item2 in item1.children"
                     :key="item2.id"
+                    class="list_item"
                   >
                     <div class="tit" @click="changeActiveName(item2)">
                       <p :class="item2.id == permission.id ? 'active' : ''">
                         {{ item2.name }}
                       </p>
                       <p v-if="item2.hasChildren">
-                        <van-icon name="arrow-up" v-if="item2.isdown" />
-                        <van-icon name="arrow-down" v-else />
+                        <van-icon v-if="item2.isdown" name="arrow-up" />
+                        <van-icon v-else name="arrow-down" />
                       </p>
                     </div>
                   </div>
@@ -191,9 +191,9 @@
       v-model="shows"
       title=""
       show-cancel-button
+      style="padding:5% 10%;box-sizing:border-box;padding-bottom:2%"
       @cancel="cancelEdit"
       @confirm="confirmEdit"
-      style="padding:5% 10%;box-sizing:border-box;padding-bottom:2%"
     >
       是否不选择对应的网格只是查看信息
     </van-dialog>
@@ -202,20 +202,20 @@
 
 <script>
 // 获取接口
-import { getEstat, getFloor } from "@/api/house";
-import { getTree, getChildTree } from "@/api/common";
-import { Toast } from "vant";
-import { Dialog } from "vant";
+import { getEstat, getFloor } from '@/api/house'
+import { getChildTree } from '@/api/common'
+import { Toast } from 'vant'
+// import { Dialog } from 'vant'
 export default {
-  name: "House",
+  name: 'House',
   data() {
     return {
       // 是否可操作
       onlySee: true,
       // 顶部的搜索框内容
-      values: "",
+      values: '',
       // orgid 应该是用户登录之后拿到的
-      orgId: "",
+      orgId: '',
       // 楼栋类型
       buildingTypeList: [1],
       // 列表数组
@@ -234,189 +234,198 @@ export default {
       shows: false,
       // 用户选择的权限
       permission: {
-        name: "",
-        id: ""
+        name: '',
+        id: ''
       },
       // 组织结构数据
       data: [
         {
-          id: sessionStorage.getItem("orgId"),
-          name: sessionStorage.getItem("name"),
+          id: sessionStorage.getItem('orgId'),
+          name: sessionStorage.getItem('name'),
           hasChildren: true,
           isdown: false,
           children: []
         }
       ]
-    };
+    }
   },
   created() {
+    // 最后对接项目的时候 在main.js中路由判断有没有登录注释掉 再把这里的获取地址栏的参数打开就行
+    // 根据 this.$route.query.参数名就可以拿到对应的参数
+    // console.log(this.$route.query.orgId);
+    // console.log(this.$route.query.orgName);
+    // var orgId = this.$route.query.orgId
+    // var orgName = this.$route.query.orgName
+    // sessionStorage.setItem('orgId',orgId)
+    // sessionStorage.setItem('orgName',orgName)
+
     // console.log(process.env.VUE_APP_BASE_API);
     // 清空sessionStorage的时候将必要的参数先保存下来
-    var type = sessionStorage.getItem("hType");
-    var name = sessionStorage.getItem("name");
-    var orgId = sessionStorage.getItem("orgId");
-    sessionStorage.clear();
-    sessionStorage.setItem("name", name);
-    sessionStorage.setItem("orgId", orgId);
-    this.orgId = orgId;
+    var type = sessionStorage.getItem('hType')
+    var name = sessionStorage.getItem('name')
+    var orgId = sessionStorage.getItem('orgId')
+    sessionStorage.clear()
+    sessionStorage.setItem('name', name)
+    sessionStorage.setItem('orgId', orgId)
+    this.orgId = orgId
     if (type) {
-      sessionStorage.setItem("hType", type);
+      sessionStorage.setItem('hType', type)
       if (type == 1) {
-        this.buildingTypeList = [1];
+        this.buildingTypeList = [1]
       } else if (type == 2) {
-        this.buildingTypeList = [2];
+        this.buildingTypeList = [2]
       } else if (type == 3) {
-        this.buildingTypeList = [3, 4, 5];
+        this.buildingTypeList = [3, 4, 5]
       }
-      this.type = Number(type);
+      this.type = Number(type)
       // console.log(this.type);
     }
     // 判断是否选择权限
     // console.log(this.orgId);
     if (this.orgId.length == 6) {
       // console.log("滕州市");
-      this.show = false;
-      sessionStorage.setItem("onlySee", true);
+      this.show = false
+      sessionStorage.setItem('onlySee', true)
     } else if (this.orgId.length == 15) {
-      this.show = false;
-      sessionStorage.setItem("onlySee", false);
-      this.onlySee = false;
+      this.show = false
+      sessionStorage.setItem('onlySee', false)
+      this.onlySee = false
     } else {
-      this.show = true;
-      sessionStorage.setItem("onlySee", true);
+      this.show = true
+      sessionStorage.setItem('onlySee', true)
     }
     // 设置默认的房屋类型
-    sessionStorage.setItem("houseType", this.type);
+    sessionStorage.setItem('houseType', this.type)
   },
   methods: {
     // 测试用
     goPeople() {
-      this.$router.push({ name: "People" });
+      this.$router.push({ name: 'People' })
     },
     // 选择网格
     getTree() {
       getChildTree(370481115).then(res => {
-        console.log(res);
-      });
+        console.log(res)
+      })
     },
     // 点击网格的时候
     changeActiveName(item, index) {
       // console.log(item);
       // 将点击的orgid和orgName保存到data的permission中  点击确定的时候更改sessionStorage
-      this.permission.id = item.id;
-      this.permission.name = item.name;
+      this.permission.id = item.id
+      this.permission.name = item.name
       // console.log(item.hasChildren, item.isdown);
       // 判断是不是拥有子级内容 没有直接返回
       if (!item.hasChildren || item.isdown) {
         // console.log(11111);
-        item.isdown = !item.isdown;
+        item.isdown = !item.isdown
         // console.log(item);
-        this.$forceUpdate();
-        return;
+        this.$forceUpdate()
+        return
       }
-      item.isdown = !item.isdown;
-      item.children = [];
-      var id = item.id;
+      item.isdown = !item.isdown
+      item.children = []
+      var id = item.id
       Toast.loading({
-        message: "加载中...",
+        message: '加载中...',
         forbidClick: true,
         duration: 10000
-      });
+      })
       getChildTree(id).then(res => {
-        Toast.clear();
+        Toast.clear()
         // console.log(res);
-        var turn = res.ret[0].name.indexOf("网格") == -1 ? false : true;
+        var turn = res.ret[0].name.indexOf('网格') != -1
         // console.log(turn);
         if (turn) {
           // console.log(index);
           res.ret.forEach(el => {
             // console.log(el);
-            el.hasChildren = false;
-            el.isdown = false;
-          });
+            el.hasChildren = false
+            el.isdown = false
+          })
 
-          item.children = res.ret;
+          item.children = res.ret
           // console.log(item.children);
-          this.$forceUpdate();
-          return;
+          this.$forceUpdate()
+          return
         }
-        item.children = res.ret;
+        item.children = res.ret
         item.children.forEach(el => {
-          el.hasChildren = true;
-          el.isdown = false;
-          el.children = [];
-        });
-        this.$forceUpdate();
+          el.hasChildren = true
+          el.isdown = false
+          el.children = []
+        })
+        this.$forceUpdate()
         // console.log(item);
-      });
+      })
     },
     // 确认选择的权限
     confirmPermisson() {
-      console.log(this.permission);
-      console.log(this.buildingTypeList);
+      console.log(this.permission)
+      console.log(this.buildingTypeList)
       // this.show = false;
-      if (this.permission.name == "" || this.permission.id.length !== 15) {
-        this.shows = true;
+      if (this.permission.name == '' || this.permission.id.length !== 15) {
+        this.shows = true
       } else if (
-        this.permission.name != "" ||
+        this.permission.name != '' ||
         this.permission.id.length == 15
       ) {
-        this.list = [];
-        this.show = false;
-        this.shows = false;
-        this.orgId = this.permission.id;
-        this.onlySee = false;
-        sessionStorage.setItem("name", this.permission.name);
-        sessionStorage.setItem("orgId", this.permission.id);
-        sessionStorage.setItem("onlySee", false);
+        this.list = []
+        this.show = false
+        this.shows = false
+        this.orgId = this.permission.id
+        this.onlySee = false
+        sessionStorage.setItem('name', this.permission.name)
+        sessionStorage.setItem('orgId', this.permission.id)
+        sessionStorage.setItem('onlySee', false)
         if (this.type == 0) {
-          this.getEstat();
+          this.getEstat()
         } else {
-          this.getFloor();
+          this.getFloor()
         }
       }
     },
     // 确认更改权限
     confirmEdit() {
       // 如果用户没有选择权限话 还事默认的
-      if (this.permission.name == "") {
-        this.show = false;
-        this.shows = false;
-        return;
+      if (this.permission.name == '') {
+        this.show = false
+        this.shows = false
+        return
       }
-      this.list = [];
-      this.show = false;
-      this.shows = false;
-      this.orgId = this.permission.id;
-      sessionStorage.setItem("name", this.permission.name);
-      sessionStorage.setItem("orgId", this.permission.id);
+      this.list = []
+      this.show = false
+      this.shows = false
+      this.orgId = this.permission.id
+      sessionStorage.setItem('name', this.permission.name)
+      sessionStorage.setItem('orgId', this.permission.id)
       if (this.type == 0) {
-        this.getEstat();
+        this.getEstat()
       } else {
-        this.getFloor();
+        this.getFloor()
       }
     },
     // 取消更改权限
     cancelEdit() {},
     // 顶部搜索
     Input(e) {
-      var that = this;
-      this.list = [];
-      this.loading = true;
+      var that = this
+      this.list = []
+      this.loading = true
       // console.log(e.data);
-      this.values = e.data;
-      var index = this.type;
+      this.values = e.data
+      var index = this.type
       if (index == 0) {
-        that.getEstat();
+        that.getEstat()
       } else {
         if (index == 1) {
-          that.buildingTypeList = [1];
+          that.buildingTypeList = [1]
         } else if (index == 2) {
-          that.buildingTypeList = [2];
+          that.buildingTypeList = [2]
         } else if (index == 3) {
-          that.buildingTypeList = [3, 4, 5];
+          that.buildingTypeList = [3, 4, 5]
         }
-        that.getFloor();
+        that.getFloor()
       }
     },
     // 点击tab切换的时候
@@ -425,37 +434,37 @@ export default {
       // if (index == this.type) {
       //   return false;
       // }
-      var that = this;
-      console.log(this.loading);
+      var that = this
+      console.log(this.loading)
       // console.log(this.pageNo);
       // console.log(index);
       // 为了下次进来还在当前的tab下面所以 设置一个本地存储 hType
-      sessionStorage.setItem("hType", index);
+      sessionStorage.setItem('hType', index)
       // 顺带设置一个 当前的房屋的类型 小区、单栋民房、单栋楼房、别墅(三种类型的别墅)
-      sessionStorage.setItem("houseType", index);
+      sessionStorage.setItem('houseType', index)
       // 改变当前的tab索引
-      this.type = index;
+      this.type = index
       // 改变当前数据的页数
-      this.pageNo = 1;
+      this.pageNo = 1
       // 先清空数据列表
-      this.list = [];
+      this.list = []
       // console.log(this.list);
       // 允许继续请求数据
-      this.finished = false;
+      this.finished = false
       // this.loading = false;
-      this.loading = true;
+      this.loading = true
       // setTimeout(function() {
       if (index == 0) {
-        that.getEstat();
+        that.getEstat()
       } else {
         if (index == 1) {
-          that.buildingTypeList = [1];
+          that.buildingTypeList = [1]
         } else if (index == 2) {
-          that.buildingTypeList = [2];
+          that.buildingTypeList = [2]
         } else if (index == 3) {
-          that.buildingTypeList = [3, 4, 5];
+          that.buildingTypeList = [3, 4, 5]
         }
-        that.getFloor();
+        that.getFloor()
       }
       // this.$router.go(0);
       // }, 100);
@@ -465,116 +474,116 @@ export default {
       if (this.type == 0) {
         // console.log("新增小区");
         // 改变session中的小区的操作类型为修改  0为新增 1为修改
-        sessionStorage.setItem("estateEditType", 0);
-        this.$router.push({ name: "EditEstate" });
+        sessionStorage.setItem('estateEditType', 0)
+        this.$router.push({ name: 'EditEstate' })
       } else {
         // 更改当前操作楼栋的类型
-        sessionStorage.setItem("residentType", this.type);
+        sessionStorage.setItem('residentType', this.type)
         // 更改当前的楼栋编辑类型
-        sessionStorage.setItem("floorEditType", 0);
-        this.$router.push({ name: "EditFloor" });
+        sessionStorage.setItem('floorEditType', 0)
+        this.$router.push({ name: 'EditFloor' })
       }
     },
     // 前往楼栋
     goFloor(item) {
-      var id = item.id;
+      var id = item.id
       // 小区id
       // console.log(id);
-      sessionStorage.setItem("estateId", id);
-      this.$router.push({ name: "Floor" });
+      sessionStorage.setItem('estateId', id)
+      this.$router.push({ name: 'Floor' })
     },
     // 前往楼栋下的房间页面   单栋民房
     goSFloor(item) {
       // console.log(item.id);
       // return false;
       // 更改session中设置楼栋id
-      sessionStorage.setItem("residentId", item.id);
+      sessionStorage.setItem('residentId', item.id)
       // console.log(residentId);
-      this.$router.push({ name: "Resident" });
+      this.$router.push({ name: 'Resident' })
     },
     // 前往楼栋详情页面
     goFloorDetail(item) {
       // console.log(22222222);
-      sessionStorage.setItem("residentId", item.id);
-      this.$router.push({ name: "ResidentInfo" });
+      sessionStorage.setItem('residentId', item.id)
+      this.$router.push({ name: 'ResidentInfo' })
     },
     // 下拉到底部请求数据
     onLoad() {
       // console.log(this.finished);
-      var that = this;
+      var that = this
       // this.pageNo = Number(this.pageNo) + 1;
       // if (this.pageNo == 1) {
       //   return false;
       // }
       if (this.type == 0) {
         // console.log("到底部了");
-        this.getEstat();
+        this.getEstat()
       } else {
-        this.getFloor();
+        this.getFloor()
       }
     },
     // 获取小区
     getEstat() {
-      var that = this;
+      var that = this
       var obj = {
         pageNo: this.pageNo,
         pageSize: this.pageSize,
         orgId: this.orgId,
         villageName: this.values
-      };
+      }
       return getEstat(obj)
         .then(res => {
           if (res.code != 200) {
-            return false;
+            return false
           }
 
           // console.log(res);
           // that.list = res.result.data;
           res.result.data.forEach((el, i) => {
-            that.list.push(el);
-          });
-          that.loading = false;
-          that.pageNo = Number(this.pageNo) + 1;
+            that.list.push(el)
+          })
+          that.loading = false
+          that.pageNo = Number(this.pageNo) + 1
           // total后台查询比较慢  不返了
 
           if (res.result.total == that.list.length) {
-            that.finished = true;
+            that.finished = true
           }
         })
         .catch(res => {
           // console.log(res);
-          that.finished = true;
-        });
+          that.finished = true
+        })
     },
     // 获取楼栋
     getFloor() {
-      var that = this;
+      var that = this
       var obj = {
         pageNo: this.pageNo,
         pageSize: this.pageSize,
         orgId: this.orgId,
         buildingTypeList: this.buildingTypeList,
         buildingName: this.values
-      };
+      }
       return getFloor(obj)
         .then(res => {
           // console.log(res);
           // that.list = res.result.data;
           res.result.data.forEach((el, i) => {
-            that.list.push(el);
-          });
-          that.loading = false;
-          that.pageNo = Number(this.pageNo) + 1;
+            that.list.push(el)
+          })
+          that.loading = false
+          that.pageNo = Number(this.pageNo) + 1
           if (res.result.total == that.list.length) {
-            that.finished = true;
+            that.finished = true
           }
         })
         .catch(res => {
-          that.finished = true;
-        });
+          that.finished = true
+        })
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .home {
