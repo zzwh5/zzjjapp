@@ -101,7 +101,21 @@
         </div>
         <div v-for="item in columns" :key="item.id" class="info_item">
           <van-field
+            v-if="item.title !== '单元总数'"
             v-model="residentInfo[item.dataIndex]"
+            colon
+            :label="item.title"
+            label-align="left"
+            placeholder="请输入"
+            :required="item.isRequire"
+            :rules="item.isRequire ? [{ required: true }] : []"
+          />
+          <van-field
+            v-if="
+              item.title == '单元总数' && residentType != 2 && residentType != 3
+            "
+            v-model="residentInfo[item.dataIndex]"
+            type="number"
             colon
             :label="item.title"
             label-align="left"
@@ -216,6 +230,12 @@ const columns = [
   //   id: 1,
   //   isRequire: true
   // },
+  {
+    title: '单元总数',
+    dataIndex: 'buildingElement',
+    id: 1,
+    isRequire: false
+  },
   {
     title: '地上层数',
     dataIndex: 'theUpperNumber',
