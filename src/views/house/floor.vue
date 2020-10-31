@@ -7,7 +7,7 @@
       </div>
       <div class="head_text">小区楼栋</div>
       <div class="head_add" @click="addFloor">
-        <img src="@/assets/add.png" @click="addEstate" v-if="!onlySee" alt />
+        <img v-if="!onlySee" src="@/assets/add.png" alt />
       </div>
     </div>
     <!-- 小区信息 点击会查看小区的信息 -->
@@ -20,26 +20,26 @@
     </div>
     <!-- 暂无楼栋的数据 -->
     <nodata
-      :text="nodataText"
       v-if="
         !estateInfo.governBuildings || estateInfo.governBuildings.length <= 0
       "
+      :text="nodataText"
     />
     <!-- 楼栋的列表 -->
     <div
-      class="floor_list"
       v-if="estateInfo.governBuildings && estateInfo.governBuildings.length > 0"
+      class="floor_list"
     >
       <!-- @click="goFloor" -->
       <div
-        class="floor_item"
         v-for="(item, index) in estateInfo.governBuildings"
         :key="item.id"
+        class="floor_item"
       >
         <div
           class="item_con"
-          @click="changeFloor(index)"
           :class="index == nowFloorType ? 'active' : ''"
+          @click="changeFloor(index)"
         >
           <p>{{ item.buildingName }}幢</p>
           <p>{{ item.time }}建</p>
@@ -61,20 +61,20 @@
 </template>
 <script>
 // 引入接口
-import { getFloorByEstate } from "@/api/house";
+import { getFloorByEstate } from '@/api/house'
 // 引入没有数据的组件
-import nodata from "@/components/nodata";
+import nodata from '@/components/nodata'
 export default {
+  name: 'Floor',
   components: {
     nodata
   },
-  name: "Floor",
   data() {
     return {
       // 当前的权限是不是只是只查看
-      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
+      onlySee: sessionStorage.getItem('onlySee') != 'false',
       // 小区的id
-      estateId: sessionStorage.getItem("estateId"),
+      estateId: sessionStorage.getItem('estateId'),
       // 小区的信息 包括楼栋
       estateInfo: {},
       // 当前点击的楼栋
@@ -82,24 +82,24 @@ export default {
       // 底部弹框的显示与否
       dialog: false,
       // 没有数据的提示
-      nodataText: "没有更多数据"
-    };
+      nodataText: '没有更多数据'
+    }
   },
   created() {
-    this.getFloor();
+    this.getFloor()
   },
   methods: {
     // 前往新增楼栋页面
     addFloor() {
       // 更改当前操作楼栋的类型 0为小区楼栋
-      sessionStorage.setItem("residentType", 0);
+      sessionStorage.setItem('residentType', 0)
       // 更改当前的楼栋编辑类型
-      sessionStorage.setItem("floorEditType", 0);
-      this.$router.push({ name: "EditFloor" });
+      sessionStorage.setItem('floorEditType', 0)
+      this.$router.push({ name: 'EditFloor' })
     },
     // 前往小区详情页
     goEstateInfo() {
-      this.$router.push({ name: "EstateInfo" });
+      this.$router.push({ name: 'EstateInfo' })
     },
     // 千万小区详情页
     addEstate() {
@@ -110,44 +110,44 @@ export default {
     // 前往小区房户
     goResident() {
       // 当前楼栋的id
-      var residentId = this.estateInfo.governBuildings[this.nowFloorType].id;
+      var residentId = this.estateInfo.governBuildings[this.nowFloorType].id
       // 再session中设置楼栋id
-      sessionStorage.setItem("residentId", residentId);
+      sessionStorage.setItem('residentId', residentId)
       // console.log(residentId);
-      this.$router.push({ name: "Resident" });
+      this.$router.push({ name: 'Resident' })
     },
     // 查看楼栋信息
     goResidentInfo() {
       // 当前楼栋的id
-      var residentId = this.estateInfo.governBuildings[this.nowFloorType].id;
+      var residentId = this.estateInfo.governBuildings[this.nowFloorType].id
       // 更改session中设置楼栋id
-      sessionStorage.setItem("residentId", residentId);
-      this.$router.push({ name: "ResidentInfo" });
+      sessionStorage.setItem('residentId', residentId)
+      this.$router.push({ name: 'ResidentInfo' })
     },
     // 返回上一级路由
     goback() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     },
     // 根据小区id获取楼栋
     getFloor() {
-      var that = this;
+      var that = this
       var obj = {
         id: this.estateId
-      };
+      }
       return getFloorByEstate(obj).then(res => {
         // console.log(res);
-        that.estateInfo = res.ret;
-      });
+        that.estateInfo = res.ret
+      })
     },
     // 改变当前选择的楼栋号
     changeFloor(index) {
       // 改变当前的楼栋索引
-      this.nowFloorType = index;
+      this.nowFloorType = index
       // 改变底部弹框的展示与否
-      this.dialog = true;
+      this.dialog = true
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .floor {

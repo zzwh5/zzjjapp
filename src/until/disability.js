@@ -51,7 +51,7 @@ const disability = [
     id: 9,
     title: '领证时间',
     dataIndex: 'obtainingCertificateDate',
-    isSelect: false
+    isSelect: true
   },
   {
     id: 10,

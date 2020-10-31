@@ -38,28 +38,28 @@ const communityCorrection = [
   {
     id: 7,
     title: '原判刑开始日期',
-    dataIndex: 'originalSentenceStartingDateStr',
+    dataIndex: 'originalSentenceStartingDate',
     isSelect: true,
     isRequire: true
   },
   {
     id: 8,
     title: '原判刑结束日期',
-    dataIndex: 'originalSentenceEndDateStr',
+    dataIndex: 'originalSentenceEndDate',
     isSelect: true,
     isRequire: true
   },
   {
     id: 9,
     title: '矫正开始日期',
-    dataIndex: 'correctionStartDateStr',
+    dataIndex: 'correctionStartDate',
     isSelect: true,
     isRequire: true
   },
   {
     id: 10,
     title: '矫正结束日期',
-    dataIndex: 'correctionEndDateStr',
+    dataIndex: 'correctionEndDate',
     isSelect: true,
     isRequire: true
   },

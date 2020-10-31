@@ -60,7 +60,7 @@
                   <van-button
                     size="small"
                     type="primary"
-                    @click.native.stop.prevent="searchHuzhu"
+                    @click.native.stop.prevent="searchHuzhu(item.title)"
                     >搜索</van-button
                   >
                 </template>
@@ -93,7 +93,16 @@
                 :required="item.isRequire"
                 placeholder="请输入"
                 :rules="item.isRequire ? [{ required: true }] : []"
-              />
+              >
+                <template v-if="item.title == '公民身份证号'" #button>
+                  <van-button
+                    size="small"
+                    type="primary"
+                    @click.native.stop.prevent="searchHuzhu(item.title)"
+                    >搜索</van-button
+                  >
+                </template>
+              </van-field>
               <!-- 占位 -->
               <span></span>
             </div>
@@ -158,7 +167,7 @@
       </div>
       <!-- 特殊人群 -->
       <div v-if="navType == 2" class="content_special">
-        <van-collapse v-model="activeName" accordion>
+        <van-collapse v-model="activeName">
           <van-collapse-item
             v-for="item in specialList"
             :key="item.id"
@@ -173,7 +182,7 @@
                 :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#fff' : '#000' }"
-                @click.native.prevent="item.turn = true"
+                @click.native.prevent.stop="openSpecial(item, 'special')"
                 >是</van-button
               >
               <van-button
@@ -182,7 +191,7 @@
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#000' : '#fff' }"
-                @click.native.prevent.stop="delSpecial(item)"
+                @click.native.prevent.stop="delSpecial(item, 'special')"
                 >否</van-button
               >
             </template>
@@ -241,7 +250,7 @@
       </div>
       <!-- 实有人口 -->
       <div v-if="navType == 3" class="content_more">
-        <van-collapse v-model="activeNames" accordion>
+        <van-collapse v-model="activeNames">
           <van-collapse-item
             v-for="item in moreList"
             :key="item.id"
@@ -257,7 +266,7 @@
                 :color="item.turn ? '#1B88F7' : '#EBEBEB'"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#fff' : '#000' }"
-                @click.native.prevent="item.turn = true"
+                @click.native.prevent.stop="openSpecial(item, 'more')"
                 >是</van-button
               >
               <van-button
@@ -266,7 +275,7 @@
                 type="danger"
                 style="width:56px;height:31px;border-radius:5px;"
                 :style="{ color: item.turn ? '#000' : '#fff' }"
-                @click.native.prevent.stop="delSpecial(item)"
+                @click.native.prevent.stop="delSpecial(item, 'more')"
                 >否</van-button
               >
             </template>
@@ -417,10 +426,12 @@ import basicLivingAllowance from '@/until/basicLivingAllowance'
 import exceptionalPoverty from '@/until/exceptionalPoverty'
 // 就业/失业
 import service from '@/until/service'
+// import { Console } from 'console'
 export default {
   name: 'EditUser',
   data() {
     return {
+      cityType: null,
       orgId: sessionStorage.getItem('orgId'),
       // 是不是基本信息的档案管理的下拉框
       isGover: false,
@@ -469,9 +480,9 @@ export default {
       // 其实日期
       minDate: new Date(1800, 0, 1),
       // 特殊人群折叠面板展开的项
-      activeName: null,
+      activeName: [],
       // 扩展信息折叠面板展开的项
-      activeNames: null,
+      activeNames: [],
       // 特殊人群列表
       specialList: [
         {
@@ -480,7 +491,7 @@ export default {
           type: releasedFromPrison,
           name: 'releasedFromPrisonInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -489,7 +500,7 @@ export default {
           type: communityCorrection,
           name: 'communityCorrectionInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -498,7 +509,7 @@ export default {
           type: psychosis,
           name: 'psychosisInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -507,7 +518,7 @@ export default {
           type: drugs,
           name: 'drugsInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -516,7 +527,7 @@ export default {
           type: aids,
           name: 'aids',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -525,7 +536,7 @@ export default {
           type: letter,
           name: 'letterInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -534,7 +545,7 @@ export default {
           type: teenager,
           name: 'teenagerInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         }
       ],
@@ -544,7 +555,7 @@ export default {
           title: '留守人员',
           type: rear,
           name: 'rearInfo',
-          turn: true,
+          turn: false,
           loading: false,
           names: {}
         },
@@ -554,7 +565,7 @@ export default {
           type: overseasReople,
           name: 'overseasReopleInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -563,7 +574,7 @@ export default {
           type: sanwu,
           name: 'sanwuInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -572,7 +583,7 @@ export default {
           type: empty,
           name: 'emptyInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -581,7 +592,7 @@ export default {
           type: death,
           name: 'deathInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -590,7 +601,7 @@ export default {
           type: disability,
           name: 'disabilityInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -599,7 +610,7 @@ export default {
           type: basicLivingAllowance,
           name: 'basicLivingAllowanceInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -608,7 +619,7 @@ export default {
           type: exceptionalPoverty,
           name: 'exceptionalPovertyInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         },
         {
@@ -617,7 +628,7 @@ export default {
           type: service,
           name: 'serviceInfo',
           names: {},
-          turn: true,
+          turn: false,
           loading: false
         }
       ],
@@ -687,7 +698,7 @@ export default {
           value.nativePlaceProvinceStr != null ||
           value.nativePlaceProvinceStr
         ) {
-          console.log(12132132)
+          // console.log(12132132)
           this.basicInfo.nativePlaces =
             this.basicInfo.nativePlaceProvinceStr +
             this.basicInfo.nativePlaceCityStr +
@@ -708,8 +719,9 @@ export default {
 
     moreList: {
       handler: function(value, old) {
-        // console.log(value);
+        // console.log(value)
         var obj = value[0].names
+        console.log(obj)
         if (
           obj.mainFamilyMembersWorkProvince != null ||
           obj.mainFamilyMembersWorkProvince != null
@@ -721,9 +733,35 @@ export default {
         }
       },
       deep: true
+    },
+    specialList: {
+      handler: function(value, old) {
+        // console.log(value);
+        var obj = value[6].names
+        // console.log(obj)
+        if (
+          obj.guardianResidenceProvinceStr != null ||
+          obj.guardianResidenceProvince != null
+        ) {
+          this.specialList[6].names.guardianResidenceProvinces =
+            obj.guardianResidenceProvinceStr +
+            obj.guardianResidenceCityStr +
+            obj.guardianResidenceRegionStr
+          console.log(value[6].names)
+        }
+      },
+      deep: true
     }
   },
   created() {
+    // activeName
+    var that = this
+    // this.specialList.forEach(item => {
+    //   that.activeName.push(item.name)
+    // })
+    // this.moreList.forEach(item => {
+    //   that.activeNames.push(item.name)
+    // })
     // 省市区
     this.getArea('', 0)
     if (this.userEditType != 0) {
@@ -740,14 +778,29 @@ export default {
       this.$router.go(-1)
     },
     // 搜索户主信息并且回显
-    searchHuzhu() {
-      console.log(this.basicInfo.householderIdCard)
-      if (!this.basicInfo.householderIdCard) {
-        Notify({ type: 'warning', message: '请先输入户主公民身份证号' })
-        return false
+    searchHuzhu(title) {
+      // console.log(this.basicInfo.householderIdCard)
+      // console.log(title)
+      // return
+      if (title == '户主公民身份证号') {
+        if (!this.basicInfo.householderIdCard) {
+          Notify({ type: 'warning', message: '请先输入户主公民身份证号' })
+          return false
+        }
+      } else {
+        if (!this.basicInfo.idCard) {
+          Notify({ type: 'warning', message: '请先输入公民身份证号' })
+          return false
+        }
       }
-      var obj = {
-        idCard: this.basicInfo.householderIdCard
+      if (title == '户主公民身份证号') {
+        var obj = {
+          idCard: this.basicInfo.householderIdCard
+        }
+      } else {
+        var obj = {
+          idCard: this.basicInfo.idCard
+        }
       }
       return getZhuhubybasicid(obj).then(res => {
         // console.log(res);
@@ -759,12 +812,32 @@ export default {
           Notify({ type: 'warning', message: '未查询到户主信息,请手动输入' })
           return false
         }
-        // this.basicInfo.householderIdCard =
-        this.basicInfo.householderName = res.ret.fullName
-        this.basicInfo.householderGenderStr = res.ret.genderStr
-        this.basicInfo.householderContactTypeStr = res.ret.contactTypeStr
-        this.basicInfo.householderContactInformation =
-          res.ret.contactInformation
+        if (title == '户主公民身份证号') {
+          // this.basicInfo.householderIdCard =
+          this.basicInfo.householderName = res.ret.fullName
+          this.basicInfo.householderGenderStr = res.ret.genderStr
+          this.basicInfo.householderContactTypeStr = res.ret.contactTypeStr
+          this.basicInfo.householderContactInformation =
+            res.ret.contactInformation
+          this.$forceUpdate()
+          return
+        }
+        this.basicInfo = res.ret
+        this.basicInfo.placeDomiciles =
+          this.basicInfo.placeDomicileProvinceStr +
+          this.basicInfo.placeDomicileCityStr +
+          this.basicInfo.placeDomicileRegionStr
+        this.basicInfo.nativePlaces =
+          this.basicInfo.nativePlaceProvinceStr +
+          this.basicInfo.nativePlaceCityStr +
+          this.basicInfo.nativePlaceRegionStr
+        this.basicInfo.currentResidences =
+          this.basicInfo.currentResidenceProvinceStr +
+          this.basicInfo.currentResidenceCityStr +
+          this.basicInfo.currentResidenceRegionStr +
+          this.basicInfo.currentResidenceStreetStr +
+          this.basicInfo.currentResidenceCommunityStr
+
         this.$forceUpdate()
         // console.log(this.basicInfo)
       })
@@ -814,8 +887,20 @@ export default {
         return false
       }
 
+      if (text == '监护人居住(省市区)') {
+        this.cityVisable = true
+        this.cityType = 4
+        var obj = this.areaList[0]
+        this.areaList = [obj, { values: [] }, { values: [] }]
+        return false
+      }
+
       // console.log(text.indexOf("日期") != -1);
-      if (text.indexOf('日期') != -1 || text == '批准时间') {
+      if (
+        text.indexOf('时间') != -1 ||
+        text.indexOf('日期') != -1 ||
+        text == '批准时间'
+      ) {
         // console.log("riqi");
         // return false;
         this.Timeshow = true
@@ -830,6 +915,15 @@ export default {
         text === '就业状况'
       ) {
         text = '标识'
+      }
+      if (text == '与监护人关系' || text == '与留守人员关系') {
+        text = '人员关系'
+      }
+      if (text == '留守人员类型') {
+        text = '人员类型'
+      }
+      if (text == '目前危险性评估等级') {
+        text = '危险性评估等级'
       }
       if (text === '房屋类型') {
         this.dialogList = [
@@ -1027,11 +1121,43 @@ export default {
         }
       })
     },
+    openSpecial(item, type) {
+      item.turn = true
+      if (type == 'special') {
+        this.activeName.push(item.name)
+        // var obj = {
+        //   basicsId: this.basicId,
+        //   name: item.name.split('Info')[0]
+        // }
+        // return getSpecialByBasicid(obj).then(res => {
+        //   item.names = res.ret ? res.ret : []
+        // })
+      } else if (type == 'more') {
+        this.activeNames.push(item.name)
+        // var obj = {
+        //   basicsId: this.basicId,
+        //   name: item.name.split('Info')[0]
+        // }
+        // return getSpecialByBasicid(obj).then(res => {
+        //   item.names = res.ret ? res.ret : []
+        // })
+      }
+    },
     //  如果不是对应的特殊人群或者实有人口 取消选中状态 并且调用删除接口
-    delSpecial(item) {
-      // 收起所有的折叠面板
-      this.activeName = null
-      this.activeNames = null
+    delSpecial(item, type) {
+      console.log(item.name)
+      // 根据的对应的type展示对应的面板
+      if (type == 'special') {
+        this.activeName = this.activeName.filter(v => {
+          // console.log(v)
+          return v != item.name
+        })
+      } else if (type == 'more') {
+        this.activeNames = this.activeNames.filter(v => {
+          return v != item.name
+        })
+        console.log(this.activeNames)
+      }
       // console.log(item.names);
       // item.names 是对应的保存字段的对象
       this.ids = item.names.id
@@ -1216,8 +1342,17 @@ export default {
       if (this.userEditType == 0) {
         if (index != 0) {
           if (!this.basicId) {
-            Notify({ type: 'warning', message: '请先选择基本信息' })
+            Notify({ type: 'warning', message: '请先提交基本信息' })
             return false
+          }
+          if (index == 1) {
+            this.getFlowByid()
+          }
+          if (index == 2) {
+            this.getSpecialIsSelect()
+          }
+          if (index == 3) {
+            this.getMoreIsSelect()
           }
           this.navType = index
           return false
@@ -1238,6 +1373,12 @@ export default {
         if (this.userEditType == 0) {
           return false
         }
+      }
+      if (index == 2) {
+        this.getSpecialIsSelect()
+      }
+      if (index == 3) {
+        this.getMoreIsSelect()
       }
     },
     // 切换特殊人群
@@ -1347,7 +1488,143 @@ export default {
       // console.log(value);
       console.log(value[2], value[1], value[0], this.cityType)
       // 都有内容
-      if (this.cityType == 3) {
+      if (this.cityType == 4) {
+        if (value[2].code && value[1].code && value[0].code) {
+          // console.log("有内容");
+          // 如果是直辖市的特殊情况
+          if (
+            // 都选择了内容的情况下
+            value[2].code &&
+            value[1].code &&
+            value[0].code
+          ) {
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceRegionStr',
+              value[2].name
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceCityStr',
+              value[1].name
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceProvinceStr',
+              value[0].name
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceRegion',
+              value[2].code
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceCity',
+              value[1].code
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceProvince',
+              value[0].code
+            )
+            // console.log(this.houseInfo);
+          } else {
+            if (this.houseEditType == 0) {
+              // console.log("有 清空");
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceRegionStr',
+                ''
+              )
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceCityStr',
+                ''
+              )
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceProvinceStr',
+                ''
+              )
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceRegion',
+                ''
+              )
+              this.$set(this.specialList[6].names, 'guardianResidenceCity', '')
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceProvince',
+                ''
+              )
+            }
+          }
+        } else {
+          if (value[2].name == '市辖区') {
+            // console.log("市辖区");
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceRegionStr',
+              value[2].name
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceCityStr',
+              value[1].name
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceProvinceStr',
+              value[0].name
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceRegion',
+              value[2].code
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceCity',
+              value[1].code
+            )
+            this.$set(
+              this.specialList[6].names,
+              'guardianResidenceProvince',
+              value[0].code
+            )
+          } else {
+            if (this.houseEditType == 0) {
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceRegionStr',
+                ''
+              )
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceCityStr',
+                ''
+              )
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceProvinceStr',
+                ''
+              )
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceRegion',
+                ''
+              )
+              this.$set(this.specialList[6].names, 'guardianResidenceCity', '')
+              this.$set(
+                this.specialList[6].names,
+                'guardianResidenceProvince',
+                ''
+              )
+            }
+          }
+        }
+      } else if (this.cityType == 3) {
         if (value[2].code && value[1].code && value[0].code) {
           // console.log("有内容");
           // 如果是直辖市的特殊情况
@@ -1813,6 +2090,7 @@ export default {
     overflow-y: scroll;
     div {
       p {
+        padding: 1%;
         padding-left: 17px;
         display: flex;
         align-items: center;
@@ -1821,7 +2099,7 @@ export default {
         color: #333333;
         box-sizing: border-box;
         width: 100%;
-        height: 39px;
+        // height: 39px;
         border-bottom: 1px solid #e5e5e5;
       }
       p:nth-child(1) {

@@ -7,11 +7,11 @@
       </div>
       <div class="head_text">查看房户信息</div>
       <div class="head_add" @click="editHouse">
-        <img src="@/assets/image/edit.png" v-if="!onlySee" alt />
+        <img v-if="!onlySee" src="@/assets/image/edit.png" alt />
       </div>
     </div>
     <div class="info">
-      <div class="info_item" v-for="item in columns" :key="item.id">
+      <div v-for="item in columns" :key="item.id" class="info_item">
         <div v-if="item.title == '单元' || item.title == '楼层'">
           <!-- 单元和楼层他才渲染 -->
           <van-field
@@ -41,187 +41,187 @@
 </template>
 <script>
 // 接口引入
-import { detailHouse } from "@/api/house";
+import { detailHouse } from '@/api/house'
 const columns = [
   {
-    title: "单元",
-    dataIndex: "element",
+    title: '单元',
+    dataIndex: 'element',
     id: 1,
     isSelect: false
   },
   {
-    title: "楼层",
-    dataIndex: "floor",
+    title: '楼层',
+    dataIndex: 'floor',
     id: 2,
     isSelect: false
   },
 
   {
-    title: "门牌号",
-    dataIndex: "houseNumber",
+    title: '门牌号',
+    dataIndex: 'houseNumber',
     id: 3,
     isSelect: false
   },
+  // {
+  //   title: "房屋编号",
+  //   dataIndex: "houseCodes",
+  //   id: 4,
+  //   isSelect: false
+  // },
   {
-    title: "房屋编号",
-    dataIndex: "houseCodes",
-    id: 4,
-    isSelect: false
-  },
-  {
-    title: "房屋地址",
-    dataIndex: "houseAddress",
+    title: '房屋地址',
+    dataIndex: 'houseAddress',
     id: 5,
     isSelect: false
   },
   {
-    title: "建筑用途",
-    dataIndex: "houseUseStr",
+    title: '建筑用途',
+    dataIndex: 'houseUseStr',
     id: 6,
     isSelect: true
   },
   {
-    title: "房屋来源",
-    dataIndex: "houseSourceStr",
+    title: '房屋来源',
+    dataIndex: 'houseSourceStr',
     id: 7,
     isSelect: true
   },
   {
-    title: "建筑面积(平方米)",
-    dataIndex: "responsibleUnit",
+    title: '建筑面积(平方米)',
+    dataIndex: 'responsibleUnit',
     id: 8,
     isSelect: false
   },
   {
-    title: "建筑分摊面积(平方米)",
-    dataIndex: "apportionedArea",
+    title: '建筑分摊面积(平方米)',
+    dataIndex: 'apportionedArea',
     id: 9,
     isSelect: false
   },
   {
-    title: "建筑产权面积(平方米)",
-    dataIndex: "propertyArea",
+    title: '建筑产权面积(平方米)',
+    dataIndex: 'propertyArea',
     id: 10,
     isSelect: false
   },
   {
-    title: "不动产编码",
-    dataIndex: "realEstate",
+    title: '不动产编码',
+    dataIndex: 'realEstate',
     id: 11,
     isSelect: false
   },
   {
-    title: "房主身份证号",
-    dataIndex: "idNumber",
+    title: '房主身份证号',
+    dataIndex: 'idNumber',
     id: 12,
     isSelect: false
   },
   {
-    title: "房主姓名",
-    dataIndex: "ownerName",
+    title: '房主姓名',
+    dataIndex: 'ownerName',
     id: 13,
     isSelect: false
   },
   {
-    title: "房主联系类型",
-    dataIndex: "ownerContactTypeStr",
+    title: '房主联系类型',
+    dataIndex: 'ownerContactTypeStr',
     id: 14,
     isSelect: true
   },
   {
-    title: "房主联系方式",
-    dataIndex: "ownerContactInformation",
+    title: '房主联系方式',
+    dataIndex: 'ownerContactInformation',
     id: 15,
     isSelect: false
   },
   {
-    title: "现住地",
-    dataIndex: "currentResidence",
+    title: '现住地',
+    dataIndex: 'currentResidence',
     id: 16,
     isSelect: true
   },
   {
-    title: "房主现居详址",
-    dataIndex: "ownerDetailedAddress",
+    title: '房主现居详址',
+    dataIndex: 'ownerDetailedAddress',
     id: 17,
     isSelect: false
   },
   {
-    title: "隐患类型",
-    dataIndex: "hiddenDangerTypeStr",
+    title: '隐患类型',
+    dataIndex: 'hiddenDangerTypeStr',
     id: 18,
     isSelect: true
   },
   {
-    title: "房屋类型",
-    dataIndex: "houseTypeStr",
+    title: '房屋类型',
+    dataIndex: 'houseTypeStr',
     id: 19,
     isSelect: true
   }
-];
+]
 export default {
-  name: "HouseInfo",
+  name: 'HouseInfo',
   data() {
     return {
       // 当前房屋的类型
-      houseType: sessionStorage.getItem("houseType"),
+      houseType: sessionStorage.getItem('houseType'),
       // 当前的权限是不是只是只查看
-      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
+      onlySee: sessionStorage.getItem('onlySee') != 'false',
       // 当前的房屋id  修改的时候用
-      id: sessionStorage.getItem("houseId"),
+      id: sessionStorage.getItem('houseId'),
       // 基本信息
       basicInfo: {},
       columns: columns
-    };
+    }
   },
   created() {
-    this.getHouseInfo();
+    this.getHouseInfo()
   },
   methods: {
     // 返回上一级
     goback() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     },
     // 获取房屋详情
     getHouseInfo() {
       var obj = {
         id: this.id
-      };
+      }
       return detailHouse(obj).then(res => {
         // console.log(res);
-        this.basicInfo = res.ret;
+        this.basicInfo = res.ret
         var province =
           this.basicInfo.currentResidenceProvinceStr == null
-            ? ""
-            : this.basicInfo.currentResidenceProvinceStr;
+            ? ''
+            : this.basicInfo.currentResidenceProvinceStr
         var city =
           this.basicInfo.currentResidenceCityStr == null
-            ? ""
-            : this.basicInfo.currentResidenceCityStr;
+            ? ''
+            : this.basicInfo.currentResidenceCityStr
         var region =
           this.basicInfo.currentResidenceRegionStr == null
-            ? ""
-            : this.basicInfo.currentResidenceRegionStr;
+            ? ''
+            : this.basicInfo.currentResidenceRegionStr
         var street =
           this.basicInfo.currentResidenceStreetStr == null
-            ? ""
-            : this.basicInfo.currentResidenceStreetStr;
+            ? ''
+            : this.basicInfo.currentResidenceStreetStr
         var community =
           this.basicInfo.currentResidenceCommunityStr == null
-            ? ""
-            : this.basicInfo.currentResidenceCommunityStr;
+            ? ''
+            : this.basicInfo.currentResidenceCommunityStr
         this.basicInfo.currentResidence =
-          "" + province + city + region + street + community;
+          '' + province + city + region + street + community
         // console.log(this.basicInfo.currentResidence);
-      });
+      })
     },
     // 前往 房屋信息编辑页面
     editHouse() {
-      sessionStorage.setItem("houseEditType", 1);
-      this.$router.push({ name: "EditHouse" });
+      sessionStorage.setItem('houseEditType', 1)
+      this.$router.push({ name: 'EditHouse' })
     }
   }
-};
+}
 </script>
 <style scoped lang="scss">
 .houseInfo {

@@ -14,7 +14,7 @@ const rear = [
   {
     id: 3,
     title: '人户一致标识',
-    dataIndex: 'householdIdentityStr',
+    dataIndex: 'householdIdentityStr1',
     isSelect: true
   },
   {

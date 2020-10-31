@@ -7,16 +7,16 @@
       </div>
       <div class="head_text">查看住户信息</div>
       <div class="head_add" @click="editInfo">
-        <img src="@/assets/image/edit.png" v-if="!onlySee" alt />
+        <img v-if="!onlySee" src="@/assets/image/edit.png" alt />
       </div>
     </div>
     <!-- 导航列表 -->
     <div class="nav">
       <div
-        class="nav_item"
         v-for="(item, i) in navList"
-        :class="navType == i ? 'active' : ''"
         :key="item.id"
+        class="nav_item"
+        :class="navType == i ? 'active' : ''"
         @click="changeNavType(i)"
       >
         <p class="text">{{ item.title }}</p>
@@ -25,8 +25,8 @@
     </div>
     <div class="info">
       <!-- 基本信息 -->
-      <div class="content_basic" v-if="navType == 0">
-        <div class="info_item" v-for="item in basic" :key="item.id">
+      <div v-if="navType == 0" class="content_basic">
+        <div v-for="item in basic" :key="item.id" class="info_item">
           <!-- {{item.isSpecial == true}} -->
           <div v-if="item.isSpecial">
             <van-field
@@ -42,7 +42,7 @@
           </div>
           <div v-else>
             <van-field
-              v-model="basicInfo.governRealPopulation[item.dataIndex]"
+              v-model="basicInfo[item.dataIndex]"
               :name="item.dataIndex"
               :label="item.title"
               readonly
@@ -55,8 +55,8 @@
         </div>
       </div>
       <!-- 暂住信息 -->
-      <div class="content_flow" v-if="navType == 1">
-        <div class="info_item" v-for="item in flow" :key="item.id">
+      <div v-if="navType == 1" class="content_flow">
+        <div v-for="item in flow" :key="item.id" class="info_item">
           <van-field
             v-model="flowInfo[item.dataIndex]"
             :name="item.dataIndex"
@@ -70,7 +70,7 @@
         </div>
       </div>
       <!-- 特殊人群 -->
-      <div class="content_special" v-if="navType == 2">
+      <div v-if="navType == 2" class="content_special">
         <van-collapse v-model="activeName" accordion>
           <van-collapse-item
             v-for="item in specialList"
@@ -97,7 +97,7 @@
                 >否</van-button
               >
             </template>
-            <div class="info_item" v-for="items in item.type" :key="items.id">
+            <div v-for="items in item.type" :key="items.id" class="info_item">
               <div>
                 <van-field
                   v-model="item.names[items.dataIndex]"
@@ -128,7 +128,7 @@
         </van-collapse>
       </div>
       <!-- 实有人口 -->
-      <div class="content_more" v-if="navType == 3">
+      <div v-if="navType == 3" class="content_more">
         <van-collapse v-model="activeNames" accordion>
           <van-collapse-item
             v-for="item in moreList"
@@ -156,7 +156,7 @@
                 >否</van-button
               >
             </template>
-            <div class="info_item" v-for="items in item.type" :key="items.id">
+            <div v-for="items in item.type" :key="items.id" class="info_item">
               <van-field
                 v-model="item.names[items.dataIndex]"
                 :name="items.dataIndex"
@@ -180,77 +180,77 @@ import {
   getGoverByBasicid,
   getFlowByBasicid,
   getSpecialByBasicid
-} from "@/api/common";
+} from '@/api/common'
 // 引入基本信息
-import basic from "@/until/basic";
+import basic from '@/until/basic'
 // 流动人口
-import flow from "@/until/flow";
+import flow from '@/until/flow'
 // 刑满释放人员
-import releasedFromPrison from "@/until/releasedFromPrison";
+import releasedFromPrison from '@/until/releasedFromPrison'
 // console.log(releasedFromPrison);
 // 社区矫正人员
-import communityCorrection from "@/until/communityCorrection";
+import communityCorrection from '@/until/communityCorrection'
 // 肇事人员
-import psychosis from "@/until/psychosis";
+import psychosis from '@/until/psychosis'
 // 吸毒人员
-import drugs from "@/until/drugs";
+import drugs from '@/until/drugs'
 // 艾滋病人员
-import aids from "@/until/aids";
+import aids from '@/until/aids'
 // 信访重点人员
-import letter from "@/until/letter";
+import letter from '@/until/letter'
 // 重点青少年
-import teenager from "@/until/teenager";
+import teenager from '@/until/teenager'
 // 留守人员
-import rear from "@/until/rear";
+import rear from '@/until/rear'
 // 境外人员
-import overseasReople from "@/until/overseasReople";
+import overseasReople from '@/until/overseasReople'
 // 三无老人
-import sanwu from "@/until/sanwu";
+import sanwu from '@/until/sanwu'
 // 空巢老人
-import empty from "@/until/empty";
+import empty from '@/until/empty'
 // 死亡人口
-import death from "@/until/death";
+import death from '@/until/death'
 // 残疾人员
-import disability from "@/until/disability";
+import disability from '@/until/disability'
 // 低保人员
-import basicLivingAllowance from "@/until/basicLivingAllowance";
+import basicLivingAllowance from '@/until/basicLivingAllowance'
 // 特困人员
-import exceptionalPoverty from "@/until/exceptionalPoverty";
+import exceptionalPoverty from '@/until/exceptionalPoverty'
 // 就业/失业
-import service from "@/until/service";
+import service from '@/until/service'
 export default {
-  name: "HouseInfo",
+  name: 'HouseInfo',
   data() {
     return {
       // 当前的权限是不是只是只查看
-      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
+      onlySee: sessionStorage.getItem('onlySee') != 'false',
       // basicId
-      basicId: sessionStorage.getItem("basicId"),
+      basicId: sessionStorage.getItem('basicId'),
       // 当前的房屋id  修改的时候用
-      id: sessionStorage.getItem("houseId"),
+      id: sessionStorage.getItem('houseId'),
       // navList 列表
       navList: [
         {
           id: 1,
-          title: "基本信息"
+          title: '基本信息'
         },
         {
           id: 2,
-          title: "暂住信息"
+          title: '暂住信息'
         },
         {
           id: 3,
-          title: "特殊信息"
+          title: '特殊信息'
         },
         {
           id: 4,
-          title: "拓展信息"
+          title: '拓展信息'
         }
       ],
       // 当前的导航类型
       navType: 0,
       // 基本信息
-      basicInfo: { governRealPopulation: {} },
+      basicInfo: {},
       // 暂住信息
       flowInfo: {},
       // 特殊人群折叠面板展开的项
@@ -261,63 +261,63 @@ export default {
       specialList: [
         {
           id: 1,
-          title: "刑满释放人口",
+          title: '刑满释放人口',
           type: releasedFromPrison,
-          name: "releasedFromPrisonInfo",
+          name: 'releasedFromPrisonInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 2,
-          title: "社区矫正人口",
+          title: '社区矫正人口',
           type: communityCorrection,
-          name: "communityCorrectionInfo",
+          name: 'communityCorrectionInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 3,
-          title: "肇事肇祸等严重精神障碍患者人口",
+          title: '肇事肇祸等严重精神障碍患者人口',
           type: psychosis,
-          name: "psychosisInfo",
+          name: 'psychosisInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 4,
-          title: "吸毒人口",
+          title: '吸毒人口',
           type: drugs,
-          name: "drugsInfo",
+          name: 'drugsInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 5,
-          title: "艾滋病人口",
+          title: '艾滋病人口',
           type: aids,
-          name: "aids",
+          name: 'aids',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 6,
-          title: "信访重点人口",
+          title: '信访重点人口',
           type: letter,
-          name: "letterInfo",
+          name: 'letterInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 7,
-          title: "重点青少年",
+          title: '重点青少年',
           type: teenager,
-          name: "teenagerInfo",
+          name: 'teenagerInfo',
           names: {},
           turn: false,
           loading: false
@@ -326,81 +326,81 @@ export default {
       moreList: [
         {
           id: 1,
-          title: "留守人员",
+          title: '留守人员',
           type: rear,
-          name: "rearInfo",
+          name: 'rearInfo',
           turn: false,
           loading: false,
           names: {}
         },
         {
           id: 2,
-          title: "境外人员",
+          title: '境外人员',
           type: overseasReople,
-          name: "overseasReopleInfo",
+          name: 'overseasReopleInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 3,
-          title: "三无老人",
+          title: '三无老人',
           type: sanwu,
-          name: "sanwuInfo",
+          name: 'sanwuInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 4,
-          title: "空巢老人",
+          title: '空巢老人',
           type: empty,
-          name: "emptyInfo",
+          name: 'emptyInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 5,
-          title: "死亡人口",
+          title: '死亡人口',
           type: death,
-          name: "deathInfo",
+          name: 'deathInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 6,
-          title: "残疾人员",
+          title: '残疾人员',
           type: disability,
-          name: "disabilityInfo",
+          name: 'disabilityInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 7,
-          title: "低保人员",
+          title: '低保人员',
           type: basicLivingAllowance,
-          name: "basicLivingAllowanceInfo",
+          name: 'basicLivingAllowanceInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 8,
-          title: "特困人员",
+          title: '特困人员',
           type: exceptionalPoverty,
-          name: "exceptionalPovertyInfo",
+          name: 'exceptionalPovertyInfo',
           names: {},
           turn: false,
           loading: false
         },
         {
           id: 9,
-          title: "就业/失业",
+          title: '就业/失业',
           type: service,
-          name: "serviceInfo",
+          name: 'serviceInfo',
           names: {},
           turn: false,
           loading: false
@@ -410,12 +410,110 @@ export default {
       basic: basic,
       // 流动人口
       flow: flow
-    };
+    }
+  },
+  watch: {
+    // 监听地址的变化 更改addressStr
+    basicInfo: {
+      handler: function(value, old) {
+        if (value.householderRelationshipStr === '户主') {
+          // console.log('自身就是户主')
+          // 如果是户主的将上面的信息填充下面的户主信息
+          // console.log(value)
+          value.householderIdCard = value.idCard
+          value.householderName = value.fullName
+          value.householderGenderStr = value.genderStr
+          value.householderGender = value.gender
+          value.householderContactTypeStr = value.contactTypeStr
+          value.householderContactType = value.contactType
+          value.householderContactInformation = value.contactInformation
+        } else if (
+          // 如果之前是户主 将之前填充的信息清空
+          value.householderRelationshipStr !== '户主' &&
+          old.householderRelationshipStr === '户主'
+        ) {
+          value.householderIdCard = ''
+          value.householderName = ''
+          value.householderGenderStr = ''
+          value.householderGender = ''
+          value.householderContactTypeStr = ''
+          value.householderContactType = ''
+          value.householderContactInformation = ''
+        }
+        // console.log("changeAddress");
+        if (
+          value.currentResidenceProvinceStr != null ||
+          value.currentResidenceProvinceStr
+        ) {
+          this.basicInfo.currentResidences =
+            this.basicInfo.currentResidenceProvinceStr +
+            this.basicInfo.currentResidenceCityStr +
+            this.basicInfo.currentResidenceRegionStr +
+            this.basicInfo.currentResidenceStreetStr +
+            this.basicInfo.currentResidenceCommunityStr
+        }
+        if (
+          value.nativePlaceProvinceStr != null ||
+          value.nativePlaceProvinceStr
+        ) {
+          // console.log(12132132)
+          this.basicInfo.nativePlaces =
+            this.basicInfo.nativePlaceProvinceStr +
+            this.basicInfo.nativePlaceCityStr +
+            this.basicInfo.nativePlaceRegionStr
+        }
+        if (
+          value.placeDomicileProvinceStr != null ||
+          value.placeDomicileProvinceStr
+        ) {
+          this.basicInfo.placeDomiciles =
+            this.basicInfo.placeDomicileProvinceStr +
+            this.basicInfo.placeDomicileCityStr +
+            this.basicInfo.placeDomicileRegionStr
+        }
+      },
+      deep: true
+    },
+    moreList: {
+      handler: function(value, old) {
+        // console.log(value)
+        var obj = value[0].names
+        console.log(obj)
+        if (
+          obj.mainFamilyMembersWorkProvince != null ||
+          obj.mainFamilyMembersWorkProvince != null
+        ) {
+          this.moreList[0].names.mainFamilyMembersWork =
+            obj.mainFamilyMembersWorkProvinceStr +
+            obj.mainFamilyMembersWorkCityStr +
+            obj.mainFamilyMembersWorkRegionStr
+        }
+      },
+      deep: true
+    },
+    specialList: {
+      handler: function(value, old) {
+        // console.log(value);
+        var obj = value[6].names
+        // console.log(obj)
+        if (
+          obj.guardianResidenceProvinceStr != null ||
+          obj.guardianResidenceProvince != null
+        ) {
+          this.specialList[6].names.guardianResidenceProvinces =
+            obj.guardianResidenceProvinceStr +
+            obj.guardianResidenceCityStr +
+            obj.guardianResidenceRegionStr
+          console.log(value[6].names)
+        }
+      },
+      deep: true
+    }
   },
   created() {
-    this.getGoverByBasicid();
-    this.getSpecialIsSelect();
-    this.getMoreIsSelect();
+    this.getGoverByBasicid()
+    this.getSpecialIsSelect()
+    this.getMoreIsSelect()
     // console.log(releasedFromPrison);
   },
   // 销毁前
@@ -425,186 +523,182 @@ export default {
   methods: {
     // 返回上一级
     goback() {
-      sessionStorage.removeItem("basicId");
-      this.$router.go(-1);
+      sessionStorage.removeItem('basicId')
+      this.$router.go(-1)
     },
     // 前往编辑住户信息的页面
     editInfo() {
       // 更改当前的楼栋编辑类型
-      sessionStorage.setItem("userEditType", 1);
-      this.$router.push({ name: "EditUser" });
+      sessionStorage.setItem('userEditType', 1)
+      this.$router.push({ name: 'EditUser' })
     },
     // 解析地址
     parseAddress(obj) {
       // 籍贯
       obj.nativePlaceProvince =
-        obj.nativePlaceProvince === null ? "" : obj.nativePlaceProvince;
+        obj.nativePlaceProvince === null ? '' : obj.nativePlaceProvince
       obj.nativePlaceCity =
-        obj.nativePlaceCity === null ? "" : obj.nativePlaceCity;
+        obj.nativePlaceCity === null ? '' : obj.nativePlaceCity
       obj.nativePlaceRegion =
-        obj.nativePlaceRegion === null ? "" : obj.nativePlaceRegion;
+        obj.nativePlaceRegion === null ? '' : obj.nativePlaceRegion
       // 户籍地
       obj.placeDomicileProvince =
-        obj.placeDomicileProvince === null ? "" : obj.placeDomicileProvince;
+        obj.placeDomicileProvince === null ? '' : obj.placeDomicileProvince
       obj.placeDomicileCity =
-        obj.placeDomicileCity === null ? "" : obj.placeDomicileCity;
+        obj.placeDomicileCity === null ? '' : obj.placeDomicileCity
       obj.placeDomicileRegion =
-        obj.placeDomicileRegion === null ? "" : obj.placeDomicileRegion;
+        obj.placeDomicileRegion === null ? '' : obj.placeDomicileRegion
       // 现住地
       obj.currentResidenceProvince =
         obj.currentResidenceProvince === null
-          ? ""
-          : obj.currentResidenceProvince;
+          ? ''
+          : obj.currentResidenceProvince
       obj.currentResidenceCity =
-        obj.currentResidenceCity === null ? "" : obj.currentResidenceCity;
+        obj.currentResidenceCity === null ? '' : obj.currentResidenceCity
       obj.currentResidenceRegion =
-        obj.currentResidenceRegion === null ? "" : obj.currentResidenceRegion;
+        obj.currentResidenceRegion === null ? '' : obj.currentResidenceRegion
       obj.currentResidenceStreet =
-        obj.currentResidenceStreet === null ? "" : obj.currentResidenceStreet;
+        obj.currentResidenceStreet === null ? '' : obj.currentResidenceStreet
       obj.currentResidenceCommunity =
         obj.currentResidenceCommunity === null
-          ? ""
-          : obj.currentResidenceCommunity;
+          ? ''
+          : obj.currentResidenceCommunity
 
       // console.log(obj)
-      if (obj.nativePlaceProvince !== "") {
+      if (obj.nativePlaceProvince !== '') {
         obj.jiguans =
           obj.nativePlaceProvince +
-          "/" +
+          '/' +
           obj.nativePlaceCity +
-          "/" +
-          obj.nativePlaceRegion;
+          '/' +
+          obj.nativePlaceRegion
       } else {
-        obj.jiguans = "";
+        obj.jiguans = ''
       }
-      if (obj.placeDomicileProvince !== "") {
+      if (obj.placeDomicileProvince !== '') {
         obj.hujidis =
           obj.placeDomicileProvince +
-          "/" +
+          '/' +
           obj.placeDomicileCity +
-          "/" +
-          obj.placeDomicileRegion;
+          '/' +
+          obj.placeDomicileRegion
       } else {
-        obj.hujidis = "";
+        obj.hujidis = ''
       }
-      if (obj.currentResidenceProvince !== "") {
+      if (obj.currentResidenceProvince !== '') {
         obj.xianzhudis =
           obj.currentResidenceProvince +
-          "/" +
+          '/' +
           obj.currentResidenceCity +
-          "/" +
+          '/' +
           obj.currentResidenceRegion +
-          "/" +
+          '/' +
           obj.currentResidenceStreet +
-          "/" +
-          obj.currentResidenceCommunity;
+          '/' +
+          obj.currentResidenceCommunity
       } else {
-        obj.xianzhudis = "";
+        obj.xianzhudis = ''
       }
-      return obj;
+      return obj
     },
     // 获取基本信息
     getGoverByBasicid() {
-      var that = this;
+      var that = this
       var obj = {
         id: this.basicId
-      };
+      }
       return getGoverByBasicid(obj).then(res => {
         // console.log(res);
-        res.ret = that.parseAddress(res.ret);
+        res.ret = that.parseAddress(res.ret)
         if (!res.ret) {
-          that.basicInfo = { governRealPopulation: {} };
-          return;
+          that.basicInfo = {}
+          return
         }
         that.basicInfo = {
-          ...res.ret,
-          governRealPopulation: {
-            ...res.ret
-          }
-        };
-        // console.log(this.basicInfo.governRealPopulation);
-      });
+          ...res.ret
+        }
+      })
     },
     // 获取流动人口信息
     getFlowByid() {
-      var that = this;
+      var that = this
       var obj = {
         basicsId: this.basicId
-      };
+      }
       return getFlowByBasicid(obj).then(res => {
         // console.log(res);
-        that.flowInfo = res.ret ? res.ret : {};
-      });
+        that.flowInfo = res.ret ? res.ret : {}
+      })
     },
     // 更改导航类型
     changeNavType(index) {
-      this.navType = index;
+      this.navType = index
       // console.log(index);
       if (index == 0) {
-        this.getGoverByBasicid();
+        this.getGoverByBasicid()
       } else if (index == 1) {
-        this.getFlowByid();
+        this.getFlowByid()
       } else if (index == 2) {
       } else if (index == 3) {
       }
     },
     // 切换特殊人群
     getSpecialIsSelect() {
-      var that = this;
+      var that = this
       this.specialList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name.split("Info")[0]
-        };
+          name: item.name.split('Info')[0]
+        }
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? true : false;
-          item.names = res.ret ? res.ret : [];
+          item.turn = !!res.ret
+          item.names = res.ret ? res.ret : []
           // console.log(item.turn);
-        });
-      });
+        })
+      })
     },
     // 切换实有人口
     getMoreIsSelect() {
-      var that = this;
+      var that = this
       this.moreList.forEach(item => {
         var obj = {
           basicsId: this.basicId,
-          name: item.name.split("Info")[0]
-        };
+          name: item.name.split('Info')[0]
+        }
         return getSpecialByBasicid(obj).then(res => {
           // console.log(res);
-          item.turn = res.ret ? true : false;
-          item.names = res.ret ? res.ret : [];
+          item.turn = !!res.ret
+          item.names = res.ret ? res.ret : []
           // console.log(item.type);
-        });
-      });
+        })
+      })
     }, // 展示下拉框
     // 弹框展示
     showName(text, type) {
-      console.log(text);
-      if (text == "现住地") {
-        this.cityVisable = true;
-        return false;
+      console.log(text)
+      if (text == '现住地') {
+        this.cityVisable = true
+        return false
       }
-      if (text == "房主联系类型") {
-        text = "联系类型";
+      if (text == '房主联系类型') {
+        text = '联系类型'
       }
-      if (text == "隐患类型") {
-        text = "安全隐患类型";
+      if (text == '隐患类型') {
+        text = '安全隐患类型'
       }
 
       return getSelect(text).then(res => {
-        console.log(res);
-        this.dialogList = res.ret.dictionaryList;
+        console.log(res)
+        this.dialogList = res.ret.dictionaryList
         // return false;
-        this.dialogType = type;
-        this.dialogText = text;
-        this.show = true;
-      });
+        this.dialogType = type
+        this.dialogText = text
+        this.show = true
+      })
     }
   }
-};
+}
 </script>
 <style scoped lang="scss">
 .basicInfo {

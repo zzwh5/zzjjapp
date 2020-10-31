@@ -5,17 +5,17 @@
       <div class="head_back" @click="goback">
         <img src="@/assets/back.png" alt />
       </div>
-      <div class="head_text" v-if="residentType == 0">查看小区楼栋</div>
-      <div class="head_text" v-if="residentType == 1">查看单栋楼房</div>
-      <div class="head_text" v-if="residentType == 2">查看单栋民房</div>
+      <div v-if="residentType == 0" class="head_text">查看小区楼栋</div>
+      <div v-if="residentType == 1" class="head_text">查看单栋楼房</div>
+      <div v-if="residentType == 2" class="head_text">查看单栋民房</div>
       <div
-        class="head_text"
         v-if="residentType == 3 || residentType == 4 || residentType == 5"
+        class="head_text"
       >
         查看别墅
       </div>
       <div class="head_add" @click="editFloor">
-        <img src="@/assets/image/edit.png" v-if="!onlySee" alt />
+        <img v-if="!onlySee" src="@/assets/image/edit.png" alt />
       </div>
     </div>
     <div class="btn">
@@ -32,8 +32,8 @@
     </div>
     <div class="info">
       <div
-        class="info_item"
         v-if="residentType == 0 || residentType == 4 || residentType == 5"
+        class="info_item"
       >
         <van-field
           v-model="residentInfo.housingEstateName"
@@ -46,8 +46,8 @@
         <span></span>
       </div>
       <div
-        class="info_item"
         v-if="residentType == 3 || residentType == 4 || residentType == 5"
+        class="info_item"
       >
         <van-field
           v-model="residentInfo.buildingTypeStr"
@@ -76,7 +76,7 @@
         <!-- 占位 -->
         <span></span>
       </div>
-      <div class="info_item" v-for="item in columns" :key="item.id">
+      <div v-for="item in columns" :key="item.id" class="info_item">
         <van-field
           v-model="residentInfo[item.dataIndex]"
           colon
@@ -104,91 +104,91 @@
 </template>
 <script>
 // 引入接口
-import { detailFloor } from "@/api/house";
+import { detailFloor } from '@/api/house'
 const columns = [
+  // {
+  //   title: "楼栋编号",
+  //   dataIndex: "buildingCode",
+  //   id: 1
+  // },
   {
-    title: "楼栋编号",
-    dataIndex: "buildingCode",
-    id: 1
-  },
-  {
-    title: "地上层数",
-    dataIndex: "theUpperNumber",
+    title: '地上层数',
+    dataIndex: 'theUpperNumber',
     id: 2
   },
 
   {
-    title: "地下层数",
-    dataIndex: "numberOfUnderground",
+    title: '地下层数',
+    dataIndex: 'numberOfUnderground',
     id: 3
   },
   {
-    title: "年代",
-    dataIndex: "time",
+    title: '年代',
+    dataIndex: 'time',
     id: 4
   },
   {
-    title: "不动产编码",
-    dataIndex: "buildingRealEstate",
+    title: '不动产编码',
+    dataIndex: 'buildingRealEstate',
     id: 5
   }
-];
+]
 export default {
   data() {
     return {
       // 当前的权限是不是只是只查看
-      onlySee: sessionStorage.getItem("onlySee") == "false" ? false : true,
+      onlySee: sessionStorage.getItem('onlySee') != 'false',
       // 楼栋类型
       residentType: null,
       // 当前的楼栋的id
-      id: sessionStorage.getItem("residentId"),
+      id: sessionStorage.getItem('residentId'),
       // 楼栋的信息
       residentInfo: {},
       // 不同的楼栋的公共字段
       columns: columns
-    };
+    }
   },
   created() {
-    this.getResidentInfo();
+    this.getResidentInfo()
   },
   methods: {
     // 返回上一级路由
     goback() {
-      this.$router.go(-1);
+      this.$router.go(-1)
     },
     // 获取楼栋详情
     getResidentInfo() {
       var obj = {
         id: this.id
-      };
+      }
       return detailFloor(obj).then(res => {
         // console.log(res);
-        this.residentInfo = res.ret;
-        this.residentType = res.ret.buildingType;
-      });
+        this.residentInfo = res.ret
+        this.residentType = res.ret.buildingType
+      })
     },
     // 前往查看房户列表页面
     goHouseInfo() {
       // 如果是别墅的话 更改sessionstorage中的房屋类型 小区、单栋民房、单栋楼房、别墅(三种类型的别墅)
-      if (sessionStorage.getItem("houseType") == 3) {
+      if (sessionStorage.getItem('houseType') == 3) {
         // console.log(this.residentInfo.buildingType);
-        sessionStorage.setItem("houseType", this.residentInfo.buildingType);
+        sessionStorage.setItem('houseType', this.residentInfo.buildingType)
       }
       // return false;
       // 更改当前的楼栋编辑类型
       // 再session中设置楼栋id
-      sessionStorage.setItem("residentId", this.id);
+      sessionStorage.setItem('residentId', this.id)
       // console.log(residentId);
-      this.$router.push({ name: "Resident" });
+      this.$router.push({ name: 'Resident' })
     },
     // 前往编辑和新增楼栋
     editFloor() {
       // 更改当前的楼栋编辑类型
-      sessionStorage.setItem("floorEditType", this.residentInfo.id);
-      this.$router.push({ name: "EditFloor" });
+      sessionStorage.setItem('floorEditType', this.residentInfo.id)
+      this.$router.push({ name: 'EditFloor' })
     }
   }
-};
+}
 </script>
 <style scoped lang="scss">
 .residentInfo {

@@ -2,17 +2,17 @@
 const basic = [
   {
     id: 1,
-    title: '姓名',
-    dataIndex: 'fullName',
-    isSelect: false,
-    isRequire: true
-  },
-  {
-    id: 2,
     title: '公民身份证号',
     dataIndex: 'idCard',
     isSelect: false,
     isRequire: false
+  },
+  {
+    id: 2,
+    title: '姓名',
+    dataIndex: 'fullName',
+    isSelect: false,
+    isRequire: true
   },
   {
     id: 3,
@@ -229,5 +229,3 @@ const basic = [
 ]
 
 export default basic
-
-

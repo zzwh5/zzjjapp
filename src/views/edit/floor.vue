@@ -63,7 +63,7 @@
           <img src="@/assets/image/more.png" alt />
         </div>
         <div
-          v-if="residentType == 0 || residentType == 4 || residentType == 5"
+          v-if="residentType == 4 || residentType == 5"
           class="info_item"
           @click="showName('housingEstateName')"
         >
@@ -95,7 +95,9 @@
             colon
             required
             :rules="[{ required: true }]"
+            @input="Input"
           />
+
           <!-- 占位 -->
           <span></span>
         </div>
@@ -345,17 +347,19 @@ export default {
     // 监听楼栋信息的变化 更改addressStr
     residentInfo: {
       handler: function(value, old) {
+        console.log(value)
         // console.log("changeAddress");
         if (value.communityStr == null || !value.communityStr) {
           // console.log(1111);
           return false
+        } else {
+          this.residentInfo.addressStr =
+            this.residentInfo.provinceStr +
+            this.residentInfo.cityStr +
+            this.residentInfo.districtStr +
+            this.residentInfo.streetStr +
+            this.residentInfo.communityStr
         }
-        this.residentInfo.addressStr =
-          this.residentInfo.provinceStr +
-          this.residentInfo.cityStr +
-          this.residentInfo.districtStr +
-          this.residentInfo.streetStr +
-          this.residentInfo.communityStr
       },
       deep: true
     }
@@ -414,10 +418,19 @@ export default {
         this.residentType = res.ret.buildingType
       })
     },
+    // 因为切换完别墅类型后因为buildingName的问题 一直不随着用户的操作变化 所以强制性更改了一下页面
+    Input() {
+      // console.log(23222222)
+      // console.log(this.residentInfo.buildingName)
+      this.$forceUpdate()
+    },
+
     // 点击弹框中的楼栋类型 更改楼栋类型
     changeResidentInfo(type) {
       // buildingName 代表的不只是 门牌号 可能还是小区名称  所以每次选择别墅类型的时候都要把这个字段清空
       this.residentInfo.buildingName = ''
+      // this.$forceUpdate()
+      console.log(this.residentInfo.buildingName)
       this.residentType = type
       this.residentInfo.buildingType = type
       // console.log(this.residentType, this.residentInfo.buildingType);
@@ -433,6 +446,9 @@ export default {
       }
       var that = this
       // console.log(this.residentType);
+      if (this.residentType == 0) {
+        this.residentInfo.housingEstateId = this.estateId
+      }
       var obj = {
         id: this.estateId
       }
